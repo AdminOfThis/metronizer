@@ -55,7 +55,6 @@ function buttonParse() {
   for (let i = 0; i < inputSections.length; i++) {
 
     let sectionValue = inputSections[i].parseSection();
-    console.log(sectionValue);
     if (i > 0) {
       tempString += "\r\n";
     }
