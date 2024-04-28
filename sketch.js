@@ -1,6 +1,12 @@
+let inputSections = [2,2];
+
+
+
 //let example_code = "1 60 4/4 x\r\n1 60 4/4\r\n1 150 4/4\r\n1 30 3/4\r\n1 71 7/4\r\n2 60 4/4"
 //let example_code = "1 60 4/4"
 let example_code = "1 60 4/4 x\r\n2 60 4/4\r\n2 120 3/4\r\n2 150 5/4";
+
+let play = true;
 
 let blocks = [];
 
@@ -47,6 +53,12 @@ class Block {
 function setup() {
   let blocks = parseInput(example_code);
 
+  for (let i = 0; i < inputSections.length; i++) {    
+  myInput = createInput("Number of ");
+  myInput.position(0, 30*i);
+  }
+  let button = createButton('click me');
+  button.position(0, inputSections.length*30);
   
   
   var cnv = createCanvas(windowWidth/2, windowHeight/2);
@@ -68,6 +80,11 @@ function parseInput(input) {
   }
 }
 
+let timeSinceStart = 0;
+let lastPause = 0;
+let totalPause = 0;
+let pauseSinceStart = 0;
+
 function draw() {
   textSize(32);
   if (startTime === undefined) {
@@ -77,9 +94,13 @@ function draw() {
       totalLength += blocks[i].lengthTotal();
     }
   }
-
-  let timeSinceStart = millis() - startTime;
-  //console.log(timeSinceStart);
+  
+  if(!play){
+    //ongoing Pause + past pauses
+    pauseSinceStart = millis() - lastPause +totalPause;
+   }
+  let timeSinceStart = (millis()-pauseSinceStart) - startTime;
+  //console.log(timeSinceStart/1000);
 
   background(0);
   stroke(255);
@@ -254,6 +275,13 @@ function mousePressed() {
 function keyPressed() {
   if (keyCode === ESCAPE) {
     fullscreen(false);
+  } else if(keyCode === ENTER) {
+    play = !play;
+    if(play) {
+      totalPause += millis() - lastPause;
+    } else {
+      lastPause = millis();
+    }
   }
 }
 
