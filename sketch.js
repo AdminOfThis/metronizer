@@ -47,7 +47,12 @@ class Block {
 function setup() {
   let blocks = parseInput(example_code);
 
-  createCanvas(800, 400);
+  
+  
+  var cnv = createCanvas(windowWidth/2, windowHeight/2);
+  cnv.style('display', 'block');
+  background(255);
+  
   bounce = height / 4;
 }
 
@@ -241,6 +246,14 @@ function mousePressed() {
     } else {
       createCanvas(1920, 1080);
     }
+  }
+}
+
+// If the mouse is pressed,
+// toggle full-screen mode.
+function keyPressed() {
+  if (keyCode === ESCAPE) {
+    fullscreen(false);
   }
 }
 
