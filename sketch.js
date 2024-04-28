@@ -260,11 +260,11 @@ function draw() {
 function reset() {
   startTime = undefined;
   timeSinceStart = 0;
-  lastPause = 0;
+  lastPause = millis();
   totalPause = 0;
   pauseSinceStart = 0;
   bounce = height / 4;
-  play = true;
+  play = false;
 }
 
 // If the mouse is pressed,
@@ -290,10 +290,8 @@ function keyPressed() {
   } else if (keyCode === ENTER) {
     play = !play;
     if (play) {
-      console.log("PLAY")
       totalPause += millis() - lastPause;
     } else {
-      console.log("PAUSE")
       lastPause = millis();
     }
   }
