@@ -1,14 +1,20 @@
-let inputSections = [2,2];
+//import controlP5.*;
 
+//ControlP5 cp5;
+// ##################### UI ###################
+let inputSections = [];
+let btnPlus, btnParse;
 
+//let inputField;
 
+// ##################### CODE ###################
 //let example_code = "1 60 4/4 x\r\n1 60 4/4\r\n1 150 4/4\r\n1 30 3/4\r\n1 71 7/4\r\n2 60 4/4"
-//let example_code = "1 60 4/4"
-let example_code = "1 60 4/4 x\r\n2 60 4/4\r\n2 120 3/4\r\n2 150 5/4";
+let example_code = "1 60 4/4 x\r\n2 150 4/4"
+//let example_code = "1 60 4/4 x\r\n2 150 4/4\r\n2 120 3/4\r\n2 150 5/4";
 
 let play = true;
 
-let blocks = [];
+var blocks = [];
 
 let totalLength;
 let bounce;
@@ -18,58 +24,52 @@ const rect_Width = 5;
 
 let startTime;
 
-class Block {
-  constructor(count, bpm, measure, dnc) {
-    //  console.log(count);
-    this.count = count;
-    this.bpm = bpm;
-    this.measure = measure;
-    this.doNotCount = dnc;
+function setup() {
+  blocks = parseInput(example_code);
 
-    this.measure_min = parseInt(measure.split("/")[0]);
-    this.measure_maj = parseInt(measure.split("/")[1]);
-  }
+  btnPlus = createButton("Add Section");
+  btnPlus.position(0, inputSections.length * 30);
+  btnPlus.mousePressed(buttonPlus);
 
-  print() {
-    console.log(
-      "COUNT: " +
-        this.count +
-        " , BPM: " +
-        this.bpm +
-        " , Measure: " +
-        this.measure
-    );
-  }
+  btnParse = createButton("Parse");
+  btnParse.mousePressed(buttonParse.bind(this.blocks));
 
-  length() {
-    return (60 / this.bpm) * this.measure_min * 1000;
-  }
+  //inputField = createWriter("Test");
+  //inputField.position(100,100);
 
-  lengthTotal() {
-    return this.count * this.length();
-  }
+
+  var cnv = createCanvas(max(400, windowWidth), max(400, windowHeight / 2));
+  cnv.style("display", "block");
+  background(255);
+
+  reset();
 }
 
-function setup() {
-  let blocks = parseInput(example_code);
+function buttonPlus() {
 
-  for (let i = 0; i < inputSections.length; i++) {    
-  myInput = createInput("Number of ");
-  myInput.position(0, 30*i);
+  new UISection(inputSections.length, inputSections, btnPlus, btnParse);
+}
+
+function buttonParse() {
+  let tempString = "";
+  for (let i = 0; i < inputSections.length; i++) {
+
+    let sectionValue = inputSections[i].parseSection();
+    if (i > 0) {
+      tempString += "\r\n";
+    }
+    tempString += sectionValue;
   }
-  let button = createButton('click me');
-  button.position(0, inputSections.length*30);
-  
-  
-  var cnv = createCanvas(windowWidth/2, windowHeight/2);
-  cnv.style('display', 'block');
-  background(255);
-  
-  bounce = height / 4;
+
+  console.log(tempString);
+
+  blocks = parseInput(tempString);
+  reset();
 }
 
 function parseInput(input) {
   let splits = input.split("\r\n");
+  let blocks = [];
   for (let i = 0; i < splits.length; i++) {
     let s = splits[i].split(" ");
     let dnc = s.length > 3 && s[3] === "x";
@@ -78,6 +78,7 @@ function parseInput(input) {
     blocks[i] = b;
     //console.log(b.length());
   }
+  return blocks;
 }
 
 let timeSinceStart = 0;
@@ -94,12 +95,12 @@ function draw() {
       totalLength += blocks[i].lengthTotal();
     }
   }
-  
-  if(!play){
+
+  if (!play) {
     //ongoing Pause + past pauses
-    pauseSinceStart = millis() - lastPause +totalPause;
-   }
-  let timeSinceStart = (millis()-pauseSinceStart) - startTime;
+    pauseSinceStart = millis() - lastPause + totalPause;
+  }
+  let timeSinceStart = millis() - pauseSinceStart - startTime;
   //console.log(timeSinceStart/1000);
 
   background(0);
@@ -128,15 +129,15 @@ function draw() {
     let ju = abs(
       sin(
         ((timeSinceStart - currentLength) / currentBlock.length()) *
-          PI *
-          currentBlock.measure_min
+        PI *
+        currentBlock.measure_min
       ) * bounce
     );
     if (
       timeSinceStart >
       totalLength -
-        blocks[blocks.length - 1].length() /
-          blocks[blocks.length - 1].measure_min
+      blocks[blocks.length - 1].length() /
+      blocks[blocks.length - 1].measure_min
     ) {
       bounce *= 0.99;
     } else {
@@ -210,11 +211,12 @@ function draw() {
         (index + (j * block.length()) / 1000) * pixelPerSecond -
         (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
+      let x = width / 3 + taktBegin;
       fill(255);
       let basecolor;
       if (!block.doNotCount) {
         textAlign(LEFT, TOP);
-        let x = width / 3 + taktBegin;
+
         fill(min(map(x, 100, width / 3, 0, 255), 255));
         //TAKTZAHL
         text(taktCount + 1, x, height / 1.35 + 10);
@@ -223,7 +225,6 @@ function draw() {
         basecolor = 127;
       }
 
-      let x = width / 3 + taktBegin;
       //draw only required
       if (x >= -width && x <= width) {
         fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
@@ -248,12 +249,21 @@ function draw() {
   }
   if (timeSinceStart > totalLength + 5000) {
     //console.log("RESET")
-    startTime = millis();
-    bounce = height / 4;
+    reset();
   }
 
   //noLoop();
   //frameRate(.5)
+}
+
+function reset() {
+  startTime = undefined;
+  timeSinceStart = 0;
+  lastPause = millis();
+  totalPause = 0;
+  pauseSinceStart = 0;
+  bounce = height / 4;
+  play = false;
 }
 
 // If the mouse is pressed,
@@ -262,6 +272,7 @@ function mousePressed() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
     let fs = fullscreen();
     fullscreen(!fs);
+    pixelsPerSecond = width / 10;
     if (fs) {
       createCanvas(800, 400);
     } else {
@@ -275,14 +286,20 @@ function mousePressed() {
 function keyPressed() {
   if (keyCode === ESCAPE) {
     fullscreen(false);
-  } else if(keyCode === ENTER) {
+  } else if (keyCode === ENTER) {
     play = !play;
-    if(play) {
+    if (play) {
       totalPause += millis() - lastPause;
     } else {
       lastPause = millis();
     }
   }
+}
+
+function windowResized() {
+  console.log("resize");
+  resizeCanvas(max(400, windowWidth), max(400, windowHeight / 2));
+  pixelsPerSecond = width / 10;
 }
 
 const msToTime = (miliseconds) => {
