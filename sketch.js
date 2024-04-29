@@ -28,25 +28,24 @@ function setup() {
   blocks = parseInput(example_code);
 
   btnPlayPause = createButton("PLAY");
-  btnPlayPause.parent("main-parent");
-  btnPlayPause.position(0, 0, "sticky");
+  btnPlayPause.parent("canvas-parent");
+  btnPlayPause.position(0, 0, "relative");
   btnPlayPause.size(100, 30);
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
   btnPlus = createButton("Add Section");
-  btnPlus.position(0, inputSections.length * 30);
+  btnPlus.parent("ui-parent");
+  btnPlus.position(0, 0, "static");
   btnPlus.mousePressed(buttonPlus);
 
   btnParse = createButton("Parse");
+  btnParse.parent("ui-parent");
+  btnPlus.position(0, 0, "static");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
   btnParse.hide();
 
-  //inputField = createWriter("Test");
-  //inputField.position(100,100);
-
-
   var cnv = createCanvas(max(400, windowWidth), max(400, windowHeight / 2));
-  cnv.parent("main-parent");
+  cnv.parent("canvas-parent");
   cnv.style("display", "block");
   background(255);
 
@@ -119,7 +118,8 @@ function draw() {
   // Gestrichelte Linie
   //for(let i=0;i<10;i++) {
   fill(65);
-  rect(width / 3, 0, rect_Width / 2, height);
+  let nowLineWidth = rect_Width / 2;
+  rect(width / 3 - nowLineWidth/2, 0, nowLineWidth, height);
   //}
 
   let currentBlock;
@@ -272,6 +272,7 @@ function reset() {
   pauseSinceStart = 0;
   bounce = height / 4;
   play = false;
+  btnPlayPause.html("PLAY");
 }
 
 // If the mouse is pressed,
