@@ -30,6 +30,12 @@ class UISection {
         this.numMeasureMin.size(20, this.numBars.height);
         this.numMeasureMin.position(0, 0, "static");
 
+        let divider = createDiv("/");
+        divider.parent("section"+ index);
+        divider.size(5, this.numBars.height);
+        divider.position(0, 0, "static");
+
+
         this.numMeasureMaj = createInput("4");
         this.numMeasureMaj.parent("section"+ index);
         this.numMeasureMaj.size(20, this.numBars.height);

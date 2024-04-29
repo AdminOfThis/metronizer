@@ -2,6 +2,8 @@
 
 //ControlP5 cp5;
 // ##################### UI ###################
+let font;
+
 let inputSections = [];
 let btnPlus, btnParse, btnPlayPause;
 
@@ -19,12 +21,29 @@ var blocks = [];
 let totalLength;
 let bounce;
 
+let circleRadius = 25;
+
 let pixelPerSecond = 150;
 const rect_Width = 5;
 
 let startTime;
 
+function preload() {
+  font = loadFont('assets/Roboto-Regular.ttf');
+}
+
 function setup() {
+
+  textFont(font);
+
+  let canvasHeight = max(200, windowHeight / 2);
+  let canvasWidth = canvasHeight / 9.0 * 16.0;
+
+  var cnv = createCanvas(canvasWidth, canvasHeight);
+  cnv.parent("canvas-parent");
+  cnv.class("canvas");
+  background(255);
+
   blocks = parseInput(example_code);
 
   btnPlayPause = createButton("PLAY");
@@ -44,11 +63,7 @@ function setup() {
   btnParse.mousePressed(buttonParse.bind(this.blocks));
   btnParse.hide();
 
-  var cnv = createCanvas(max(400, windowWidth), max(400, windowHeight / 2));
-  cnv.parent("canvas-parent");
-  cnv.style("display", "block");
-  background(255);
-
+  windowResized();
   reset();
 }
 
@@ -117,9 +132,9 @@ function draw() {
 
   // Gestrichelte Linie
   //for(let i=0;i<10;i++) {
-  fill(65);
+  fill(map(bounce, 0, height / 8, 0, 25));
   let nowLineWidth = rect_Width / 2;
-  rect(width / 3 - nowLineWidth/2, 0, nowLineWidth, height);
+  rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
   //}
 
   let currentBlock;
@@ -133,34 +148,17 @@ function draw() {
 
   // TEMPO
   if (currentBlock != undefined) {
-    //let ju = abs(sin(timeSinceStart/(currentBlock.length())*PI*currentBlock.measure_min )*height/4);
-    let ju = abs(
-      sin(
-        ((timeSinceStart - currentLength) / currentBlock.length()) *
-        PI *
-        currentBlock.measure_min
-      ) * bounce
-    );
-    if (play && (
-      timeSinceStart >
-      totalLength -
-      blocks[blocks.length - 1].length() /
-      blocks[blocks.length - 1].measure_min
-    )) {
-      bounce *= 0.99;
-    } else {
-      bounce = height / 4;
-    }
-    fill(255, 0, 0);
-    circle(width / 3, height / 2.25 - ju, 25);
+
     textAlign(LEFT, TOP);
+    fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
     text(currentBlock.bpm + " BPM", 10, 10);
-    fill(255);
+    fill(map(bounce, 0, height / 8, 0, 255));
     text(currentBlock.measure, 10, 50);
     textAlign(LEFT, TOP);
     text(msToTime(timeSinceStart), width - 125, 10);
 
-    let br = 0;
+    // Calculate current bar, subdivide, etc
+
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
@@ -190,34 +188,58 @@ function draw() {
         break;
       }
     }
+
+    let ju = abs(sin(((timeSinceStart - currentLength) / currentBlock.length()) * PI * currentBlock.measure_min) * bounce);
+
+    let circleY = height / 2 - ju - (circleRadius / 2.0);
+    let circleX = width / 3;
+    fill(255, 0, 0);
+
+    if (play && (timeSinceStart > totalLength - blocks[blocks.length - 1].length() / blocks[blocks.length - 1].measure_min)) {
+      // Piece is over, having fun
+      bounce *= 0.99;
+      circleY = min(height - (circleRadius / 2), circleY + (timeSinceStart - totalLength) / 20);
+      circleX += (timeSinceStart - totalLength) * (timeSinceStart - totalLength) / 100000;
+    } else {
+      if (currentSubdivide == currentBlock.measure_min) {
+        // pronounce the bar opening
+        bounce = height / 3;
+      } else {
+        bounce = height / 5;
+      }
+    }
+    circle(circleX, circleY, circleRadius);
+
+    // DISPLAY BARS, SUBDIVIDE, ETC
+    textSize(48);
     textAlign(CENTER, TOP);
-    text(
-      currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
-      width / 2,
-      10
-    );
+    if (currentSubdivide > 0) {
+      fill(255);
+      text(currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min, width / 2, 10);
+    } else {
+      fill(map(bounce, 0, height / 8, 0, 255));
+      text("END", width / 2, 10);
+    }
   }
 
   // TAKT LINES
   let taktCount = 0;
   for (let i = 0; i < blocks.length; i++) {
     let block = blocks[i];
-    let blockX =
-      width / 3 +
-      (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
+    let blockX = width / 3 + (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
     textAlign(LEFT, BOTTOM);
     if (i > 0 && blocks[i].bpm != blocks[i - 1].bpm) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255));
-      text(block.bpm, blockX, height - 38);
+      textSize(32);
+      text(block.bpm, blockX, height / 8 * 7.5);
     }
     if (i > 0 && blocks[i].measure !== blocks[i - 1].measure) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
+      textSize(32);
       text(block.measure, blockX, height - 10);
     }
     for (let j = 0; j < block.count; j++) {
-      let taktBegin =
-        (index + (j * block.length()) / 1000) * pixelPerSecond -
-        (timeSinceStart / 1000) * pixelPerSecond;
+      let taktBegin = (index + (j * block.length()) / 1000) * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
       let x = width / 3 + taktBegin;
       fill(255);
@@ -227,7 +249,17 @@ function draw() {
 
         fill(min(map(x, 100, width / 3, 0, 255), 255));
         //TAKTZAHL
+        textSize(32);
+        let bbox = font.textBounds((taktCount + 1) + "", x, height / 1.35 + 10, 32);
+        //fill(127);
+        let textMargin = 5;
+        let boxWidth = 2;
+        rect(bbox.x - textMargin - boxWidth, bbox.y - textMargin - boxWidth, bbox.w + (2 * (textMargin + boxWidth)), bbox.h + (2 * (textMargin + boxWidth)));
+        fill(0);
+        rect(bbox.x - textMargin, bbox.y - textMargin, bbox.w + (2 * textMargin), bbox.h + (2 * textMargin));
+        fill(min(map(x, 100, width / 3, 0, 255), 255));
         text(taktCount + 1, x, height / 1.35 + 10);
+
         basecolor = 255;
       } else {
         basecolor = 127;
@@ -255,7 +287,7 @@ function draw() {
     index += block.lengthTotal() / 1000;
     //console.log(index);
   }
-  if (timeSinceStart > totalLength + 5000) {
+  if (timeSinceStart > totalLength + 30000) {
     //console.log("RESET")
     reset();
   }
@@ -301,9 +333,11 @@ function keyPressed() {
 }
 
 function windowResized() {
-  console.log("resize");
-  resizeCanvas(max(400, windowWidth), max(400, windowHeight / 2));
+  let canvasHeight = max(200, windowHeight / 2);
+  let canvasWidth = canvasHeight / 9.0 * 16.0;
+  resizeCanvas(canvasWidth, canvasHeight);
   pixelsPerSecond = width / 10;
+  circleRadius = width / 25;
 }
 
 function buttonPlayPause() {
