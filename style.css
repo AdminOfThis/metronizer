@@ -7,11 +7,57 @@ html, body {
 body {
   margin: 5;
   padding: 5;
-  display: flex;
+  /*display: flex;*/
+
+  overflow-y: hidden; /* Hide scrollbars */
+  overflow-x: hidden; /* Hide scrollbars */
 
   /* This centers our sketch horizontally. */
   justify-content: center;
 
   /* This centers our sketch vertically. */
   align-items: center;
+}
+
+.ui-parent {
+  display:list-item;
+  justify-content: space-between;
+  padding: 5;
+  margin: 5;
+  min-width: 500px;
+  }
+.ui-parent:first-child {
+  padding: 5;
+  margin: 5;
+}
+
+.ui-section {
+  height: 30;
+  display: flex;
+  margin: 5;
+}
+
+.ui-section-element {
+  padding: 5;
+  margin: 5;
+}
+
+.canvas-parent {
+  display: block;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: darkgrey;
+  color: white;
+  text-align: center;
+}
+
+a:link {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
 }
