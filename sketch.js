@@ -148,22 +148,6 @@ function draw() {
 
   // TEMPO
   if (currentBlock != undefined) {
-    let ju = abs(sin(((timeSinceStart - currentLength) / currentBlock.length()) * PI * currentBlock.measure_min) * bounce);
-
-    let circleY = height / 2 - ju - (circleRadius / 2.0);
-    let circleX = width / 3;
-    fill(255, 0, 0);
-
-    if (play && (timeSinceStart > totalLength - blocks[blocks.length - 1].length() / blocks[blocks.length - 1].measure_min)) {
-      bounce *= 0.99;
-      circleY = min(height-(circleRadius/2), circleY+(timeSinceStart - totalLength) / 20);
-      circleX += (timeSinceStart - totalLength)*(timeSinceStart - totalLength)/100000;
-    } else {
-      bounce = height / 4;
-
-    }
-    circle(circleX, circleY, circleRadius);
-
 
     textAlign(LEFT, TOP);
     fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
@@ -173,7 +157,8 @@ function draw() {
     textAlign(LEFT, TOP);
     text(msToTime(timeSinceStart), width - 125, 10);
 
-    let br = 0;
+    // Calculate current bar, subdivide, etc
+
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
@@ -203,9 +188,33 @@ function draw() {
         break;
       }
     }
+
+    let ju = abs(sin(((timeSinceStart - currentLength) / currentBlock.length()) * PI * currentBlock.measure_min) * bounce);
+
+    let circleY = height / 2 - ju - (circleRadius / 2.0);
+    let circleX = width / 3;
+    fill(255, 0, 0);
+
+    if (play && (timeSinceStart > totalLength - blocks[blocks.length - 1].length() / blocks[blocks.length - 1].measure_min)) {
+      // Piece is over, having fun
+      bounce *= 0.99;
+      circleY = min(height - (circleRadius / 2), circleY + (timeSinceStart - totalLength) / 20);
+      circleX += (timeSinceStart - totalLength) * (timeSinceStart - totalLength) / 100000;
+    } else {
+      if (currentSubdivide == currentBlock.measure_min) {
+        // pronounce the bar opening
+        bounce = height / 3;
+      } else {
+        bounce = height / 5;
+      }
+    }
+    circle(circleX, circleY, circleRadius);
+
+    // DISPLAY BARS, SUBDIVIDE, ETC
     textSize(48);
     textAlign(CENTER, TOP);
     if (currentSubdivide > 0) {
+      fill(255);
       text(currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min, width / 2, 10);
     } else {
       fill(map(bounce, 0, height / 8, 0, 255));
