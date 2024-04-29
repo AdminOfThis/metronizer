@@ -3,7 +3,7 @@
 //ControlP5 cp5;
 // ##################### UI ###################
 let inputSections = [];
-let btnPlus, btnParse;
+let btnPlus, btnParse, btnPlayPause;
 
 //let inputField;
 
@@ -27,18 +27,26 @@ let startTime;
 function setup() {
   blocks = parseInput(example_code);
 
+  btnPlayPause = createButton("PLAY");
+  btnPlayPause.parent("main-parent");
+  btnPlayPause.position(0, 0, "sticky");
+  btnPlayPause.size(100, 30);
+  btnPlayPause.mousePressed(buttonPlayPause.bind(this));
+
   btnPlus = createButton("Add Section");
   btnPlus.position(0, inputSections.length * 30);
   btnPlus.mousePressed(buttonPlus);
 
   btnParse = createButton("Parse");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
+  btnParse.hide();
 
   //inputField = createWriter("Test");
   //inputField.position(100,100);
 
 
   var cnv = createCanvas(max(400, windowWidth), max(400, windowHeight / 2));
+  cnv.parent("main-parent");
   cnv.style("display", "block");
   background(255);
 
@@ -133,12 +141,12 @@ function draw() {
         currentBlock.measure_min
       ) * bounce
     );
-    if (
+    if (play && (
       timeSinceStart >
       totalLength -
       blocks[blocks.length - 1].length() /
       blocks[blocks.length - 1].measure_min
-    ) {
+    )) {
       bounce *= 0.99;
     } else {
       bounce = height / 4;
@@ -287,12 +295,7 @@ function keyPressed() {
   if (keyCode === ESCAPE) {
     fullscreen(false);
   } else if (keyCode === ENTER) {
-    play = !play;
-    if (play) {
-      totalPause += millis() - lastPause;
-    } else {
-      lastPause = millis();
-    }
+    buttonPlayPause();
   }
 }
 
@@ -300,6 +303,17 @@ function windowResized() {
   console.log("resize");
   resizeCanvas(max(400, windowWidth), max(400, windowHeight / 2));
   pixelsPerSecond = width / 10;
+}
+
+function buttonPlayPause() {
+  play = !play;
+  if (play) {
+    btnPlayPause.html("PAUSE");
+    totalPause += millis() - lastPause;
+  } else {
+    btnPlayPause.html("PLAY");
+    lastPause = millis();
+  }
 }
 
 const msToTime = (miliseconds) => {
