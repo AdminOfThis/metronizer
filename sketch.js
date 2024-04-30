@@ -162,7 +162,7 @@ function draw() {
     text(msToTime(timeSinceStart), width - 125, 10);
 
     // Calculate current bar, subdivide, etc
-
+    // Abandon all hope ye who enter beyond this point
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
