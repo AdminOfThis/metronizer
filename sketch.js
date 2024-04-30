@@ -5,7 +5,7 @@
 let font;
 
 let inputSections = [];
-let btnPlus, btnParse, btnPlayPause;
+let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 
 //let inputField;
 
@@ -46,20 +46,14 @@ function setup() {
 
   blocks = parseInput(example_code);
 
-  btnPlayPause = createButton("PLAY");
-  btnPlayPause.parent("canvas-parent");
-  btnPlayPause.position(0, 0, "relative");
-  btnPlayPause.size(100, 30);
+  btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
-  btnPlus = createButton("Add Section");
-  btnPlus.parent("ui-parent");
-  btnPlus.position(0, 0, "static");
-  btnPlus.mousePressed(buttonPlus);
-
-  btnParse = createButton("Parse");
-  btnParse.parent("ui-parent");
-  btnPlus.position(0, 0, "static");
+  btnAddSection = select("#btnAddSection");
+  btnAddSection.mousePressed(buttonAddSection);
+  btnAddComment = select("#btnAddComment");
+  btnAddComment.mousePressed(buttonAddComment);
+  btnParse = select("#btnParse");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
   btnParse.hide();
 
@@ -67,9 +61,13 @@ function setup() {
   reset();
 }
 
-function buttonPlus() {
+function buttonAddComment() {
+  console.log("COMMENT");
+}
 
-  new UISection(inputSections.length, inputSections, btnPlus, btnParse);
+function buttonAddSection() {
+  load_home("section.html");
+  //new UISection(inputSections.length, inputSections, btnAddSection, btnParse);
 }
 
 function buttonParse() {
@@ -359,3 +357,7 @@ const msToTime = (miliseconds) => {
 
   return `${mm}:${ss}.${MM}`;
 };
+
+function load_home(element) {
+  document.getElementById("sections").innerHTML += '<object style="display: inline-row; overflow:hidden; width: fit-content; height: 75px" type="text/html" data="' + element + '" ></object>';
+}
