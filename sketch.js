@@ -1,7 +1,13 @@
+//When I wrote this, only God and I understood what I was doing
+//Now, God only knows
+
+
+// ##################### UI ###################
+
 //import controlP5.*;
 
 //ControlP5 cp5;
-// ##################### UI ###################
+
 let font;
 
 let inputSections = [];
