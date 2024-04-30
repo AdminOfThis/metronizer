@@ -12,7 +12,7 @@ body {
   /* margin:0;  */
 
   /* Hide scrollbars */
-  overflow: hidden;
+  overflow-y: hidden;
 
   /* This centers our sketch horizontally. */
   /* justify-content: center; */
@@ -42,9 +42,14 @@ body {
 
 .control {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.control-button {
+  width: 75px;
+  height: 30px
 }
 
 .grid-container {
@@ -53,6 +58,7 @@ body {
   vertical-align: top;
   border-color: white;
   border-style: solid;
+  border-radius: 5px;
 }
 
 .sections {
@@ -105,6 +111,22 @@ body {
   background-color: black;
   color: white;
   /* text-align: center; */
+}
+
+/* ALLGEMEIN ################################################# */
+
+button {
+  background-color: black;
+  border: solid;
+  border-width: 1px;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px;
+  border-radius: 5px;
 }
 
 a:link {

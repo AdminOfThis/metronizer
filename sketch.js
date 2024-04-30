@@ -55,7 +55,7 @@ function setup() {
   btnAddComment.mousePressed(buttonAddComment);
   btnParse = select("#btnParse");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
-  btnParse.hide();
+  // btnParse.hide();
 
   windowResized();
   reset();
@@ -302,7 +302,7 @@ function reset() {
   pauseSinceStart = 0;
   bounce = height / 4;
   play = false;
-  btnPlayPause.html("PLAY");
+  btnPlayPause.html("&#9654;");
 }
 
 // If the mouse is pressed,
@@ -341,10 +341,10 @@ function windowResized() {
 function buttonPlayPause() {
   play = !play;
   if (play) {
-    btnPlayPause.html("PAUSE");
+    btnPlayPause.html("&#8214;");
     totalPause += millis() - lastPause;
   } else {
-    btnPlayPause.html("PLAY");
+    btnPlayPause.html("&#9654;");
     lastPause = millis();
   }
 }
