@@ -16,7 +16,7 @@
     <meta charset="utf-8" />
   </head>
 
-  <body>
+  <body style="overflow-y: auto; height: 95%">
     <div id="canvas-parent" class="canvas-parent"></div>
     <div id="ui-parent" class="ui-parent">
       <div id="control" class="control">
@@ -24,12 +24,16 @@
         <button id="btnParse" class="control-button">&#10227;</button>
       </div>
       <div class="grid-container">
-        <h3 class="h3" style="justify-self: center">Sections</h3>
-        <h3 class="h3" style="justify-self: center">Comments</h3>
-        <div id="sections" class="grid-item, sections"></div>
-        <div id="comments" class="grid-item, comments"></div>
-        <button id="btnAddSection">Add Section</button>
-        <button id="btnAddComment">Add Comment</button>
+        <div style="border: 3px solid green; display: grid; width: auto; overflow: scroll;">
+          <h3 class="h3">Sections</h3>
+          <div id="sections" class="sections"></div>
+          <button id="btnAddSection" class="centered-button">Add Section</button>
+        </div>
+        <div style="border: 3px solid green; display: grid;">
+          <h3 class="h3">Comments</h3>
+          <div id="comments" class="comments"></div>
+          <button id="btnAddComment" class="centered-button">Add Comment</button>
+        </div>
       </div>
     </div>
     <!-- <div id="includeHtml"></div> -->
@@ -45,6 +49,7 @@
           target="_blank"
           >Issues</a
         >
+      </div>
       </div>
     </footer>
     <script src="block.js"></script>

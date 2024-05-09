@@ -402,7 +402,7 @@ const msToTime = (miliseconds) => {
 
 function load_home(element) {
   document.getElementById("sections").innerHTML +=
-    '<object style="display: inline-row; overflow:hidden; width: fit-content; height: 75px" type="text/html" data="' +
+    '<object style="display: inline-row; overflow:hidden; width: 100%; height: 75px" type="text/html" data="' +
     element +
     '" ></object>';
 }
