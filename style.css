@@ -55,40 +55,49 @@ body {
   margin-right: auto;
   justify-content: center;
   display: flex;
-  background-color: Gray;
 }
 
-.grid-container div {
+.grid-item {
   flex-basis: 100%;
   display: grid;
+  /* border: 3px solid green; */
+  background-color: Gray;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  display: grid;
+  width: auto;
+  overflow: scroll;
 }
 
 .sections {
-  /* max-height: 100px; */
-  /* overflow-y: auto; */
   justify-self: center;
-  width: 100%;
+  width: auto;
 }
 
 .comments {
   justify-self: center;
-  width: 100%;
+  width: auto;
 }
 
 .ui-parent {
   display: list;
   margin: 5px;
+  margin-bottom: 25px;
 }
 
 .ui-section {
   height: 30;
-  display: inline-flex;
+  display: block;
   overflow: hidden;
+  width: auto;
+  border: 5px;
+  align-items: center;
 }
 
 .ui-section > input {
   height: 30;
-  width: 200;
+  width: auto;
 }
 
 .ui-section-element {
@@ -118,6 +127,10 @@ body {
 .centered-button {
   margin: auto;
   align-items: center;
+}
+
+.remove-button {
+  font-size: 12px;
 }
 
 /* ALLGEMEIN ################################################# */

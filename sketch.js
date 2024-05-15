@@ -66,11 +66,11 @@ function setup() {
 }
 
 function buttonAddComment() {
-  console.log("COMMENT");
+  load_home("comment.html", document.getElementById("comments"));
 }
 
 function buttonAddSection() {
-  load_home("section.html");
+  load_home("section.html", document.getElementById("sections"));
   //new UISection(inputSections.length, inputSections, btnAddSection, btnParse);
 }
 
@@ -400,9 +400,13 @@ const msToTime = (miliseconds) => {
   return `${mm}:${ss}.${MM}`;
 };
 
-function load_home(element) {
-  document.getElementById("sections").innerHTML +=
-    '<object style="display: inline-row; overflow:hidden; width: 100%; height: 75px" type="text/html" data="' +
-    element +
-    '" ></object>';
+function load_home(file, element) {
+  fetch(file /*, options */)
+    .then((response) => response.text())
+    .then((html) => {
+      element.innerHTML += html;
+    })
+    .catch((error) => {
+      console.warn(error);
+    });
 }

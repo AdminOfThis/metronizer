@@ -1,32 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script>
-      $(function () {
-        $("#includeHtml").load("section.html");
-      });
-    </script>
-    <script src="p5.js"></script>
-    <script src="library.js"></script>
-    <script src="controlP5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <div class="ui-section">
-        <input type="number" id="tentacles" placeholder="Bars" min="1" max="999" style="width: 50px"/>
-        <input type="number" id="tentacles" placeholder="BPM" min="1" max="300" style="width: 50px"/>
-        <input type="number" id="tentacles" placeholder="4" min="1" max="20" style="width: 30px"/>
-        /
-        <input type="number" id="tentacles" placeholder="4" min="1" max="20" style="width: 30px"/>
-        <div>
-            <input type="checkbox" id="horns" name="horns" />
-            <label for="horns">Is Pre-Count</label>
-        </div>
-        <button>-</button>
-    </div>
-  </body>
-</html>
+<div class="ui-section">
+  <input
+    type="number"
+    id="tentacles"
+    placeholder="Bars"
+    min="1"
+    max="999"
+    style="width: 50px"
+  />
+  <input
+    type="number"
+    id="tentacles"
+    placeholder="BPM"
+    min="1"
+    max="300"
+    style="width: 50px"
+  />
+  <select name="bars" id="bars">
+    <option value="javascript">3/4</option>
+    <option value="python">4/4</option>
+    <option value="c++">5/4</option>
+    <option value="java">6/4</option>
+    <option value="5">6/8</option>
+    <option value="5">7/8</option>
+    <option value="5">8/8</option>
+    <option value="5">9/8</option>
+  </select>
+  <div style="display: ruby">
+    <input type="checkbox" id="horns" name="horns" />
+    <label for="horns">Is Pre-Count</label>
+  </div>
+
+  <button class="remove-button">Remove</button>
+</div>
