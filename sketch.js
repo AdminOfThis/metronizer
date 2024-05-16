@@ -3,10 +3,6 @@
 
 // ##################### UI ###################
 
-//import controlP5.*;
-
-//ControlP5 cp5;
-
 let font;
 
 let inputSections = [];
@@ -65,13 +61,52 @@ function setup() {
   reset();
 }
 
-function buttonAddComment() {
-  load_home("comment.html", document.getElementById("comments"));
+async function buttonAddComment() {
+  loadStrings("comment.html", AddComment);
+}
+
+function AddComment(data) {
+  let str = "";
+  for (let i = 1; i < data.length - 1; i++) {
+    str += data[i];
+  }
+  let index = select("#comments").elt.childElementCount;
+  str = str.replaceAll(">  <", "><");
+  str = str.replaceAll("XXX", index + "");
+  //console.log(str);
+  const newDiv = createDiv(str);
+  newDiv.innerHTML = str;
+  //let index = select("#comm//nts").children.length;
+  let removeButton = select("#removeButton" + index);
+  removeButton.mousePressed(() => {
+    newDiv.remove();
+  });
+  newDiv.child(removeButton);
+  newDiv.parent(select("#comments"));
 }
 
 function buttonAddSection() {
-  load_home("section.html", document.getElementById("sections"));
-  //new UISection(inputSections.length, inputSections, btnAddSection, btnParse);
+  loadStrings("section.html", AddSection);
+}
+
+function AddSection(data) {
+  let str = "";
+  for (let i = 1; i < data.length - 1; i++) {
+    str += data[i];
+  }
+  let index = select("#sections").elt.childElementCount;
+  str = str.replaceAll(">  <", "><");
+  str = str.replaceAll("XXX", index + "");
+  //console.log(str);
+  const newDiv = createDiv(str);
+  newDiv.innerHTML = str;
+  //let index = select("#comm//nts").children.length;
+  let removeButton = select("#removeSectionButton" + index);
+  removeButton.mousePressed(() => {
+    newDiv.remove();
+  });
+  newDiv.child(removeButton);
+  newDiv.parent(select("#sections"));
 }
 
 function buttonParse() {
@@ -400,11 +435,32 @@ const msToTime = (miliseconds) => {
   return `${mm}:${ss}.${MM}`;
 };
 
+async function load(file) {
+  let fr = new FileReader();
+  fr.onload = function () {
+    document.getElementById("comments").innerHTML += fr.result;
+  };
+
+  fr.readAsText(file);
+}
+
 function load_home(file, element) {
   fetch(file /*, options */)
     .then((response) => response.text())
     .then((html) => {
+      const index = document.getElementById("sections").children.length / 2;
+      console.log("Index " + index);
+      html = html.replaceAll("XXX", index + "");
+      element;
       element.innerHTML += html;
+      let btnRemove = select("#removeButton" + index);
+      btnRemove.btnRemove.mousePressed(function () {
+        console.log("Trying to remove index " + index);
+        const sections = document.getElementById("sections");
+
+        sections.removeChild(sections.children[index * 2]);
+        sections.removeChild(sections.children[index * 2]);
+      });
     })
     .catch((error) => {
       console.warn(error);
