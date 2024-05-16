@@ -73,11 +73,9 @@ function AddComment(data) {
   let index = select("#comments").elt.childElementCount;
   str = str.replaceAll(">  <", "><");
   str = str.replaceAll("XXX", index + "");
-  //console.log(str);
   const newDiv = createDiv(str);
   newDiv.innerHTML = str;
-  //let index = select("#comm//nts").children.length;
-  let removeButton = select("#removeButton" + index);
+  let removeButton = select("#removeCommentButton" + index);
   removeButton.mousePressed(() => {
     newDiv.remove();
   });
@@ -97,7 +95,6 @@ function AddSection(data) {
   let index = select("#sections").elt.childElementCount;
   str = str.replaceAll(">  <", "><");
   str = str.replaceAll("XXX", index + "");
-  //console.log(str);
   const newDiv = createDiv(str);
   newDiv.innerHTML = str;
   //let index = select("#comm//nts").children.length;
