@@ -299,7 +299,7 @@ function draw() {
       //draw only required
       if (x >= -width && x <= width) {
         fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-        rect(x, height / 2, rect_Width * 1.5, height / 4);
+        rect(x - rect_Width / 2, height / 2, rect_Width * 1.5, height / 4);
 
         for (let count_min = 1; count_min < block.measure_min; count_min++) {
           let addOffset =
@@ -308,7 +308,7 @@ function draw() {
             pixelPerSecond;
           x = width / 3 + taktBegin + addOffset;
           fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-          rect(x, height / 2, rect_Width, height / 6);
+          rect(x - rect_Width / 2, height / 2, rect_Width, height / 6);
         }
       }
       if (!block.doNotCount) {
