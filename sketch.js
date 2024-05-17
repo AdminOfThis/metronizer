@@ -72,7 +72,30 @@ function setup() {
 }
 
 function buttonSave() {
-  console.log("NEED TO IMPLEMENT SAVING HERE");
+  let contentArray = [getStrings()];
+
+  // Save the contentArray to a text file named 'output.txt'
+  saveStrings(contentArray, "output.txt");
+}
+
+function getStrings() {
+  let result = "";
+
+  for (let i = 0; i < sections.length; i++) {
+    if (i > 0) {
+      result += "\r\n";
+    }
+    result += sections[i].parseToString();
+  }
+
+  for (let i = 0; i < comments.length; i++) {
+    if (result !== "" && comments.length > 0) {
+      result += "\r\n";
+    }
+    result += comments[i].parseToString();
+  }
+
+  return result;
 }
 
 function buttonParse() {
