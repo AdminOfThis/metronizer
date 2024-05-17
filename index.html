@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script>
-      $(function () {
-        $("#includeHtml").load("section.html");
-      });
-    </script>
-    <!-- <script src="p5.js"></script> -->
-    <!-- <script src="library.js"></script> -->
+    <title>Metronizer</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
@@ -23,6 +17,7 @@
       <div id="control" class="control">
         <button id="btnPlayPause" class="control-button">&#9654;</button>
         <button id="btnParse" class="control-button">&#10227;</button>
+        <button id="btnSave" class="control-button">Save File</button>
       </div>
       <div class="grid-container">
         <div class="grid-item">
@@ -54,7 +49,6 @@
       </div>
     </footer>
     <script src="block.js"></script>
-    <script src="uiSection.js"></script>
     <script src="sketch.js"></script>
   </body>
 </html>

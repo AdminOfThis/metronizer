@@ -30,6 +30,7 @@ const rect_Width = 5;
 let startTime;
 
 let sections = [];
+let comments = [];
 
 function preload() {
   font = loadFont("assets/Roboto-Regular.ttf");
@@ -51,33 +52,49 @@ function setup() {
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
+  btnParse = select("#btnParse");
+  btnParse.mousePressed(buttonParse.bind(this.blocks));
+
+  btnSave = select("#btnSave");
+  btnSave.mousePressed(buttonSave.bind(this));
+
   btnAddSection = select("#btnAddSection");
   btnAddSection.mousePressed(function () {
     sections.push(new Section());
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
-    new Comment();
+    comments.push(new Comment());
   });
-  btnParse = select("#btnParse");
-  btnParse.mousePressed(buttonParse.bind(this.blocks));
-  // btnParse.hide();
 
   windowResized();
   reset();
 }
 
-function buttonParse() {
-  let result = "";
+function buttonSave() {
+  console.log("NEED TO IMPLEMENT SAVING HERE")
+}
 
+function buttonParse() {
+  let sectionsString = "";
+
+  let commentsString = "";
   for (let i = 0; i < sections.length; i++) {
-    result += sections[i].parseToString();
-    if (i < sections.length - 1) {
-      result += "\r\n";
+    sectionsString += sections[i].parseToString();
+    if (sections.length > 0 && i < sections.length - 1) {
+      sectionsString += "\r\n";
     }
   }
 
-  blocks = parseInput(result);
+  for (let i = 0; i < comments.length; i++) {
+    commentsString += comments[i].parseToString();
+    if (comments.length > 0 && i < comments.length - 1) {
+      commentsString += "\r\n";
+    }
+  }
+  let combinedString = (sectionsString += "\r\n" + commentsString);
+  console.log(combinedString);
+  blocks = parseInput(combinedString);
   reset();
 }
 
@@ -85,12 +102,17 @@ function parseInput(input) {
   let splits = input.split("\r\n");
   let blocks = [];
   for (let i = 0; i < splits.length; i++) {
-    let s = splits[i].split(" ");
-    let dnc = s.length > 3 && s[3] === "x";
-    let b = new Block(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
-    //b.print();
-    blocks[i] = b;
-    //console.log(b.length());
+    if (splits[i] !== "") {
+      if (splits[i].startsWith("c")) {
+        let s = splits[i].split(" ");
+        //new Comment();
+      } else {
+        const s = splits[i].split(" ");
+        const dnc = s.length > 3 && s[3] === "x"; // does not count
+        const b = new Block(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
+        blocks[i] = b;
+      }
+    }
   }
   return blocks;
 }
