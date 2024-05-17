@@ -72,7 +72,7 @@ function setup() {
 }
 
 function buttonSave() {
-  console.log("NEED TO IMPLEMENT SAVING HERE")
+  console.log("NEED TO IMPLEMENT SAVING HERE");
 }
 
 function buttonParse() {
@@ -194,9 +194,11 @@ function draw() {
           }
         }
         if (!blocks[i].doNotCount) {
-          let temp =
-            blocks[i].length() + blocks[i].length() / blocks[i].measure_min;
-          currentTakt += floor(addedTime / temp) + 1;
+          currentTakt +=
+            floor(
+              (addedTime - blocks[i].length() / blocks[i].measure_min) /
+                blocks[i].length()
+            ) + 1;
         }
         break;
       }
