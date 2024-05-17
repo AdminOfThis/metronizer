@@ -29,6 +29,8 @@ const rect_Width = 5;
 
 let startTime;
 
+let sections = [];
+
 function preload() {
   font = loadFont("assets/Roboto-Regular.ttf");
 }
@@ -50,9 +52,13 @@ function setup() {
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
   btnAddSection = select("#btnAddSection");
-  btnAddSection.mousePressed(buttonAddSection);
+  btnAddSection.mousePressed(function () {
+    sections.push(new Section());
+  });
   btnAddComment = select("#btnAddComment");
-  btnAddComment.mousePressed(buttonAddComment);
+  btnAddComment.mousePressed(function () {
+    new Comment();
+  });
   btnParse = select("#btnParse");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
   // btnParse.hide();
@@ -61,64 +67,17 @@ function setup() {
   reset();
 }
 
-async function buttonAddComment() {
-  loadStrings("comment.html", AddComment);
-}
-
-function AddComment(data) {
-  let str = "";
-  for (let i = 1; i < data.length - 1; i++) {
-    str += data[i];
-  }
-  let index = select("#comments").elt.childElementCount;
-  str = str.replaceAll(">  <", "><");
-  str = str.replaceAll("XXX", index + "");
-  const newDiv = createDiv(str);
-  newDiv.innerHTML = str;
-  let removeButton = select("#removeCommentButton" + index);
-  removeButton.mousePressed(() => {
-    newDiv.remove();
-  });
-  newDiv.child(removeButton);
-  newDiv.parent(select("#comments"));
-}
-
-function buttonAddSection() {
-  loadStrings("section.html", AddSection);
-}
-
-function AddSection(data) {
-  let str = "";
-  for (let i = 1; i < data.length - 1; i++) {
-    str += data[i];
-  }
-  let index = select("#sections").elt.childElementCount;
-  str = str.replaceAll(">  <", "><");
-  str = str.replaceAll("XXX", index + "");
-  const newDiv = createDiv(str);
-  newDiv.innerHTML = str;
-  //let index = select("#comm//nts").children.length;
-  let removeButton = select("#removeSectionButton" + index);
-  removeButton.mousePressed(() => {
-    newDiv.remove();
-  });
-  newDiv.child(removeButton);
-  newDiv.parent(select("#sections"));
-}
-
 function buttonParse() {
-  let tempString = "";
-  for (let i = 0; i < inputSections.length; i++) {
-    let sectionValue = inputSections[i].parseSection();
-    if (i > 0) {
-      tempString += "\r\n";
+  let result = "";
+
+  for (let i = 0; i < sections.length; i++) {
+    result += sections[i].parseToString();
+    if (i < sections.length - 1) {
+      result += "\r\n";
     }
-    tempString += sectionValue;
   }
 
-  console.log(tempString);
-
-  blocks = parseInput(tempString);
+  blocks = parseInput(result);
   reset();
 }
 
