@@ -97,7 +97,16 @@ function gotFile(file) {
   //console.log(file);
   if (hasAllowedExtension(file.name)) {
     //console.log(file.data);
+    // console.log(select("#sections").elt.children.length);
+    // select("#sections").elt.children.length = 0;
+
+    for(let s of sections) {
+      console.log(s);
+      s.remove();
+    }
+
     blocks = parseInput(file.data);
+    //sections = blocks;
   }
 }
 

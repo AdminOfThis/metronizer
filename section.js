@@ -32,24 +32,36 @@ class Section {
 
     let removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
     removeButton.mousePressed(() => {
-      newDiv.remove();
+      // newDiv.remove();
+      this.remove();
     });
     newDiv.child(removeButton);
     newDiv.parent(select("#sections"));
 
-    selectAll("#bars")[this.index].value(this.count);
-    selectAll("#bpm")[this.index].value(this.bpm);
-    selectAll("#measure")[this.index].value(this.measure);
+    select("#bars" + this.index).value(this.count);
+    select("#bpm" + this.index).value(this.bpm);
+    select("#measure" + this.index).value(this.measure);
     select("#isPre" + this.index).checked(this.doNotCount);
+  }
+
+  remove() {
+    select("#bars" + this.index)
+      .value(this.count)
+      .parent()
+      .remove();
+    // let index = sections.indexOf(this);
+
+    // if (index !== -1) {
+    //   sections.splice(index, 1);
+    // }
   }
 
   createString() {
     let result = "";
-    this.count = selectAll("#bars")[this.index].value();
-    this.bpm = selectAll("#bpm")[this.index].value();
-    this.measure = selectAll("#measure")[this.index].value();
+    this.count = select("#bars" + this.index).value();
+    this.bpm = select("#bpm" + this.index).value();
+    this.measure = select("#measure" + this.index).value();
     this.doNotCount = select("#isPre" + this.index).checked();
-
 
     result +=
       this.count +
