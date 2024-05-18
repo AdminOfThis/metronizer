@@ -5,7 +5,7 @@ class Section {
     return new Section(1, 60, "4/4");
   }
 
-  constructor(count, bpm, measure, dnc = false) {
+  constructor(count, bpm, measure, dnc) {
     //  console.log(count);
     this.count = count;
     this.bpm = bpm;
@@ -19,44 +19,45 @@ class Section {
   }
 
   AddSection(data) {
-    // while (Section.lock) {
-    //   console.log("WATINING");
-    // }
-    // Section.lock = true;
-    try {
-      let str = "";
-      for (let i = 1; i < data.length - 1; i++) {
-        str += data[i];
-      }
-      this.index = select("#sections").elt.childElementCount; // Set the instance variable
-
-      str = str.replaceAll(">  <", "><");
-      str = str.replaceAll("XXX", this.index + ""); // Use the instance variable
-      const newDiv = createDiv(str);
-      newDiv.innerHTML = str;
-
-      let removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
-      removeButton.mousePressed(() => {
-        newDiv.remove();
-      });
-      newDiv.child(removeButton);
-      newDiv.parent(select("#sections"));
-    } finally {
-      // Section.lock = false;
+    let str = "";
+    for (let i = 1; i < data.length - 1; i++) {
+      str += data[i];
     }
+    this.index = select("#sections").elt.childElementCount; // Set the instance variable
+
+    str = str.replaceAll(">  <", "><");
+    str = str.replaceAll("XXX", this.index + ""); // Use the instance variable
+    const newDiv = createDiv(str);
+    newDiv.innerHTML = str;
+
+    let removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
+    removeButton.mousePressed(() => {
+      newDiv.remove();
+    });
+    newDiv.child(removeButton);
+    newDiv.parent(select("#sections"));
+
+    selectAll("#bars")[this.index].value(this.count);
+    selectAll("#bpm")[this.index].value(this.bpm);
+    selectAll("#measure")[this.index].value(this.measure);
+    select("#isPre" + this.index).checked(this.doNotCount);
   }
 
-  parseToString() {
+  createString() {
     let result = "";
-    const bars = selectAll("#bars")[this.index];
-    const bpm = selectAll("#bpm")[this.index];
-    const measure = selectAll("#measure")[this.index];
-    const isPre = select("#isPre" + this.index);
+    this.count = selectAll("#bars")[this.index].value();
+    this.bpm = selectAll("#bpm")[this.index].value();
+    this.measure = selectAll("#measure")[this.index].value();
+    this.doNotCount = select("#isPre" + this.index).checked();
 
-    result += bars.value();
-    result += " " + bpm.value();
-    result += " " + measure.value();
-    result += isPre.checked() ? " x" : "";
+
+    result +=
+      this.count +
+      " " +
+      this.bpm +
+      " " +
+      this.measure +
+      (this.doNotCount ? " x" : "");
 
     return result;
   }

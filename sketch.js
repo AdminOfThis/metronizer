@@ -57,6 +57,7 @@ function setup() {
   background(255);
 
   blocks = parseInput(example_code);
+  //sections = blocks;
 
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
@@ -93,9 +94,9 @@ function hasAllowedExtension(fileName) {
 }
 
 function gotFile(file) {
-  console.log(file);
+  //console.log(file);
   if (hasAllowedExtension(file.name)) {
-    console.log(file.data);
+    //console.log(file.data);
     blocks = parseInput(file.data);
   }
 }
@@ -114,39 +115,31 @@ function getStrings() {
     if (i > 0) {
       result += "\r\n";
     }
-    result += sections[i].parseToString();
+    console.log(sections[i].createString());
+    result += sections[i].createString();
   }
 
   for (let i = 0; i < comments.length; i++) {
     if (result !== "" && comments.length > 0) {
       result += "\r\n";
     }
-    result += comments[i].parseToString();
+    result += comments[i].createString();
   }
 
   return result;
 }
 
 function buttonParse() {
-  let sectionsString = "";
-
-  let commentsString = "";
-  for (let i = 0; i < sections.length; i++) {
-    sectionsString += sections[i].parseToString();
-    if (sections.length > 0 && i < sections.length - 1) {
-      sectionsString += "\r\n";
-    }
+  for (let s of sections) {
+    s.createString();
   }
 
-  for (let i = 0; i < comments.length; i++) {
-    commentsString += comments[i].parseToString();
-    if (comments.length > 0 && i < comments.length - 1) {
-      commentsString += "\r\n";
-    }
+  for (let c of sections) {
+    c.createString();
   }
-  let combinedString = (sectionsString += "\r\n" + commentsString);
-  console.log(combinedString);
-  //blocks = parseInput(combinedString);
+
+  blocks = sections;
+
   reset();
 }
 
@@ -164,7 +157,6 @@ function parseInput(input) {
         const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
         sections.push(b);
         blocks[i] = b;
-        console.log(sections.length);
       }
     }
   }
@@ -235,7 +227,7 @@ function draw() {
         t += blocks[i].lengthTotal();
         if (!blocks[i].doNotCount) {
           // add the finished takt block counts
-          currentTakt += blocks[i].count;
+          currentTakt += parseInt(blocks[i].count);
         }
       } else {
         let addedTime = 0;
@@ -468,35 +460,3 @@ const msToTime = (miliseconds) => {
 
   return `${mm}:${ss}.${MM}`;
 };
-
-async function load(file) {
-  let fr = new FileReader();
-  fr.onload = function () {
-    document.getElementById("comments").innerHTML += fr.result;
-  };
-
-  fr.readAsText(file);
-}
-
-function load_home(file, element) {
-  fetch(file /*, options */)
-    .then((response) => response.text())
-    .then((html) => {
-      const index = document.getElementById("sections").children.length / 2;
-      console.log("Index " + index);
-      html = html.replaceAll("XXX", index + "");
-      element;
-      element.innerHTML += html;
-      let btnRemove = select("#removeButton" + index);
-      btnRemove.btnRemove.mousePressed(function () {
-        console.log("Trying to remove index " + index);
-        const sections = document.getElementById("sections");
-
-        sections.removeChild(sections.children[index * 2]);
-        sections.removeChild(sections.children[index * 2]);
-      });
-    })
-    .catch((error) => {
-      console.warn(error);
-    });
-}
