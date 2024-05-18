@@ -1,5 +1,8 @@
 class Comment {
-  constructor() {
+  constructor(bar, subBar, commentMessage) {
+    this.bar = bar;
+    this.sub_bar = subBar;
+    this.commentMessage = commentMessage;
     this.index = select("#comments").elt.childElementCount; // Set the instance variable
     loadStrings("comment.html", this.AddComment.bind(this));
   }
@@ -20,17 +23,30 @@ class Comment {
     });
     newDiv.child(removeButton);
     newDiv.parent(select("#comments"));
+
+    select("#commentBar" + this.index).value(this.bar);
+    select("#commentSubBar" + this.index).value(this.sub_bar);
+    select("#commentMessage" + this.index).value(this.commentMessage);
   }
 
-  parseToString() {
-    let result = "c ";
-    const bar = selectAll("#bar")[this.index];
-    const sub_bar = selectAll("#sub_bar")[this.index];
-    const commentMessage = selectAll("#commentMessage")[this.index];
+  remove() {
+    select("#commentBar" + this.index)
+      .parent()
+      .remove();
+    // let index = sections.indexOf(this);
 
-    result += bar.value();
-    result += " " + sub_bar.value();
-    result += " " + commentMessage.value();
+    // if (index !== -1) {
+    //   sections.splice(index, 1);
+    // }
+  }
+
+  createString() {
+    let result = "c ";
+    this.bar = select("#commentBar" + this.index).value();
+    this.sub_bar = select("#commentSubBar" + this.index).value();
+    this.commentMessage = select("#commentMessage" + this.index).value();
+
+    result += this.bar + " " + this.sub_bar + " " + this.commentMessage;
 
     return result;
   }

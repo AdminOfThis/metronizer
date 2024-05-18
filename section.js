@@ -46,7 +46,6 @@ class Section {
 
   remove() {
     select("#bars" + this.index)
-      .value(this.count)
       .parent()
       .remove();
     // let index = sections.indexOf(this);

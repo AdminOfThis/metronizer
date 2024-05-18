@@ -14,7 +14,7 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 
 // ##################### CODE ###################
 //let example_code = "1 60 4/4 x\r\n1 60 4/4\r\n1 150 4/4\r\n1 30 3/4\r\n1 71 7/4\r\n2 60 4/4"
-let example_code = "1 60 4/4 x\r\n2 150 4/4";
+let example_code = "1 120 4/4 x\r\n2 150 4/4";
 //let example_code = "1 60 4/4 x\r\n2 150 4/4\r\n2 120 3/4\r\n2 150 5/4";
 
 let play = true;
@@ -74,7 +74,7 @@ function setup() {
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
-    comments.push(new Comment());
+    comments.push(new Comment(1,1,""));
   });
 
   windowResized();
@@ -100,9 +100,14 @@ function gotFile(file) {
     // console.log(select("#sections").elt.children.length);
     // select("#sections").elt.children.length = 0;
 
-    for(let s of sections) {
-      console.log(s);
+    for (let s of sections) {
+      // console.log(s);
       s.remove();
+    }
+
+    for (let c of comments) {
+      // console.log(s);
+      c.remove();
     }
 
     blocks = parseInput(file.data);
@@ -143,7 +148,7 @@ function buttonParse() {
     s.createString();
   }
 
-  for (let c of sections) {
+  for (let c of comments) {
     c.createString();
   }
 
@@ -159,7 +164,7 @@ function parseInput(input) {
     if (splits[i] !== "") {
       if (splits[i].startsWith("c")) {
         let s = splits[i].split(" ");
-        //new Comment();
+        const c = new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
@@ -297,6 +302,8 @@ function draw() {
     }
     circle(circleX, circleY, circleRadius);
 
+    drawComments(index, pixelPerSecond, timeSinceStart);
+
     // DISPLAY BARS, SUBDIVIDE, ETC
     textSize(48);
     textAlign(CENTER, TOP);
@@ -404,6 +411,34 @@ function draw() {
 
   //noLoop();
   //frameRate(.5)
+  //console.log(index + " " + pixelPerSecond + " " + timeSinceStart);
+}
+
+function drawComments(index, pixelPerSecond, timeSinceStart) {
+  for (let c of comments) {
+    let x = calculateX(c, index, pixelPerSecond, timeSinceStart);
+    fill(min(map(x, 100, width / 3, 0, 255), 255));
+    text(c.commentMessage, x, 100);
+  }
+  //text("TEST COMMENT", 100, 100);
+}
+
+function calculateX(c, index, pixelPerSecond, timeSinceStart) {
+  let currentBar = 0;
+  let currentBlock = 0;
+  let x = 0;
+  //console.log(c.bar);
+  while (currentBar < c.bar && currentBlock < blocks.length) {
+    if (currentBar + blocks[currentBlock].count <= c.bar) {
+      x += (blocks[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBar += parseInt(blocks[currentBlock].count);
+    } else {
+      x += (blocks[currentBlock].length() / 1000.0) * pixelPerSecond;
+      currentBar++;
+    }
+    currentBlock++;
+  }
+  return x + width / 3 - (timeSinceStart / 1000.0) * pixelPerSecond;
 }
 
 function reset() {
