@@ -1,17 +1,20 @@
-//import controlP5.*;
+//When I wrote this, only God and I understood what I was doing
+//Now, God only knows
 
-//ControlP5 cp5;
+const allowedExtensions = [".txt", ".met"]; // Specify allowed file extensions
+
 // ##################### UI ###################
+
 let font;
 
 let inputSections = [];
-let btnPlus, btnParse, btnPlayPause;
+let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 
 //let inputField;
 
 // ##################### CODE ###################
 //let example_code = "1 60 4/4 x\r\n1 60 4/4\r\n1 150 4/4\r\n1 30 3/4\r\n1 71 7/4\r\n2 60 4/4"
-let example_code = "1 60 4/4 x\r\n2 150 4/4"
+let example_code = "1 120 4/4 x\r\n2 150 4/4";
 //let example_code = "1 60 4/4 x\r\n2 150 4/4\r\n2 120 3/4\r\n2 150 5/4";
 
 let play = true;
@@ -28,16 +31,25 @@ const rect_Width = 5;
 
 let startTime;
 
+let sections = [];
+let comments = [];
+
 function preload() {
-  font = loadFont('assets/Roboto-Regular.ttf');
+  font = loadFont("assets/Roboto-Regular.ttf");
 }
 
 function setup() {
-
   textFont(font);
 
+  dropZone = select("#body");
+
+  // Setup drag and drop event handlers
+  dropZone.dragOver(highlight);
+  dropZone.dragLeave(unhighlight);
+  dropZone.drop(gotFile, unhighlight);
+
   let canvasHeight = max(200, windowHeight / 2);
-  let canvasWidth = canvasHeight / 9.0 * 16.0;
+  let canvasWidth = (canvasHeight / 9.0) * 16.0;
 
   var cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent("canvas-parent");
@@ -45,47 +57,103 @@ function setup() {
   background(255);
 
   blocks = parseInput(example_code);
+  //sections = blocks;
 
-  btnPlayPause = createButton("PLAY");
-  btnPlayPause.parent("canvas-parent");
-  btnPlayPause.position(0, 0, "relative");
-  btnPlayPause.size(100, 30);
+  btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
-  btnPlus = createButton("Add Section");
-  btnPlus.parent("ui-parent");
-  btnPlus.position(0, 0, "static");
-  btnPlus.mousePressed(buttonPlus);
-
-  btnParse = createButton("Parse");
-  btnParse.parent("ui-parent");
-  btnPlus.position(0, 0, "static");
+  btnParse = select("#btnParse");
   btnParse.mousePressed(buttonParse.bind(this.blocks));
-  btnParse.hide();
+
+  btnSave = select("#btnSave");
+  btnSave.mousePressed(buttonSave.bind(this));
+
+  btnAddSection = select("#btnAddSection");
+  btnAddSection.mousePressed(function () {
+    sections.push(new Section(1, 60, "4/4"));
+  });
+  btnAddComment = select("#btnAddComment");
+  btnAddComment.mousePressed(function () {
+    comments.push(new Comment(1, 1, ""));
+  });
 
   windowResized();
   reset();
 }
 
-function buttonPlus() {
+function highlight() {
+  dropZone.addClass("dragover");
+}
 
-  new UISection(inputSections.length, inputSections, btnPlus, btnParse);
+function unhighlight() {
+  dropZone.removeClass("dragover");
+}
+
+function hasAllowedExtension(fileName) {
+  return allowedExtensions.some((ext) => fileName.endsWith(ext));
+}
+
+function gotFile(file) {
+  //console.log(file);
+  if (hasAllowedExtension(file.name)) {
+    //console.log(file.data);
+    // console.log(select("#sections").elt.children.length);
+    // select("#sections").elt.children.length = 0;
+
+    for (let s of sections) {
+      // console.log(s);
+      s.remove();
+    }
+
+    for (let c of comments) {
+      // console.log(s);
+      c.remove();
+    }
+
+    blocks = parseInput(file.data);
+    //sections = blocks;
+  }
+}
+
+function buttonSave() {
+  let contentArray = [getStrings()];
+
+  // Save the contentArray to a text file named 'output.txt'
+  saveStrings(contentArray, "output.txt");
+}
+
+function getStrings() {
+  let result = "";
+
+  for (let i = 0; i < sections.length; i++) {
+    if (i > 0) {
+      result += "\r\n";
+    }
+    console.log(sections[i].createString());
+    result += sections[i].createString();
+  }
+
+  for (let i = 0; i < comments.length; i++) {
+    if (result !== "" && comments.length > 0) {
+      result += "\r\n";
+    }
+    result += comments[i].createString();
+  }
+
+  return result;
 }
 
 function buttonParse() {
-  let tempString = "";
-  for (let i = 0; i < inputSections.length; i++) {
-
-    let sectionValue = inputSections[i].parseSection();
-    if (i > 0) {
-      tempString += "\r\n";
-    }
-    tempString += sectionValue;
+  for (let s of sections) {
+    s.createString();
   }
 
-  console.log(tempString);
+  for (let c of comments) {
+    c.createString();
+  }
 
-  blocks = parseInput(tempString);
+  blocks = sections;
+
   reset();
 }
 
@@ -93,12 +161,19 @@ function parseInput(input) {
   let splits = input.split("\r\n");
   let blocks = [];
   for (let i = 0; i < splits.length; i++) {
-    let s = splits[i].split(" ");
-    let dnc = s.length > 3 && s[3] === "x";
-    let b = new Block(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
-    //b.print();
-    blocks[i] = b;
-    //console.log(b.length());
+    if (splits[i] !== "") {
+      if (splits[i].startsWith("c")) {
+        let s = splits[i].split(" ");
+        const c = new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
+        comments.push(c);
+      } else {
+        const s = splits[i].split(" ");
+        const dnc = s.length > 3 && s[3] === "x"; // does not count
+        const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
+        sections.push(b);
+        blocks[i] = b;
+      }
+    }
   }
   return blocks;
 }
@@ -148,7 +223,6 @@ function draw() {
 
   // TEMPO
   if (currentBlock != undefined) {
-
     textAlign(LEFT, TOP);
     fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
     text(currentBlock.bpm + " BPM", 10, 10);
@@ -158,7 +232,7 @@ function draw() {
     text(msToTime(timeSinceStart), width - 125, 10);
 
     // Calculate current bar, subdivide, etc
-
+    // Abandon all hope ye who enter beyond this point
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
@@ -168,7 +242,7 @@ function draw() {
         t += blocks[i].lengthTotal();
         if (!blocks[i].doNotCount) {
           // add the finished takt block counts
-          currentTakt += blocks[i].count;
+          currentTakt += parseInt(blocks[i].count);
         }
       } else {
         let addedTime = 0;
@@ -181,25 +255,44 @@ function draw() {
           }
         }
         if (!blocks[i].doNotCount) {
-          let temp =
-            blocks[i].length() + blocks[i].length() / blocks[i].measure_min;
-          currentTakt += floor(addedTime / temp) + 1;
+          currentTakt +=
+            floor(
+              (addedTime - blocks[i].length() / blocks[i].measure_min) /
+                blocks[i].length()
+            ) + 1;
         }
         break;
       }
     }
 
-    let ju = abs(sin(((timeSinceStart - currentLength) / currentBlock.length()) * PI * currentBlock.measure_min) * bounce);
+    let ju = abs(
+      sin(
+        ((timeSinceStart - currentLength) / currentBlock.length()) *
+          PI *
+          currentBlock.measure_min
+      ) * bounce
+    );
 
-    let circleY = height / 2 - ju - (circleRadius / 2.0);
+    let circleY = height / 2 - ju - circleRadius / 2.0;
     let circleX = width / 3;
     fill(255, 0, 0);
 
-    if (play && (timeSinceStart > totalLength - blocks[blocks.length - 1].length() / blocks[blocks.length - 1].measure_min)) {
+    if (
+      play &&
+      timeSinceStart >
+        totalLength -
+          blocks[blocks.length - 1].length() /
+            blocks[blocks.length - 1].measure_min
+    ) {
       // Piece is over, having fun
       bounce *= 0.99;
-      circleY = min(height - (circleRadius / 2), circleY + (timeSinceStart - totalLength) / 20);
-      circleX += (timeSinceStart - totalLength) * (timeSinceStart - totalLength) / 100000;
+      circleY = min(
+        height - circleRadius / 2,
+        circleY + (timeSinceStart - totalLength) / 20
+      );
+      circleX +=
+        ((timeSinceStart - totalLength) * (timeSinceStart - totalLength)) /
+        100000;
     } else {
       if (currentSubdivide == currentBlock.measure_min) {
         // pronounce the bar opening
@@ -215,7 +308,11 @@ function draw() {
     textAlign(CENTER, TOP);
     if (currentSubdivide > 0) {
       fill(255);
-      text(currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min, width / 2, 10);
+      text(
+        currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
+        width / 2,
+        10
+      );
     } else {
       fill(map(bounce, 0, height / 8, 0, 255));
       text("END", width / 2, 10);
@@ -226,12 +323,14 @@ function draw() {
   let taktCount = 0;
   for (let i = 0; i < blocks.length; i++) {
     let block = blocks[i];
-    let blockX = width / 3 + (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
+    let blockX =
+      width / 3 +
+      (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
     textAlign(LEFT, BOTTOM);
     if (i > 0 && blocks[i].bpm != blocks[i - 1].bpm) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255));
       textSize(32);
-      text(block.bpm, blockX, height / 8 * 7.5);
+      text(block.bpm, blockX, (height / 8) * 7.5);
     }
     if (i > 0 && blocks[i].measure !== blocks[i - 1].measure) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
@@ -239,7 +338,9 @@ function draw() {
       text(block.measure, blockX, height - 10);
     }
     for (let j = 0; j < block.count; j++) {
-      let taktBegin = (index + (j * block.length()) / 1000) * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond;
+      let taktBegin =
+        (index + (j * block.length()) / 1000) * pixelPerSecond -
+        (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
       let x = width / 3 + taktBegin;
       fill(255);
@@ -250,13 +351,28 @@ function draw() {
         fill(min(map(x, 100, width / 3, 0, 255), 255));
         //TAKTZAHL
         textSize(32);
-        let bbox = font.textBounds((taktCount + 1) + "", x, height / 1.35 + 10, 32);
+        let bbox = font.textBounds(
+          taktCount + 1 + "",
+          x,
+          height / 1.35 + 10,
+          32
+        );
         //fill(127);
         let textMargin = 5;
         let boxWidth = 2;
-        rect(bbox.x - textMargin - boxWidth, bbox.y - textMargin - boxWidth, bbox.w + (2 * (textMargin + boxWidth)), bbox.h + (2 * (textMargin + boxWidth)));
+        rect(
+          bbox.x - textMargin - boxWidth,
+          bbox.y - textMargin - boxWidth,
+          bbox.w + 2 * (textMargin + boxWidth),
+          bbox.h + 2 * (textMargin + boxWidth)
+        );
         fill(0);
-        rect(bbox.x - textMargin, bbox.y - textMargin, bbox.w + (2 * textMargin), bbox.h + (2 * textMargin));
+        rect(
+          bbox.x - textMargin,
+          bbox.y - textMargin,
+          bbox.w + 2 * textMargin,
+          bbox.h + 2 * textMargin
+        );
         fill(min(map(x, 100, width / 3, 0, 255), 255));
         text(taktCount + 1, x, height / 1.35 + 10);
 
@@ -268,7 +384,7 @@ function draw() {
       //draw only required
       if (x >= -width && x <= width) {
         fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-        rect(x, height / 2, rect_Width * 1.5, height / 4);
+        rect(x - rect_Width / 2, height / 2, rect_Width * 1.5, height / 4);
 
         for (let count_min = 1; count_min < block.measure_min; count_min++) {
           let addOffset =
@@ -277,7 +393,7 @@ function draw() {
             pixelPerSecond;
           x = width / 3 + taktBegin + addOffset;
           fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-          rect(x, height / 2, rect_Width, height / 6);
+          rect(x - rect_Width / 2, height / 2, rect_Width, height / 6);
         }
       }
       if (!block.doNotCount) {
@@ -287,6 +403,8 @@ function draw() {
     index += block.lengthTotal() / 1000;
     //console.log(index);
   }
+
+  drawComments(index, pixelPerSecond, timeSinceStart);
   if (timeSinceStart > totalLength + 30000) {
     //console.log("RESET")
     reset();
@@ -294,6 +412,34 @@ function draw() {
 
   //noLoop();
   //frameRate(.5)
+  //console.log(index + " " + pixelPerSecond + " " + timeSinceStart);
+}
+
+function drawComments(index, pixelPerSecond, timeSinceStart) {
+  for (let c of comments) {
+    let x = calculateX(c, index, pixelPerSecond, timeSinceStart);
+    fill(min(map(x, 100, width / 3, 0, 255), 255));
+    text(c.commentMessage, x, 100);
+  }
+  //text("TEST COMMENT", 100, 100);
+}
+
+function calculateX(c, index, pixelPerSecond, timeSinceStart) {
+  let currentBar = 1;
+  let currentBlock = 0;
+  let x = 0;
+  //console.log(c.bar);
+  while (currentBar < c.bar) {
+    if (currentBar + blocks[currentBlock].count <= c.bar) {
+      x += (blocks[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBar += parseInt(blocks[currentBlock].count);
+    } else {
+      x += (blocks[currentBlock].length() / 1000.0) * pixelPerSecond;
+      currentBar++;
+    }
+    currentBlock++;
+  }
+  return x + width / 3 - (timeSinceStart / 1000.0) * pixelPerSecond;
 }
 
 function reset() {
@@ -304,7 +450,7 @@ function reset() {
   pauseSinceStart = 0;
   bounce = height / 4;
   play = false;
-  btnPlayPause.html("PLAY");
+  btnPlayPause.html("&#9654;");
 }
 
 // If the mouse is pressed,
@@ -334,7 +480,7 @@ function keyPressed() {
 
 function windowResized() {
   let canvasHeight = max(200, windowHeight / 2);
-  let canvasWidth = canvasHeight / 9.0 * 16.0;
+  let canvasWidth = (canvasHeight / 9.0) * 16.0;
   resizeCanvas(canvasWidth, canvasHeight);
   pixelsPerSecond = width / 10;
   circleRadius = width / 25;
@@ -343,10 +489,10 @@ function windowResized() {
 function buttonPlayPause() {
   play = !play;
   if (play) {
-    btnPlayPause.html("PAUSE");
+    btnPlayPause.html("&#8214;");
     totalPause += millis() - lastPause;
   } else {
-    btnPlayPause.html("PLAY");
+    btnPlayPause.html("&#9654;");
     lastPause = millis();
   }
 }

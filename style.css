@@ -1,48 +1,23 @@
 /* style.css */
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
+  background-color: dimgray;
 
-  background-color: dimgray ;
+  margin: 0;
 
-  margin: 5;
-  padding: 5;
-  /*display: flex;*/
-
-  overflow-y: hidden; /* Hide scrollbars */
-  overflow-x: hidden; /* Hide scrollbars */
+  /* Hide scrollbars */
+  overflow-y: hidden;
 
   /* This centers our sketch horizontally. */
-  justify-content: center;
+  /* justify-content: center; */
 
   /* This centers our sketch vertically. */
-  align-items: center;
-}
-
-.ui-parent {
-  display:list-item;
-  justify-content: space-between;
-  padding: 5;
-  margin: 5;
-  min-width: 500px;
-  }
-.ui-parent:first-child {
-  padding: 5;
-  margin: 5;
-}
-
-.ui-section {
-  height: 30;
-  display: flex;
-  margin: 5;
-}
-
-.ui-section-element {
-  padding: 5;
-  margin: 5;
+  /* align-items: center; */
 }
 
 .canvas {
@@ -56,25 +31,140 @@ body {
 }
 
 .canvas-parent {
-  margin: 50px;
+  margin: 5px;
   display: block;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
 }
 
+.control {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.control-button {
+  min-width: 50px;
+
+  height: 35px;
+}
+
+.grid-container {
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: center;
+  display: flex;
+}
+
+.grid-item {
+  flex-basis: 100%;
+  display: grid;
+  /* border: 3px solid green; */
+  background-color: Gray;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 5px;
+  display: grid;
+  width: auto;
+  overflow: scroll;
+}
+
+.sections {
+  justify-self: center;
+  width: auto;
+}
+
+.comments {
+  justify-self: center;
+  width: auto;
+}
+
+.ui-parent {
+  display: list;
+  margin: 5px;
+  margin-bottom: 25px;
+}
+
+.ui-section {
+  height: 30;
+  display: block;
+  overflow: hidden;
+  width: auto;
+  border: 5px;
+  align-items: center;
+}
+
+.ui-section > input {
+  height: 30;
+  width: auto;
+}
+
+.ui-section-element {
+  padding: 5;
+  margin: 5;
+}
+
+.h3 {
+  text-align: center;
+  color: white;
+  margin: 5px;
+}
+
 .footer {
   position: fixed;
-  left: 0;
-  bottom: 0;
+  display: inline-block;
+  padding: 5px;
+  left: 0px;
+  right: 10px;
+  bottom: 0px;
   width: 100%;
-  background-color: darkgrey;
+  background-color: black;
   color: white;
+  /* text-align: center; */
+}
+
+.centered-button {
+  margin: auto;
+  align-items: center;
+}
+
+.remove-button {
+  font-size: 12px;
+}
+
+.dropZone {
+  border: solid;
+  border-width: 5px;
+}
+
+.dropZone.dragover {
+  border-color: blue;
+}
+
+/* ALLGEMEIN ################################################# */
+
+button {
+  background-color: black;
+  border: solid;
+  border-width: 1px;
+  color: white;
+  padding: 5px;
   text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px;
+  border-radius: 3px;
 }
 
 a:link {
   color: white;
   background-color: transparent;
   text-decoration: none;
+}
+
+a:visited {
+  color: grey;
 }
