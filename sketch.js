@@ -1,6 +1,8 @@
 //When I wrote this, only God and I understood what I was doing
 //Now, God only knows
 
+const allowedExtensions = [".txt", ".met"]; // Specify allowed file extensions
+
 // ##################### UI ###################
 
 let font;
@@ -39,6 +41,13 @@ function preload() {
 function setup() {
   textFont(font);
 
+  dropZone = select("#body");
+
+  // Setup drag and drop event handlers
+  dropZone.dragOver(highlight);
+  dropZone.dragLeave(unhighlight);
+  dropZone.drop(gotFile, unhighlight);
+
   let canvasHeight = max(200, windowHeight / 2);
   let canvasWidth = (canvasHeight / 9.0) * 16.0;
 
@@ -60,7 +69,7 @@ function setup() {
 
   btnAddSection = select("#btnAddSection");
   btnAddSection.mousePressed(function () {
-    sections.push(new Section());
+    sections.push(new Section(1, 60, "4/4"));
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
@@ -69,6 +78,26 @@ function setup() {
 
   windowResized();
   reset();
+}
+
+function highlight() {
+  dropZone.addClass("dragover");
+}
+
+function unhighlight() {
+  dropZone.removeClass("dragover");
+}
+
+function hasAllowedExtension(fileName) {
+  return allowedExtensions.some((ext) => fileName.endsWith(ext));
+}
+
+function gotFile(file) {
+  console.log(file);
+  if (hasAllowedExtension(file.name)) {
+    console.log(file.data);
+    blocks = parseInput(file.data);
+  }
 }
 
 function buttonSave() {
@@ -117,7 +146,7 @@ function buttonParse() {
   }
   let combinedString = (sectionsString += "\r\n" + commentsString);
   console.log(combinedString);
-  blocks = parseInput(combinedString);
+  //blocks = parseInput(combinedString);
   reset();
 }
 
@@ -132,8 +161,10 @@ function parseInput(input) {
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
-        const b = new Block(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
+        const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
+        sections.push(b);
         blocks[i] = b;
+        console.log(sections.length);
       }
     }
   }

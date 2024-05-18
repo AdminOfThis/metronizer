@@ -8,7 +8,7 @@ body {
 body {
   background-color: dimgray;
 
-  /* margin:0;  */
+  margin: 0;
 
   /* Hide scrollbars */
   overflow-y: hidden;
@@ -132,6 +132,15 @@ body {
 
 .remove-button {
   font-size: 12px;
+}
+
+.dropZone {
+  border: solid;
+  border-width: 5px;
+}
+
+.dropZone.dragover {
+  border-color: blue;
 }
 
 /* ALLGEMEIN ################################################# */
