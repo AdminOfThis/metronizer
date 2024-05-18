@@ -74,7 +74,7 @@ function setup() {
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
-    comments.push(new Comment(1,1,""));
+    comments.push(new Comment(1, 1, ""));
   });
 
   windowResized();
@@ -165,6 +165,7 @@ function parseInput(input) {
       if (splits[i].startsWith("c")) {
         let s = splits[i].split(" ");
         const c = new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
+        comments.push(c);
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
@@ -302,8 +303,6 @@ function draw() {
     }
     circle(circleX, circleY, circleRadius);
 
-    drawComments(index, pixelPerSecond, timeSinceStart);
-
     // DISPLAY BARS, SUBDIVIDE, ETC
     textSize(48);
     textAlign(CENTER, TOP);
@@ -404,6 +403,8 @@ function draw() {
     index += block.lengthTotal() / 1000;
     //console.log(index);
   }
+
+  drawComments(index, pixelPerSecond, timeSinceStart);
   if (timeSinceStart > totalLength + 30000) {
     //console.log("RESET")
     reset();
@@ -424,11 +425,11 @@ function drawComments(index, pixelPerSecond, timeSinceStart) {
 }
 
 function calculateX(c, index, pixelPerSecond, timeSinceStart) {
-  let currentBar = 0;
+  let currentBar = 1;
   let currentBlock = 0;
   let x = 0;
   //console.log(c.bar);
-  while (currentBar < c.bar && currentBlock < blocks.length) {
+  while (currentBar < c.bar) {
     if (currentBar + blocks[currentBlock].count <= c.bar) {
       x += (blocks[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
       currentBar += parseInt(blocks[currentBlock].count);
