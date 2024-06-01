@@ -427,13 +427,13 @@ function draw() {
 function drawComments(index, pixelPerSecond, timeSinceStart) {
   textSize(32);
   for (let c of Comment.list) {
-    let x = calculateX(c, index, pixelPerSecond, timeSinceStart);
+    let x = calculateX(c, pixelPerSecond, timeSinceStart);
     fill(min(map(x, 100, width / 3, 0, 255), 255));
     text(c.commentMessage, x, 100);
   }
 }
 
-function calculateX(c, index, pixelPerSecond, timeSinceStart) {
+function calculateX(c, pixelPerSecond, timeSinceStart) {
   let currentBar = 1;
   let currentBlock = 0;
   let x = 0;
