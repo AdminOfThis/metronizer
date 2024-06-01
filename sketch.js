@@ -56,7 +56,7 @@ function setup() {
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
   btnParse = select("#btnParse");
-  btnParse.mousePressed(buttonParse);
+  btnParse.mousePressed(buttonReset);
 
   btnSave = select("#btnSave");
   btnSave.mousePressed(buttonSave.bind(this));
@@ -64,6 +64,7 @@ function setup() {
   btnAddSection = select("#btnAddSection");
   btnAddSection.mousePressed(function () {
     new Section(1, 60, "4/4");
+    reset();
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
@@ -131,7 +132,7 @@ function getStrings() {
   return result;
 }
 
-function buttonParse() {
+function buttonReset() {
   parse();
   reset();
 }
@@ -168,6 +169,7 @@ function parseInput(input) {
       }
     }
   }
+  reset();
   return blocks;
 }
 
@@ -432,6 +434,11 @@ function calculateX(c, index, pixelPerSecond, timeSinceStart) {
   let currentBar = 1;
   let currentBlock = 0;
   let x = 0;
+
+  if (Section.list.length <= 0) {
+    return 0;
+  }
+
   while (currentBar < c.bar) {
     if (currentBar + Section.list[currentBlock].count <= c.bar) {
       // add total of previous block
@@ -444,12 +451,13 @@ function calculateX(c, index, pixelPerSecond, timeSinceStart) {
       currentBar++;
     }
   }
-
-  let subBarPixels =
-    (min(c.sub_bar - 1, Section.list[currentBlock].measure_min - 1) /
-      Section.list[currentBlock].measure_min) *
-    ((Section.list[currentBlock].length() / 1000.0) * pixelPerSecond);
-  x += subBarPixels;
+  if (Section.list[currentBlock] != undefined) {
+    let subBarPixels =
+      (min(c.sub_bar - 1, Section.list[currentBlock].measure_min - 1) /
+        Section.list[currentBlock].measure_min) *
+      ((Section.list[currentBlock].length() / 1000.0) * pixelPerSecond);
+    x += subBarPixels;
+  }
 
   return x + width / 3 - (timeSinceStart / 1000.0) * pixelPerSecond;
 }
@@ -462,7 +470,9 @@ function reset() {
   pauseSinceStart = 0;
   bounce = height / 4;
   play = false;
-  btnPlayPause.html("&#9654;");
+  try {
+    btnPlayPause.html("&#9654;");
+  } catch {}
 }
 
 // If the mouse is pressed,
