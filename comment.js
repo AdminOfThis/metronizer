@@ -1,9 +1,13 @@
 class Comment {
+  static createUI() {
+    return new Comment(1, 1, "");
+  }
+
   constructor(bar, subBar, commentMessage) {
     this.bar = bar;
     this.sub_bar = subBar;
     this.commentMessage = commentMessage;
-    this.index = select("#comments").elt.childElementCount; // Set the instance variable
+
     loadStrings("comment.html", this.AddComment.bind(this));
   }
 
@@ -12,7 +16,7 @@ class Comment {
     for (let i = 1; i < data.length - 1; i++) {
       str += data[i];
     }
-    let index = select("#comments").elt.childElementCount;
+    this.index = select("#comments").elt.childElementCount;
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + "");
     const newDiv = createDiv(str);
@@ -24,28 +28,38 @@ class Comment {
     newDiv.child(removeButton);
     newDiv.parent(select("#comments"));
 
-    select("#commentBar" + this.index).value(this.bar);
-    select("#commentSubBar" + this.index).value(this.sub_bar);
-    select("#commentMessage" + this.index).value(this.commentMessage);
+    this.inputBar = select("#commentBar" + this.index);
+    this.inputBar.value(this.bar);
+    this.inputBar.changed(
+      function () {
+        this.bar = select("#commentBar" + this.index).value();
+      }.bind(this)
+    );
+    this.inputSubBar = select("#commentSubBar" + this.index);
+    this.inputSubBar.value(this.sub_bar);
+    this.inputSubBar.changed(
+      function () {
+        this.subBar = select("#commentSubBar" + this.index).value();
+      }.bind(this)
+    );
+    this.inputComment = select("#commentMessage" + this.index);
+    this.inputComment.value(this.commentMessage);
+    this.inputComment.changed(
+      function () {
+        this.commentMessage = select("#commentMessage" + this.index).value();
+      }.bind(this)
+    );
   }
 
   remove() {
     select("#commentBar" + this.index)
       .parent()
       .remove();
-    // let index = sections.indexOf(this);
-
-    // if (index !== -1) {
-    //   sections.splice(index, 1);
-    // }
   }
 
   createString() {
     let result = "c ";
-    this.bar = select("#commentBar" + this.index).value();
-    this.sub_bar = select("#commentSubBar" + this.index).value();
-    this.commentMessage = select("#commentMessage" + this.index).value();
-
+   
     result += this.bar + " " + this.sub_bar + " " + this.commentMessage;
 
     return result;
