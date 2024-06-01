@@ -14,7 +14,7 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 
 // ##################### CODE ###################
 // let example_code = "1 200 4/4 x\r\n2 150 4/4\r\nc 2 2 PENIS";
-let example_code = "4 150 4/4 x\r\nc 2 1 PENIS";
+let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
 let play = true;
 
