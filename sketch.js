@@ -163,13 +163,7 @@ function parseInput(input) {
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
-        const b = new Section(
-          parseInt(s[0]),
-          parseInt(s[1]),
-          s[2],
-          dnc,
-          Section.list
-        );
+        const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
         blocks[i] = b;
       }
     }
