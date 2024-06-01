@@ -154,7 +154,12 @@ function parseInput(input) {
     if (splits[i] !== "") {
       if (splits[i].startsWith("c")) {
         let s = splits[i].split(" ");
-        new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
+
+        let message = splits[i].substring(
+          getPosition(splits[i], " ", 3),
+          splits[i].length
+        );
+        new Comment(parseInt(s[1]), parseInt(s[2]), message);
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
@@ -171,6 +176,10 @@ function parseInput(input) {
   }
   reset();
   return blocks;
+}
+
+function getPosition(string, subString, index) {
+  return string.split(subString, index).join(subString).length;
 }
 
 let timeSinceStart = 0;
