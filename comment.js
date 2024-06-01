@@ -1,9 +1,13 @@
 class Comment {
+  static list = [];
+
   static createUI() {
     return new Comment(1, 1, "");
   }
 
   constructor(bar, subBar, commentMessage) {
+    Comment.list.push(this);
+
     this.bar = bar;
     this.sub_bar = subBar;
     this.commentMessage = commentMessage;
@@ -23,7 +27,7 @@ class Comment {
     newDiv.innerHTML = str;
     let removeButton = select("#removeCommentButton" + this.index);
     removeButton.mousePressed(() => {
-      newDiv.remove();
+      this.remove();
     });
     newDiv.child(removeButton);
     newDiv.parent(select("#comments"));
@@ -39,7 +43,7 @@ class Comment {
     this.inputSubBar.value(this.sub_bar);
     this.inputSubBar.changed(
       function () {
-        this.subBar = select("#commentSubBar" + this.index).value();
+        this.sub_bar = select("#commentSubBar" + this.index).value();
       }.bind(this)
     );
     this.inputComment = select("#commentMessage" + this.index);
@@ -55,11 +59,13 @@ class Comment {
     select("#commentBar" + this.index)
       .parent()
       .remove();
-  }
+
+    Comment.list.splice(Comment.list.indexOf(this), 1);
+    }
 
   createString() {
     let result = "c ";
-   
+
     result += this.bar + " " + this.sub_bar + " " + this.commentMessage;
 
     return result;

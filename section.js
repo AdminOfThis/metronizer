@@ -1,12 +1,13 @@
 class Section {
-  // lock = false;
+  static list = [];
 
   static createUI() {
     return new Section(1, 60, "4/4");
   }
 
   constructor(count, bpm, measure, dnc) {
-    //  console.log(count);
+    Section.list.push(this);
+
     this.count = count;
     this.bpm = bpm;
     this.measure = measure;
@@ -74,6 +75,9 @@ class Section {
     select("#bars" + this.index)
       .parent()
       .remove();
+
+    // removing myself from the list
+    Section.list.splice(Section.list.indexOf(this), 1);
   }
 
   createString() {
