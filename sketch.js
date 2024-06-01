@@ -13,9 +13,8 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 //let inputField;
 
 // ##################### CODE ###################
-//let example_code = "1 60 4/4 x\r\n1 60 4/4\r\n1 150 4/4\r\n1 30 3/4\r\n1 71 7/4\r\n2 60 4/4"
-let example_code = "1 120 4/4 x\r\n2 150 4/4";
-//let example_code = "1 60 4/4 x\r\n2 150 4/4\r\n2 120 3/4\r\n2 150 5/4";
+// let example_code = "1 200 4/4 x\r\n2 150 4/4\r\nc 2 2 PENIS";
+let example_code = "4 150 4/4 x\r\nc 2 1 PENIS";
 
 let play = true;
 
@@ -28,9 +27,6 @@ let pixelPerSecond = 150;
 const rect_Width = 5;
 
 let startTime;
-
-let sections = [];
-let comments = [];
 
 function preload() {
   font = loadFont("assets/Roboto-Regular.ttf");
@@ -54,7 +50,7 @@ function setup() {
   cnv.class("canvas");
   background(255);
 
-  sections = parseInput(example_code);
+  Section.list = parseInput(example_code);
 
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
@@ -67,11 +63,11 @@ function setup() {
 
   btnAddSection = select("#btnAddSection");
   btnAddSection.mousePressed(function () {
-    sections.push(new Section(1, 60, "4/4"));
+    new Section(1, 60, "4/4");
   });
   btnAddComment = select("#btnAddComment");
   btnAddComment.mousePressed(function () {
-    comments.push(new Comment(1, 1, ""));
+    new Comment(1, 1, "");
   });
 
   windowResized();
@@ -93,21 +89,17 @@ function hasAllowedExtension(fileName) {
 function gotFile(file) {
   //console.log(file);
   if (hasAllowedExtension(file.name)) {
-    //console.log(file.data);
-    // console.log(select("#sections").elt.children.length);
-    // select("#sections").elt.children.length = 0;
-
     for (let s of sections) {
       // console.log(s);
       s.remove();
     }
 
-    for (let c of comments) {
+    for (let c of Comment.list) {
       // console.log(s);
       c.remove();
     }
 
-    sections = parseInput(file.data);
+    Section.list = parseInput(file.data);
   }
 }
 
@@ -121,19 +113,19 @@ function buttonSave() {
 function getStrings() {
   let result = "";
 
-  for (let i = 0; i < sections.length; i++) {
+  for (let i = 0; i < Section.list.length; i++) {
     if (i > 0) {
       result += "\r\n";
     }
-    console.log(sections[i].createString());
-    result += sections[i].createString();
+    console.log(Section.list[i].createString());
+    result += Section.list[i].createString();
   }
 
-  for (let i = 0; i < comments.length; i++) {
-    if (result !== "" && comments.length > 0) {
+  for (let i = 0; i < Comment.list.length; i++) {
+    if (result !== "" && Comment.list.length > 0) {
       result += "\r\n";
     }
-    result += comments[i].createString();
+    result += Comment.list[i].createString();
   }
 
   return result;
@@ -145,11 +137,11 @@ function buttonParse() {
 }
 
 function parse() {
-  for (let s of sections) {
+  for (let s of Section.list) {
     s.createString();
   }
 
-  for (let c of comments) {
+  for (let c of Comment.list) {
     c.createString();
   }
 }
@@ -161,13 +153,17 @@ function parseInput(input) {
     if (splits[i] !== "") {
       if (splits[i].startsWith("c")) {
         let s = splits[i].split(" ");
-        const c = new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
-        comments.push(c);
+        new Comment(parseInt(s[1]), parseInt(s[2]), s[3]);
       } else {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
-        const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
-        sections.push(b);
+        const b = new Section(
+          parseInt(s[0]),
+          parseInt(s[1]),
+          s[2],
+          dnc,
+          Section.list
+        );
         blocks[i] = b;
       }
     }
@@ -188,8 +184,8 @@ function draw() {
   if (startTime === undefined) {
     startTime = millis();
     totalLength = 0;
-    for (let i = 0; i < sections.length; i++) {
-      totalLength += sections[i].lengthTotal();
+    for (let i = 0; i < Section.list.length; i++) {
+      totalLength += Section.list[i].lengthTotal();
     }
   }
 
@@ -212,14 +208,14 @@ function draw() {
 
   let currentBlock;
   let currentLength = 0;
-  for (let i = 0; i < sections.length; i++) {
+  for (let i = 0; i < Section.list.length; i++) {
     if (currentLength < timeSinceStart) {
-      currentBlock = sections[i];
-      currentLength += sections[i].lengthTotal();
+      currentBlock = Section.list[i];
+      currentLength += Section.list[i].lengthTotal();
     }
   }
-  if (currentBlock == undefined && sections.length > 0) {
-    currentBlock = sections[0];
+  if (currentBlock == undefined && Section.list.length > 0) {
+    currentBlock = Section.list[0];
   }
 
   // TEMPO
@@ -237,13 +233,14 @@ function draw() {
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
-    for (let i = 0; i < sections.length; i++) {
-      let lengthOfMeasureMin = sections[i].length() / currentBlock.measure_min;
-      if (t + sections[i].lengthTotal() <= timeSinceStart) {
-        t += sections[i].lengthTotal();
-        if (!sections[i].doNotCount) {
+    for (let i = 0; i < Section.list.length; i++) {
+      let lengthOfMeasureMin =
+        Section.list[i].length() / currentBlock.measure_min;
+      if (t + Section.list[i].lengthTotal() <= timeSinceStart) {
+        t += Section.list[i].lengthTotal();
+        if (!Section.list[i].doNotCount) {
           // add the finished takt block counts
-          currentTakt += parseInt(sections[i].count);
+          currentTakt += parseInt(Section.list[i].count);
         }
       } else {
         let addedTime = 0;
@@ -255,11 +252,12 @@ function draw() {
             currentSubdivide = 1;
           }
         }
-        if (!sections[i].doNotCount) {
+        if (!Section.list[i].doNotCount) {
           currentTakt +=
             floor(
-              (addedTime - sections[i].length() / sections[i].measure_min) /
-                sections[i].length()
+              (addedTime -
+                Section.list[i].length() / Section.list[i].measure_min) /
+                Section.list[i].length()
             ) + 1;
         }
         break;
@@ -282,8 +280,8 @@ function draw() {
       play &&
       timeSinceStart >
         totalLength -
-          sections[sections.length - 1].length() /
-            sections[sections.length - 1].measure_min
+          Section.list[Section.list.length - 1].length() /
+            Section.list[Section.list.length - 1].measure_min
     ) {
       // Piece is over, having fun
       bounce *= 0.99;
@@ -327,18 +325,18 @@ function draw() {
 
   // TAKT LINES
   let taktCount = 0;
-  for (let i = 0; i < sections.length; i++) {
-    let block = sections[i];
+  for (let i = 0; i < Section.list.length; i++) {
+    let block = Section.list[i];
     let blockX =
       width / 3 +
       (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
     textAlign(LEFT, BOTTOM);
-    if (i > 0 && sections[i].bpm != sections[i - 1].bpm) {
+    if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255));
       textSize(32);
       text(block.bpm, blockX, (height / 8) * 7.5);
     }
-    if (i > 0 && sections[i].measure !== sections[i - 1].measure) {
+    if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
       textSize(32);
       text(block.measure, blockX, height - 10);
@@ -422,29 +420,37 @@ function draw() {
 }
 
 function drawComments(index, pixelPerSecond, timeSinceStart) {
-  for (let c of comments) {
+  textSize(32);
+  for (let c of Comment.list) {
     let x = calculateX(c, index, pixelPerSecond, timeSinceStart);
     fill(min(map(x, 100, width / 3, 0, 255), 255));
     text(c.commentMessage, x, 100);
   }
-  //text("TEST COMMENT", 100, 100);
 }
 
 function calculateX(c, index, pixelPerSecond, timeSinceStart) {
   let currentBar = 1;
   let currentBlock = 0;
   let x = 0;
-  //console.log(c.bar);
   while (currentBar < c.bar) {
-    if (currentBar + sections[currentBlock].count <= c.bar) {
-      x += (sections[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
-      currentBar += parseInt(sections[currentBlock].count);
+    if (currentBar + Section.list[currentBlock].count <= c.bar) {
+      // add total of previous block
+      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBar += parseInt(Section.list[currentBlock].count);
+      currentBlock++;
     } else {
-      x += (sections[currentBlock].length() / 1000.0) * pixelPerSecond;
+      // add a bar at a time
+      x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
       currentBar++;
     }
-    currentBlock++;
   }
+
+  let subBarPixels =
+    (min(c.sub_bar - 1, Section.list[currentBlock].measure_min - 1) /
+      Section.list[currentBlock].measure_min) *
+    ((Section.list[currentBlock].length() / 1000.0) * pixelPerSecond);
+  x += subBarPixels;
+
   return x + width / 3 - (timeSinceStart / 1000.0) * pixelPerSecond;
 }
 
