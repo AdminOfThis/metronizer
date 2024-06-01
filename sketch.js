@@ -19,8 +19,6 @@ let example_code = "1 120 4/4 x\r\n2 150 4/4";
 
 let play = true;
 
-var blocks = [];
-
 let totalLength;
 let bounce;
 
@@ -56,14 +54,13 @@ function setup() {
   cnv.class("canvas");
   background(255);
 
-  blocks = parseInput(example_code);
-  //sections = blocks;
+  sections = parseInput(example_code);
 
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mousePressed(buttonPlayPause.bind(this));
 
   btnParse = select("#btnParse");
-  btnParse.mousePressed(buttonParse.bind(this.blocks));
+  btnParse.mousePressed(buttonParse);
 
   btnSave = select("#btnSave");
   btnSave.mousePressed(buttonSave.bind(this));
@@ -110,8 +107,7 @@ function gotFile(file) {
       c.remove();
     }
 
-    blocks = parseInput(file.data);
-    //sections = blocks;
+    sections = parseInput(file.data);
   }
 }
 
@@ -144,6 +140,11 @@ function getStrings() {
 }
 
 function buttonParse() {
+  parse();
+  reset();
+}
+
+function parse() {
   for (let s of sections) {
     s.createString();
   }
@@ -151,10 +152,6 @@ function buttonParse() {
   for (let c of comments) {
     c.createString();
   }
-
-  blocks = sections;
-
-  reset();
 }
 
 function parseInput(input) {
@@ -184,12 +181,15 @@ let totalPause = 0;
 let pauseSinceStart = 0;
 
 function draw() {
+  try {
+    parse();
+  } catch {}
   textSize(32);
   if (startTime === undefined) {
     startTime = millis();
     totalLength = 0;
-    for (let i = 0; i < blocks.length; i++) {
-      totalLength += blocks[i].lengthTotal();
+    for (let i = 0; i < sections.length; i++) {
+      totalLength += sections[i].lengthTotal();
     }
   }
 
@@ -205,20 +205,21 @@ function draw() {
   strokeWeight(0);
   let index = 0;
 
-  // Gestrichelte Linie
-  //for(let i=0;i<10;i++) {
+  // Takt Linie
   fill(map(bounce, 0, height / 8, 0, 25));
   let nowLineWidth = rect_Width / 2;
   rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
-  //}
 
   let currentBlock;
   let currentLength = 0;
-  for (let i = 0; i < blocks.length; i++) {
+  for (let i = 0; i < sections.length; i++) {
     if (currentLength < timeSinceStart) {
-      currentBlock = blocks[i];
-      currentLength += blocks[i].lengthTotal();
+      currentBlock = sections[i];
+      currentLength += sections[i].lengthTotal();
     }
+  }
+  if (currentBlock == undefined && sections.length > 0) {
+    currentBlock = sections[0];
   }
 
   // TEMPO
@@ -236,13 +237,13 @@ function draw() {
     let currentTakt = 0;
     let currentSubdivide = 0;
     let t = 0;
-    for (let i = 0; i < blocks.length; i++) {
-      let lengthOfMeasureMin = blocks[i].length() / currentBlock.measure_min;
-      if (t + blocks[i].lengthTotal() <= timeSinceStart) {
-        t += blocks[i].lengthTotal();
-        if (!blocks[i].doNotCount) {
+    for (let i = 0; i < sections.length; i++) {
+      let lengthOfMeasureMin = sections[i].length() / currentBlock.measure_min;
+      if (t + sections[i].lengthTotal() <= timeSinceStart) {
+        t += sections[i].lengthTotal();
+        if (!sections[i].doNotCount) {
           // add the finished takt block counts
-          currentTakt += parseInt(blocks[i].count);
+          currentTakt += parseInt(sections[i].count);
         }
       } else {
         let addedTime = 0;
@@ -254,11 +255,11 @@ function draw() {
             currentSubdivide = 1;
           }
         }
-        if (!blocks[i].doNotCount) {
+        if (!sections[i].doNotCount) {
           currentTakt +=
             floor(
-              (addedTime - blocks[i].length() / blocks[i].measure_min) /
-                blocks[i].length()
+              (addedTime - sections[i].length() / sections[i].measure_min) /
+                sections[i].length()
             ) + 1;
         }
         break;
@@ -281,8 +282,8 @@ function draw() {
       play &&
       timeSinceStart >
         totalLength -
-          blocks[blocks.length - 1].length() /
-            blocks[blocks.length - 1].measure_min
+          sections[sections.length - 1].length() /
+            sections[sections.length - 1].measure_min
     ) {
       // Piece is over, having fun
       bounce *= 0.99;
@@ -314,25 +315,30 @@ function draw() {
         10
       );
     } else {
-      fill(map(bounce, 0, height / 8, 0, 255));
-      text("END", width / 2, 10);
+      if (currentBlock.index > 0) {
+        fill(map(bounce, 0, height / 8, 0, 255));
+        text("END", width / 2, 10);
+      } else {
+        fill(255);
+        text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
+      }
     }
   }
 
   // TAKT LINES
   let taktCount = 0;
-  for (let i = 0; i < blocks.length; i++) {
-    let block = blocks[i];
+  for (let i = 0; i < sections.length; i++) {
+    let block = sections[i];
     let blockX =
       width / 3 +
       (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
     textAlign(LEFT, BOTTOM);
-    if (i > 0 && blocks[i].bpm != blocks[i - 1].bpm) {
+    if (i > 0 && sections[i].bpm != sections[i - 1].bpm) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255));
       textSize(32);
       text(block.bpm, blockX, (height / 8) * 7.5);
     }
-    if (i > 0 && blocks[i].measure !== blocks[i - 1].measure) {
+    if (i > 0 && sections[i].measure !== sections[i - 1].measure) {
       fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
       textSize(32);
       text(block.measure, blockX, height - 10);
@@ -430,11 +436,11 @@ function calculateX(c, index, pixelPerSecond, timeSinceStart) {
   let x = 0;
   //console.log(c.bar);
   while (currentBar < c.bar) {
-    if (currentBar + blocks[currentBlock].count <= c.bar) {
-      x += (blocks[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
-      currentBar += parseInt(blocks[currentBlock].count);
+    if (currentBar + sections[currentBlock].count <= c.bar) {
+      x += (sections[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBar += parseInt(sections[currentBlock].count);
     } else {
-      x += (blocks[currentBlock].length() / 1000.0) * pixelPerSecond;
+      x += (sections[currentBlock].length() / 1000.0) * pixelPerSecond;
       currentBar++;
     }
     currentBlock++;

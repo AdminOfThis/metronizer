@@ -38,29 +38,46 @@ class Section {
     newDiv.child(removeButton);
     newDiv.parent(select("#sections"));
 
-    select("#bars" + this.index).value(this.count);
-    select("#bpm" + this.index).value(this.bpm);
-    select("#measure" + this.index).value(this.measure);
-    select("#isPre" + this.index).checked(this.doNotCount);
+    this.inputBars = select("#bars" + this.index);
+    this.inputBars.value(this.count);
+    this.inputBars.changed(
+      function () {
+        this.count = select("#bars" + this.index).value();
+      }.bind(this)
+    );
+    this.inputBPM = select("#bpm" + this.index);
+    this.inputBPM.value(this.bpm);
+    this.inputBPM.changed(
+      function () {
+        this.bpm = select("#bpm" + this.index).value();
+      }.bind(this)
+    );
+    this.inputMeasure = select("#measure" + this.index);
+    this.inputMeasure.value(this.measure);
+    this.inputMeasure.changed(
+      function () {
+        this.measure = select("#measure" + this.index).value();
+        this.measure_min = parseInt(this.measure.split("/")[0]);
+        this.measure_maj = parseInt(this.measure.split("/")[1]);
+      }.bind(this)
+    );
+    this.inputIsPre = select("#isPre" + this.index);
+    this.inputIsPre.checked(this.doNotCount);
+    this.inputIsPre.changed(
+      function () {
+        this.doNotCount = select("#isPre" + this.index).checked();
+      }.bind(this)
+    );
   }
 
   remove() {
     select("#bars" + this.index)
       .parent()
       .remove();
-    // let index = sections.indexOf(this);
-
-    // if (index !== -1) {
-    //   sections.splice(index, 1);
-    // }
   }
 
   createString() {
     let result = "";
-    this.count = select("#bars" + this.index).value();
-    this.bpm = select("#bpm" + this.index).value();
-    this.measure = select("#measure" + this.index).value();
-    this.doNotCount = select("#isPre" + this.index).checked();
 
     result +=
       this.count +
