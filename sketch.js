@@ -322,7 +322,7 @@ function draw() {
         fill(map(bounce, 0, height / 8, 0, 255));
         text("END", width / 2, 10);
       } else {
-        fill(255);
+        fill(map(bounce, 0, height / 8, 0, 255));
         text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
       }
     }
