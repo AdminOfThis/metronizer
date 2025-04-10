@@ -58,8 +58,14 @@ function setup() {
   btnParse = select("#btnParse");
   btnParse.mousePressed(buttonReset);
 
-  btnSave = select("#btnSave");
-  btnSave.mousePressed(buttonSave.bind(this));
+  btnSaveFile = select("#btnSaveFile");
+  btnSaveFile.mousePressed(buttonSave.bind(this));
+
+  // btnSaveClip = select("#btnSaveClip");
+  // btnSaveClip.attribute("disabled", '');
+  // btnSaveClip.attribute("hidden", '');
+
+  // btnSaveClip.mousePressed(function () {console.log("BAM, WORKS")});
 
   btnAddSection = select("#btnAddSection");
   btnAddSection.mousePressed(function () {
@@ -231,7 +237,7 @@ function draw() {
     fill(map(bounce, 0, height / 8, 0, 255));
     text(currentBlock.measure, 10, 50);
     textAlign(LEFT, TOP);
-    text(msToTime(timeSinceStart), width - 125, 10);
+    text(msToTime(timeSinceStart), width - 135, 10);
 
     // Calculate current bar, subdivide, etc
     // Abandon all hope ye who enter beyond this point
