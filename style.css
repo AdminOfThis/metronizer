@@ -159,6 +159,20 @@ button {
   border-radius: 3px;
 }
 
+button:disabled {
+  background-color: gray;
+  border: solid;
+  border-width: 1px;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px;
+  border-radius: 3px;
+}
+
 a:link {
   color: white;
   background-color: transparent;
