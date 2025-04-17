@@ -283,6 +283,28 @@ function draw() {
       ) * bounce
     );
 
+    // DISPLAY BARS, SUBDIVIDE, ETC
+    textSize(48);
+    textAlign(CENTER, TOP);
+    if (currentSubdivide > 0) {
+      fill(255);
+      text(
+        currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
+        width / 2,
+        10
+      );
+    } else {
+      if (currentBlock.index > 0) {
+        fill(map(bounce, 0, height / 8, 0, 255));
+        text("END", width / 2, 10);
+      } else {
+        fill(map(bounce, 0, height / 8, 0, 255));
+        text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
+      }
+    }
+
+
+    //BOUNCE BALL
     let circleY = height / 2 - ju - circleRadius / 2.0;
     let circleX = width / 3;
     fill(255, 0, 0);
@@ -304,34 +326,15 @@ function draw() {
         ((timeSinceStart - totalLength) * (timeSinceStart - totalLength)) /
         100000;
     } else {
-      if (currentSubdivide == currentBlock.measure_min) {
-        // pronounce the bar opening
-        bounce = height / 3;
-      } else {
+      // if (currentSubdivide == currentBlock.measure_min) {
+      //   // pronounce the bar opening
+      //   // bounce = height / 3;
+      // } else {
+      //   bounce = height / 5;
+      // }
         bounce = height / 5;
-      }
     }
     circle(circleX, circleY, circleRadius);
-
-    // DISPLAY BARS, SUBDIVIDE, ETC
-    textSize(48);
-    textAlign(CENTER, TOP);
-    if (currentSubdivide > 0) {
-      fill(255);
-      text(
-        currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
-        width / 2,
-        10
-      );
-    } else {
-      if (currentBlock.index > 0) {
-        fill(map(bounce, 0, height / 8, 0, 255));
-        text("END", width / 2, 10);
-      } else {
-        fill(map(bounce, 0, height / 8, 0, 255));
-        text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
-      }
-    }
   }
 
   // TAKT LINES
