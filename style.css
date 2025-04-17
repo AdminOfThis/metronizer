@@ -59,14 +59,14 @@ body {
 }
 
 .grid-item {
-  flex-basis: 100%;
-  display: grid;
+  /* flex-basis: 100%; */
+  display: flex;
+  flex-direction: column;
   /* border: 3px solid green; */
   background-color: Gray;
   border-radius: 5px;
   margin: 5px;
   padding: 5px;
-  display: grid;
   width: auto;
   overflow: scroll;
 }
@@ -74,11 +74,15 @@ body {
 .sections {
   justify-self: center;
   width: auto;
+  white-space: nowrap;
+  height: 100%;
 }
 
 .comments {
   justify-self: center;
   width: auto;
+  white-space: nowrap;
+  height: 100%;
 }
 
 .ui-parent {
@@ -157,6 +161,11 @@ button {
   font-size: 16px;
   margin: 4px;
   border-radius: 3px;
+}
+
+button img {
+  filter: invert(100%) sepia(0%) saturate(100%) hue-rotate(0deg)
+    brightness(100%) contrast(100%);
 }
 
 button:disabled {
