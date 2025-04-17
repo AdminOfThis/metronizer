@@ -3,6 +3,7 @@ class Section {
 
   static createUI() {
     return new Section(1, 60, "4/4");
+    
   }
 
   constructor(count, bpm, measure, dnc) {
@@ -17,7 +18,10 @@ class Section {
     this.measure_maj = parseInt(measure.split("/")[1]);
 
     loadStrings("section.html", this.AddSection.bind(this));
+
+   
   }
+
 
   AddSection(data) {
     let str = "";
