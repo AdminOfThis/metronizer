@@ -32,7 +32,7 @@ class Section {
     newDiv.innerHTML = str;
 
     let removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
-    removeButton.mousePressed(() => {
+    removeButton.mouseReleased(() => {
       // newDiv.remove();
       this.remove();
     });

@@ -26,7 +26,7 @@ class Comment {
     const newDiv = createDiv(str);
     newDiv.innerHTML = str;
     let removeButton = select("#removeCommentButton" + this.index);
-    removeButton.mousePressed(() => {
+    removeButton.mouseReleased(() => {
       this.remove();
     });
     newDiv.child(removeButton);
