@@ -5,8 +5,26 @@ body {
   height: 100%;
 }
 
+:root {
+  /* Base colors */
+  --color-bg: #2d2d2d;
+  --color-surface: #3b3b3b;
+  --color-primary: #8abf7b;
+  --color-secondary: #f5a623;
+  --color-text: #f0f0f0; /* Slightly brighter for contrast on dark */
+  --color-text-on-secondary: #1a1a1a; /* Dark text for use over secondary */
+  --color-text-muted: #a1a1a1;
+  --color-border: #444444;
+  --color-danger: #ff6f61;
+
+  --color-hover: #4d4d4d;
+  --color-active: #4c4c4c;
+
+  font-family: "Segoe UI";
+}
+
 body {
-  background-color: dimgray;
+  background-color: var(--color-bg);
 
   margin: 0;
 
@@ -26,7 +44,7 @@ body {
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  border-color: red;
+  border-color: var(--color-danger);
   border-style: solid;
 }
 
@@ -63,8 +81,8 @@ body {
   display: flex;
   flex-direction: column;
   /* border: 3px solid green; */
-  background-color: Gray;
-  border-radius: 5px;
+  background-color: var(--color-surface);
+  border-radius: 1px;
   margin: 5px;
   padding: 5px;
   width: auto;
@@ -76,6 +94,9 @@ body {
   width: auto;
   white-space: nowrap;
   height: 100%;
+  button:hover {
+    background-color: var(--color-hover);
+  }
 }
 
 .comments {
@@ -112,7 +133,7 @@ body {
 
 .h3 {
   text-align: center;
-  color: white;
+  color: var(--color-primary);
   margin: 5px;
 }
 
@@ -124,23 +145,22 @@ body {
   right: 10px;
   bottom: 0px;
   width: 100%;
-  background-color: black;
-  color: white;
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
   /* text-align: center; */
 }
 
 .warning {
   text-align: center;
 
-  color: white;
-  font-family: "Roboto-Regular";
+  color: var(--color-text-muted);
   font-weight: normal;
   font-size: 12px;
   border-style: solid;
   border-width: 1px;
   margin: 5px;
   padding: 5px;
-  display: inline-block
+  display: inline-block;
 }
 
 .centered-button {
@@ -152,6 +172,10 @@ body {
   font-size: 12px;
 }
 
+div {
+  color: var(--color-text);
+}
+
 .dropZone {
   border: solid;
   border-width: 5px;
@@ -159,23 +183,39 @@ body {
 }
 
 .dropZone.dragover {
-  border-color: blue;
+  border-color: var(--color-secondary);
 }
 
 /* ALLGEMEIN ################################################# */
 
 button {
-  background-color: black;
+  background-color: var(--color-surface);
   border: solid;
-  border-width: 1px;
-  color: white;
+  border-width: 2px;
+  border-color: var(--color-border);
+  border-radius: 1px;
+  color: var(--color-text);
   padding: 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 4px;
-  border-radius: 3px;
+  /* text-shadow: -0.5px -0.5px 0 black, .5px -.5px 0 black, -.5px .5px 0 black,
+    .5px .5px 0 black; */
+}
+
+button:hover {
+  background-color: var(--color-hover);
+}
+
+button:active {
+  background-color: var(--color-primary);
+}
+
+button:disabled {
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
 }
 
 button img {
@@ -183,26 +223,12 @@ button img {
     brightness(100%) contrast(100%);
 }
 
-button:disabled {
-  background-color: gray;
-  border: solid;
-  border-width: 1px;
-  color: white;
-  padding: 5px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px;
-  border-radius: 3px;
-}
-
 a:link {
-  color: white;
+  color: var(--color-text);
   background-color: transparent;
   text-decoration: none;
 }
 
 a:visited {
-  color: grey;
+  color: var(--color-text-muted);
 }
