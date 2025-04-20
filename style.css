@@ -96,6 +96,9 @@ body {
   button:hover {
     background-color: var(--color-hover);
   }
+  button:active {
+    background-color: var(--color-primary);
+  }
 }
 
 .comments {
@@ -200,8 +203,6 @@ button {
   display: inline-block;
   font-size: 16px;
   margin: 4px;
-  /* text-shadow: -0.5px -0.5px 0 black, .5px -.5px 0 black, -.5px .5px 0 black,
-    .5px .5px 0 black; */
 }
 
 button:hover {

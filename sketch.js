@@ -53,27 +53,27 @@ function setup() {
   Section.list = parseInput(example_code);
 
   btnPlayPause = select("#btnPlayPause");
-  btnPlayPause.mousePressed(buttonPlayPause.bind(this));
+  btnPlayPause.mouseReleased(buttonPlayPause.bind(this));
 
   btnParse = select("#btnParse");
-  btnParse.mousePressed(buttonReset);
+  btnParse.mouseReleased(buttonReset);
 
   btnSaveFile = select("#btnSaveFile");
-  btnSaveFile.mousePressed(buttonSave.bind(this));
+  btnSaveFile.mouseReleased(buttonSave.bind(this));
 
   // btnSaveClip = select("#btnSaveClip");
   // btnSaveClip.attribute("disabled", '');
   // btnSaveClip.attribute("hidden", '');
 
-  // btnSaveClip.mousePressed(function () {console.log("BAM, WORKS")});
+  // btnSaveClip.mouseReleased(function () {console.log("BAM, WORKS")});
 
   btnAddSection = select("#btnAddSection");
-  btnAddSection.mousePressed(function () {
+  btnAddSection.mouseReleased(function () {
     new Section(1, 60, "4/4");
     reset();
   });
   btnAddComment = select("#btnAddComment");
-  btnAddComment.mousePressed(function () {
+  btnAddComment.mouseReleased(function () {
     new Comment(1, 1, "");
   });
 
@@ -508,7 +508,7 @@ function reset() {
 
 // If the mouse is pressed,
 // toggle full-screen mode.
-function mousePressed() {
+function mouseReleased() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
     let fs = fullscreen();
     fullscreen(!fs);
