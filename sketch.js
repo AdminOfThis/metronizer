@@ -13,7 +13,7 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 //let inputField;
 
 // ##################### CODE ###################
-let example_code = "1 120 4/4 x\r\n5 180 3/4\r\nc 2 2 TEST";
+let example_code = "1 120 4/4 x\r\n5 180 3/4\r\nc 1 1 TEST";
 // let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
 let play = true;
@@ -161,10 +161,9 @@ function parseInput(input) {
       if (splits[i].startsWith("c")) {
         let s = splits[i].split(" ");
 
-        let message = splits[i].substring(
-          getPosition(splits[i], " ", 3),
-          splits[i].length
-        );
+        let message = splits[i]
+          .substring(getPosition(splits[i], " ", 3), splits[i].length)
+          .trim();
         new Comment(parseInt(s[1]), parseInt(s[2]), message);
       } else {
         const s = splits[i].split(" ");
@@ -442,6 +441,10 @@ function drawComments(index, pixelPerSecond, timeSinceStart) {
     fill(min(map(x, 100, width / 3, 0, 255), 255));
     textAlign(LEFT, TOP);
     text(c.commentMessage, x, 100);
+    // Takt Linie
+    // fill(map(bounce, 0, height / 8, 0, 25));
+    let nowLineWidth = rect_Width / 2;
+    rect(x - rect_Width / 2, 100, 1, 180);
   }
 }
 
