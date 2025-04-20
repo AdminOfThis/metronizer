@@ -13,7 +13,7 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 //let inputField;
 
 // ##################### CODE ###################
-let example_code = "1 120 4/4 x\r\n5 180 3/4\r\nc 1 1 TEST";
+let example_code = "1 120 4/4\r\n5 180 3/4\r\nc 1 1 TEST";
 // let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
 let play = true;
@@ -457,15 +457,30 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
     return 0;
   }
 
+  // for (let s of Section.list) {
+  //   if (s.doNotCount) {
+  //     x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+  //     // // currentBar += parseInt(Section.list[currentBlock].count);
+  //     currentBlock++;
+  //   }
+  // }
+
   while (currentBar <= c.bar) {
-    if (currentBar + Section.list[currentBlock].count <= c.bar) {
+    if (Section.list[currentBlock].doNotCount) {
+      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+
+      currentBlock++;
+    } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
       // add total of previous block
       x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
       currentBar += parseInt(Section.list[currentBlock].count);
+
       currentBlock++;
     } else {
       // add a bar at a time
-      x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
+      if (currentBar < c.bar) {
+        x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
+      }
       currentBar++;
     }
   }
