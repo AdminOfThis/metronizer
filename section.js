@@ -13,6 +13,8 @@ class Section {
     this.measure = measure;
     this.doNotCount = dnc;
 
+    // this.index = crypto.randomUUID();
+
     this.measure_min = parseInt(measure.split("/")[0]);
     this.measure_maj = parseInt(measure.split("/")[1]);
 

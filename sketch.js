@@ -13,7 +13,7 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 //let inputField;
 
 // ##################### CODE ###################
-let example_code = "1 120 4/4\r\n5 180 3/4\r\nc 1 1 TEST";
+let example_code = "1 120 4/4\r\n5 180 3/44\r\n5 180 3/4\r\nc 1 1 TEST";
 // let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
 let play = true;
