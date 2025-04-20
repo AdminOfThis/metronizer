@@ -25,8 +25,7 @@ body {
 
 body {
   background-color: var(--color-bg);
-
-  margin: 0;
+  height: auto;
 
   /* Hide scrollbars */
   overflow-y: hidden;
