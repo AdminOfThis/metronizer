@@ -96,17 +96,16 @@ function hasAllowedExtension(fileName) {
 function gotFile(file) {
   //console.log(file);
   if (hasAllowedExtension(file.name)) {
-    for (let s of sections) {
-      // console.log(s);
-      s.remove();
+    while (Section.list.length > 0) {
+      Section.list[0].remove();
     }
 
-    for (let c of Comment.list) {
-      // console.log(s);
-      c.remove();
+    while (Comment.list.length > 0) {
+      Comment.list[0].remove();
     }
 
-    Section.list = parseInput(file.data);
+    // Section.list = parseInput(file.data);
+    parseInput(file.data);
   }
 }
 
@@ -264,7 +263,6 @@ function draw() {
           }
         }
         if (!Section.list[i].doNotCount) {
-          console.log("test");
           currentTakt +=
             floor(
               (addedTime -
