@@ -2,17 +2,18 @@
 <html lang="en">
   <head>
     <title>Metronizer</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
-  <body id="body" class="dropZone" style="overflow-y: auto; height: 95%">
+  <body id="body" class="dropZone" style="overflow-y: auto">
     <div id="canvas-parent" class="canvas-parent"></div>
+
     <div id="ui-parent" class="ui-parent">
       <div id="control" class="control">
         <button id="btnPlayPause" class="control-button">&#9654;</button>
@@ -20,16 +21,25 @@
         <button id="btnSaveFile" class="control-button">Save File</button>
         <!-- <button id="btnSaveClip" class="control-button">Save as MP4</button> -->
       </div>
+      <div style="text-align: center">
+        <h3 class="warning">
+          To load files, please drag and drop them into the window!
+        </h3>
+      </div>
       <div class="grid-container">
         <div class="grid-item">
           <h3 class="h3">Sections</h3>
           <div id="sections" class="sections"></div>
-          <button id="btnAddSection" class="centered-button">Add Section</button>
+          <button id="btnAddSection" class="centered-button">
+            Add Section
+          </button>
         </div>
         <div class="grid-item">
           <h3 class="h3">Comments</h3>
           <div id="comments" class="comments"></div>
-          <button id="btnAddComment" class="centered-button">Add Comment</button>
+          <button id="btnAddComment" class="centered-button">
+            Add Comment
+          </button>
         </div>
       </div>
     </div>
@@ -37,10 +47,19 @@
     <footer class="footer">
       <a href="./disclaimer.html" style="float: left">Disclaimer</a>
       <div style="float: right; margin-right: 10px">
-        <a rel="noopener" href="https://github.com/AdminOfThis/Metronizer" target="_blank">GitHub</a>
+        <a
+          rel="noopener"
+          href="https://github.com/AdminOfThis/Metronizer"
+          target="_blank"
+          >GitHub</a
+        >
         |
-        <a rel="noopener" href="https://github.com/AdminOfThis/metronizer/issues" target="_blank">Issues</a>
-      </div>
+        <a
+          rel="noopener"
+          href="https://github.com/AdminOfThis/metronizer/issues"
+          target="_blank"
+          >Issues</a
+        >
       </div>
     </footer>
     <script src="sketch.js"></script>
