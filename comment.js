@@ -2,7 +2,7 @@ class Comment {
   static list = [];
 
   static createUI() {
-    return new Comment(1, 1, "");
+    return new Comment(2, 1, "");
   }
 
   constructor(bar, subBar, commentMessage) {
@@ -61,7 +61,7 @@ class Comment {
       .remove();
 
     Comment.list.splice(Comment.list.indexOf(this), 1);
-    }
+  }
 
   createString() {
     let result = "c ";

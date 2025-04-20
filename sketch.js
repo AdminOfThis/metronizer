@@ -265,7 +265,7 @@ function draw() {
           }
         }
         if (!Section.list[i].doNotCount) {
-          // console.log("test");
+          console.log("test");
           currentTakt +=
             floor(
               (addedTime -
@@ -440,6 +440,7 @@ function drawComments(index, pixelPerSecond, timeSinceStart) {
   for (let c of Comment.list) {
     let x = calculateX(c, pixelPerSecond, timeSinceStart);
     fill(min(map(x, 100, width / 3, 0, 255), 255));
+    textAlign(LEFT, TOP);
     text(c.commentMessage, x, 100);
   }
 }
@@ -453,7 +454,7 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
     return 0;
   }
 
-  while (currentBar < c.bar) {
+  while (currentBar <= c.bar) {
     if (currentBar + Section.list[currentBlock].count <= c.bar) {
       // add total of previous block
       x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
