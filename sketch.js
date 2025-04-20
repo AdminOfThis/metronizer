@@ -13,8 +13,8 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 //let inputField;
 
 // ##################### CODE ###################
-// let example_code = "1 200 4/4 x\r\n2 150 4/4\r\nc 2 2 PENIS";
-let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
+let example_code = "1 120 4/4 x\r\n5 180 3/4\r\nc 2 2 TEST";
+// let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
 let play = true;
 
@@ -251,6 +251,7 @@ function draw() {
         t += Section.list[i].lengthTotal();
         if (!Section.list[i].doNotCount) {
           // add the finished takt block counts
+
           currentTakt += parseInt(Section.list[i].count);
         }
       } else {
@@ -264,10 +265,12 @@ function draw() {
           }
         }
         if (!Section.list[i].doNotCount) {
+          // console.log("test");
           currentTakt +=
             floor(
               (addedTime -
-                Section.list[i].length() / Section.list[i].measure_min) /
+                Section.list[i].length() / Section.list[i].measure_min +
+                5) /
                 Section.list[i].length()
             ) + 1;
         }
@@ -303,7 +306,6 @@ function draw() {
       }
     }
 
-
     //BOUNCE BALL
     let circleY = height / 2 - ju - circleRadius / 2.0;
     let circleX = width / 3;
@@ -332,7 +334,7 @@ function draw() {
       // } else {
       //   bounce = height / 5;
       // }
-        bounce = height / 5;
+      bounce = height / 5;
     }
     circle(circleX, circleY, circleRadius);
   }
