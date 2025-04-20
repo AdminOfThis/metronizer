@@ -13,7 +13,7 @@ class Section {
     this.measure = measure;
     this.doNotCount = dnc;
 
-    this.index = crypto.randomUUID();
+    // this.index = crypto.randomUUID();
 
     this.measure_min = parseInt(measure.split("/")[0]);
     this.measure_maj = parseInt(measure.split("/")[1]);
@@ -26,7 +26,7 @@ class Section {
     for (let i = 1; i < data.length - 1; i++) {
       str += data[i];
     }
-    // this.index = select("#sections").elt.childElementCount; // Set the instance variable
+    this.index = select("#sections").elt.childElementCount; // Set the instance variable
 
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + ""); // Use the instance variable
