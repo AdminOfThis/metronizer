@@ -1,13 +1,8 @@
-/* style.css */
-
-html,
-body {
-  height: 100%;
-}
-
 :root {
+  /* counter-reset: sections; */
   /* Base colors */
   --color-bg: #2d2d2d;
+  --color-bg2: #3b3b3b;
   --color-surface: #3b3b3b;
   --color-primary: #8abf7b;
   --color-secondary: #f5a623;
@@ -23,49 +18,117 @@ body {
   font-family: "Segoe UI";
 }
 
+html,
 body {
-  background-color: var(--color-bg);
-  height: auto;
-
-  /* Hide scrollbars */
-  overflow-y: hidden;
-
-  /* This centers our sketch horizontally. */
-  /* justify-content: center; */
-
-  /* This centers our sketch vertically. */
-  /* align-items: center; */
+  height: 100%;
 }
 
+* {
+  color: var(--color-text);
+  background-color: var(--color-bg2);
+
+  border-radius: 1px;
+  margin: 0;
+}
+
+main {
+  display: grid;
+  height: 100%;
+  grid-template-areas:
+    "top top top top"
+    "nav canvas canvas settings"
+    "nav control control settings"
+    "nav sections comments settings"
+    "footer footer footer footer";
+
+  grid-template-columns: 0fr 2fr 2fr 1fr;
+  grid-template-rows: 0px auto auto 1fr 30px;
+  gap: 5px 5px;
+
+  background-color: var(--color-bg);
+  /* background-color: red; */
+}
+
+main > * {
+  justify-items: center;
+  padding: 5px;
+}
+
+/* GRID Items */
+headerSection {
+  grid-area: top;
+}
+navSection {
+  grid-area: nav;
+}
+
+headerSection,
+navSection {
+  visibility: hidden;
+  min-width: 0;
+  width: 0;
+  max-width: 0;
+  padding: 0;
+}
+
+settingsArea {
+  grid-area: settings;
+  min-width: 100px;
+}
+
+settingsDiv {
+  display: grid;
+  gap: 20px;
+}
+
+canvasSection {
+  grid-area: canvas;
+  height: auto;
+}
+
+controlSection {
+  grid-area: control;
+  justify-items: center;
+}
+
+sectionSection {
+  grid-area: sections;
+  justify-content: center;
+}
+
+commentSection {
+  grid-area: comments;
+  justify-content: center;
+}
+
+sectionSection > *,
+commentSection > * {
+  /* grid-area: sections; */
+  justify-items: center;
+  justify-content: center;
+}
+
+footer {
+  grid-area: footer;
+  background-color: var(--color-bg2);
+}
+
+/* CANVAS */
+
 .canvas {
-  margin: 20px;
+  /* margin: 20px; */
   display: block;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  border-color: var(--color-danger);
-  border-style: solid;
 }
 
 .canvas-parent {
-  margin: 5px;
+  /* margin: 5px; */
   display: block;
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-}
-
-.control {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.control-button {
-  min-width: 50px;
-
-  height: 35px;
 }
 
 .grid-container {
@@ -75,24 +138,22 @@ body {
   display: flex;
 }
 
-.grid-item {
-  /* flex-basis: 100%; */
+input[type="range"] {
+  width: 100%; /* or any other unit like %, vw, etc. */
+  accent-color: var(--color-primary);
+}
+
+.control {
   display: flex;
-  flex-direction: column;
-  /* border: 3px solid green; */
-  background-color: var(--color-border);
-  border-radius: 1px;
-  width: auto;
-  overflow: scroll;
-  padding: 20px;
-  margin: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .sections {
-  justify-self: center;
-  width: auto;
+  /* justify-content: center; */
+  /* width: auto; */
   white-space: nowrap;
-  height: 100%;
   button:hover {
     background-color: var(--color-hover);
   }
@@ -105,90 +166,7 @@ body {
   justify-self: center;
   width: auto;
   white-space: nowrap;
-  height: 100%;
 }
-
-.ui-parent {
-  display: list;
-  margin: 5px;
-  margin-bottom: 25px;
-}
-
-.ui-section {
-  height: 30;
-  display: block;
-  overflow: hidden;
-  width: auto;
-  border: 5px;
-  align-items: center;
-}
-
-.ui-section > input {
-  height: 30;
-  width: auto;
-}
-
-.ui-section-element {
-  padding: 5;
-  margin: 5;
-}
-
-.h3 {
-  text-align: center;
-  color: var(--color-primary);
-  margin: 5px;
-}
-
-.footer {
-  position: fixed;
-  display: inline-block;
-  padding: 5px;
-  left: 0px;
-  right: 10px;
-  bottom: 0px;
-  width: 100%;
-  background-color: var(--color-border);
-  color: var(--color-text-muted);
-  /* text-align: center; */
-}
-
-.warning {
-  text-align: center;
-
-  color: var(--color-text-muted);
-  font-weight: normal;
-  font-size: 12px;
-  border-style: solid;
-  border-width: 1px;
-  margin: 5px;
-  padding: 5px;
-  display: inline-block;
-}
-
-.centered-button {
-  margin: auto;
-  align-items: center;
-}
-
-.remove-button {
-  font-size: 12px;
-}
-
-div {
-  color: var(--color-text);
-}
-
-.dropZone {
-  border: solid;
-  border-width: 5px;
-  border-color: transparent;
-}
-
-.dropZone.dragover {
-  border-color: var(--color-secondary);
-}
-
-/* ALLGEMEIN ################################################# */
 
 button {
   background-color: var(--color-surface);
@@ -203,6 +181,7 @@ button {
   display: inline-block;
   font-size: 16px;
   margin: 4px;
+  min-width: 50px;
 }
 
 button:hover {
@@ -231,4 +210,10 @@ a:link {
 
 a:visited {
   color: var(--color-text-muted);
+}
+
+h3 {
+  text-align: center;
+  color: var(--color-primary);
+  margin: 5px;
 }

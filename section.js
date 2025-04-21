@@ -71,6 +71,9 @@ class Section {
         this.doNotCount = select("#isPre" + this.index).checked();
       }.bind(this)
     );
+    if (this.index > 0) {
+      select("#precountParent" + this.index).hide();
+    }
   }
 
   remove() {
