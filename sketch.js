@@ -1,31 +1,53 @@
 //When I wrote this, only God and I understood what I was doing
 //Now, God only knows
 
-const allowedExtensions = [".txt", ".met"]; // Specify allowed file extensions
+// ===========================
+// Constants & Configuration & UI Declarations
+// ===========================
+
+// Allowed file extensions for input files (e.g., text or metronome data)
+const ALLOWED_EXTENSIONS = [".txt", ".met"];
 
 // ##################### UI ###################
 
+// Font for rendering text on canvas (loaded in preload)
 let font;
 
+// Array to hold dynamically added section input elements (if used)
 let inputSections = [];
+
+// Button elements for user interactions: adding sections/comments, parsing input, and controlling playback
 let btnAddSection, btnAddComment, btnParse, btnPlayPause;
 
-//let inputField;
+let sliderDensity, sliderPronounciation, sliderBallSize;
 
 // ##################### CODE ###################
-let example_code = "1 120 4/4\r\n5 180 3/44\r\n5 180 3/4\r\nc 1 1 TEST";
-// let example_code = "4 150 4/4 x\r\nc 2 1 TEST COMMENT";
 
+// Example raw code string for quick testing; uses line breaks
+let example_code = "1 120 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
+
+// Playback state: true when running, false when paused
 let play = true;
 
+// Total duration (ms) of all parsed sections combined
 let totalLength;
+
+// Bounce factor for visual animation of the circle
 let bounce;
 
+// Visual properties for the bouncing circle
 let circleRadius = 25;
 
-let pixelPerSecond = 150;
+// Movement speed: how many pixels the playhead travels per second
+let pixelPerSecond = 100;
+
+// How much the ball bounces higher on the measure start, measured in percentage from 1-100
+let barPronounciation = 0;
+
+// Width of each visual bar on the timeline
 const rect_Width = 5;
 
+// Timestamp when playback started or resumed (ms)
 let startTime;
 
 function preload() {
@@ -42,7 +64,7 @@ function setup() {
   dropZone.dragLeave(unhighlight);
   dropZone.drop(gotFile, unhighlight);
 
-  let canvasHeight = max(200, windowHeight / 2);
+  let canvasHeight = max(100, windowHeight / 4);
   let canvasWidth = (canvasHeight / 9.0) * 16.0;
 
   var cnv = createCanvas(canvasWidth, canvasHeight);
@@ -76,6 +98,38 @@ function setup() {
   btnAddComment.mouseReleased(function () {
     new Comment(1, 1, "");
   });
+
+  sliderDensity = select("#sizeSlider");
+  if (sliderDensity != null) {
+    //Initial value
+    sliderDensity.value(pixelPerSecond);
+    select("#sizeValue").html(pixelPerSecond);
+    //add listener
+    sliderDensity.input(function () {
+      pixelPerSecond = sliderDensity.value();
+    });
+  }
+  sliderPronounciation = select("#barSlider");
+  if (sliderPronounciation != null) {
+    //Initial value
+    sliderPronounciation.value(barPronounciation);
+    select("#barSliderValue").html(barPronounciation);
+    //add listener
+    sliderPronounciation.input(function () {
+      barPronounciation = sliderPronounciation.value();
+    });
+  }
+
+  sliderBallSize = select("#ballSizeSlider");
+  if (sliderBallSize != null) {
+    //Initial value
+    sliderBallSize.value(circleRadius);
+    select("#ballSizeSliderValue").html(circleRadius);
+    //add listener
+    sliderBallSize.input(function () {
+      circleRadius = sliderBallSize.value();
+    });
+  }
 
   windowResized();
   reset();
@@ -190,8 +244,8 @@ function draw() {
     parse();
   } catch {}
   textSize(32);
-  if (startTime === undefined) {
-    startTime = millis();
+  if (startTime === lastPause) {
+    // startTime = millis();
     totalLength = 0;
     for (let i = 0; i < Section.list.length; i++) {
       totalLength += Section.list[i].lengthTotal();
@@ -226,6 +280,8 @@ function draw() {
   if (currentBlock == undefined && Section.list.length > 0) {
     currentBlock = Section.list[0];
   }
+
+  drawComments(index, pixelPerSecond, timeSinceStart);
 
   // TEMPO
   if (currentBlock != undefined) {
@@ -275,7 +331,7 @@ function draw() {
       }
     }
 
-    let ju = abs(
+    let jump = abs(
       sin(
         ((timeSinceStart - currentLength) / currentBlock.length()) *
           PI *
@@ -304,36 +360,7 @@ function draw() {
     }
 
     //BOUNCE BALL
-    let circleY = height / 2 - ju - circleRadius / 2.0;
-    let circleX = width / 3;
-    fill(255, 0, 0);
-
-    if (
-      play &&
-      timeSinceStart >
-        totalLength -
-          Section.list[Section.list.length - 1].length() /
-            Section.list[Section.list.length - 1].measure_min
-    ) {
-      // Piece is over, having fun
-      bounce *= 0.99;
-      circleY = min(
-        height - circleRadius / 2,
-        circleY + (timeSinceStart - totalLength) / 20
-      );
-      circleX +=
-        ((timeSinceStart - totalLength) * (timeSinceStart - totalLength)) /
-        100000;
-    } else {
-      // if (currentSubdivide == currentBlock.measure_min) {
-      //   // pronounce the bar opening
-      //   // bounce = height / 3;
-      // } else {
-      //   bounce = height / 5;
-      // }
-      bounce = height / 5;
-    }
-    circle(circleX, circleY, circleRadius);
+    drawCircle(jump, timeSinceStart, currentSubdivide, currentBlock);
   }
 
   // TAKT LINES
@@ -421,7 +448,6 @@ function draw() {
     //console.log(index);
   }
 
-  drawComments(index, pixelPerSecond, timeSinceStart);
   if (timeSinceStart > totalLength + 30000) {
     //console.log("RESET")
     reset();
@@ -430,6 +456,39 @@ function draw() {
   //noLoop();
   //frameRate(.5)
   //console.log(index + " " + pixelPerSecond + " " + timeSinceStart);
+}
+
+function drawCircle(ju, timeSinceStart, currentSubdivide, currentBlock) {
+  let circleY = height / 2 - ju - circleRadius / 2.0;
+  let circleX = width / 3;
+  fill(255, 0, 0);
+  // console.log(totalLength);
+  if (
+    play &&
+    timeSinceStart >
+      totalLength -
+        Section.list[Section.list.length - 1].length() /
+          Section.list[Section.list.length - 1].measure_min
+  ) {
+    // Piece is over, having fun
+    bounce *= 0.99;
+    circleY = min(
+      height - circleRadius / 2,
+      circleY + (timeSinceStart - totalLength) / 20
+    );
+    circleX +=
+      ((timeSinceStart - totalLength) * (timeSinceStart - totalLength)) /
+      100000;
+  } else {
+    if (currentSubdivide == currentBlock.measure_min) {
+      // pronounce the bar opening
+      bounce = (height / 5) * (1 + barPronounciation / 100);
+    } else {
+      bounce = height / 5;
+    }
+    // bounce = height / 5;
+  }
+  circle(circleX, circleY, circleRadius);
 }
 
 function drawComments(index, pixelPerSecond, timeSinceStart) {
@@ -494,32 +553,33 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
 }
 
 function reset() {
-  startTime = undefined;
-  timeSinceStart = 0;
   lastPause = millis();
+  timeSinceStart = 0;
+  startTime = lastPause;
   totalPause = 0;
   pauseSinceStart = 0;
   bounce = height / 4;
   play = false;
+
   try {
     btnPlayPause.html("&#9654;");
   } catch {}
 }
 
-// If the mouse is pressed,
-// toggle full-screen mode.
-function mouseReleased() {
-  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    let fs = fullscreen();
-    fullscreen(!fs);
-    pixelsPerSecond = width / 10;
-    if (fs) {
-      createCanvas(800, 400);
-    } else {
-      createCanvas(1920, 1080);
-    }
-  }
-}
+// // If the mouse is pressed,
+// // toggle full-screen mode.
+// function mouseReleased() {
+//   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+//     let fs = fullscreen();
+//     fullscreen(!fs);
+//     pixelsPerSecond = width / 10;
+//     if (fs) {
+//       resizeCanvas(800, 400);
+//     } else {
+//       resizeCanvas(1920, 1080);
+//     }
+//   }
+// }
 
 // If the mouse is pressed,
 // toggle full-screen mode.

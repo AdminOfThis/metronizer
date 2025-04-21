@@ -11,68 +11,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
-  <body id="body" class="dropZone" style="overflow-y: auto">
-
-    <div id="canvas-parent" class="canvas-parent"></div>
-
-    <div id="ui-parent" class="ui-parent">
-      <div id="control" class="control">
-        <button id="btnPlayPause" class="control-button">&#9654;</button>
-        <button id="btnParse" class="control-button">&#10227;</button>
-        <button id="btnSaveFile" class="control-button">Save File</button>
-        <!-- <button id="btnSaveClip" class="control-button">Save as MP4</button> -->
-      </div>
-      <div style="text-align: center">
-        <h3 class="warning">
-          To load files, please drag and drop them into the window!
-        </h3>
-      </div>
-      <div class="grid-container">
-        <div class="grid-item">
-          <h3 class="h3">Sections</h3>
-          <div style="display: flex">
-            <div style="width: 58px">Bar</div>
-            <div style="width: 58px">Count</div>
-            <div style="width: 50px">Measure</div>
-          </div>
-          <div id="sections" class="sections"></div>
-          <button id="btnAddSection" class="centered-button">
-            Add Section
-          </button>
+  <body id="body" class="dropZone">
+    <main>
+      <headerSection>HEADER</headerSection>
+      <canvasSection>
+        <div id="canvas-parent" class="canvas-parent"></div>
+      </canvasSection>
+      <controlSection>
+        <div id="control" class="control">
+          <button id="btnPlayPause" class="control-button">&#9654;</button>
+          <button id="btnParse" class="control-button">&#10227;</button>
+          <button id="btnSaveFile" class="control-button">Save File</button>
+          <!-- <button id="btnSaveClip" class="control-button">Save as MP4</button> -->
         </div>
-        <div class="grid-item">
-          <h3 class="h3">Comments</h3>
-          <div style="display: flex">
-            <div style="width: 58px">Bar</div>
-            <div style="width: 58px">Count</div>
-            <div style="width: 50px">Comment</div>
-          </div>
-          <div id="comments" class="comments"></div>
-          <button id="btnAddComment" class="centered-button">
-            Add Comment
-          </button>
+        <div style="text-align: center">
+          <h3 class="warning">
+            To load files, please drag and drop them into the window!
+          </h3>
         </div>
-      </div>
-    </div>
-    <!-- <div id="includeHtml"></div> -->
-    <footer class="footer">
-      <a href="./disclaimer.html" style="float: left">Disclaimer</a>
-      <div style="float: right; margin-right: 10px">
-        <a
-          rel="noopener"
-          href="https://github.com/AdminOfThis/Metronizer"
-          target="_blank"
-          >GitHub</a
-        >
-        |
-        <a
-          rel="noopener"
-          href="https://github.com/AdminOfThis/metronizer/issues"
-          target="_blank"
-          >Issues</a
-        >
-      </div>
-    </footer>
-    <script src="sketch.js"></script>
+      </controlSection>
+      <sectionSection>
+        <h3 class="h3">Sections</h3>
+        <!-- <div style="display: flex">
+          <div style="width: 58px">Bar</div>
+          <div style="width: 58px">Count</div>
+          <div style="width: 50px">Measure</div>
+        </div> -->
+        <div id="sections" class="sections"></div>
+        <button id="btnAddSection" class="centered-button">Add Section</button>
+      </sectionSection>
+      <commentSection>
+        <h3 class="h3">Comments</h3>
+        <!-- <div style="display: flex">
+          <div style="width: 58px">Bar</div>
+          <div style="width: 58px">Count</div>
+          <div style="width: 50px">Comment</div>
+        </div> -->
+        <div id="comments" class="comments"></div>
+        <button id="btnAddComment" class="centered-button">Add Comment</button>
+      </commentSection>
+      <!-- SETTINGS -->
+      <settingsArea>
+        <h3>Settings</h3>
+        <settingsDiv>
+          <!-- Density Slider -->
+          <div>
+            <label for="sizeSlider" class="slider-label">
+              Speed:
+              <span id="sizeValue">50</span>
+            </label>
+            <input
+              type="range"
+              title="Density"
+              id="sizeSlider"
+              min="20"
+              max="200"
+              step="10"
+              value="50"
+              list="sizeTicks"
+              oninput="sizeValue.textContent = this.value"
+            />
+            <datalist id="sizeTicks">
+              <option value="50"></option>
+              <option value="100"></option>
+              <option value="150"></option>
+              <option value="200"></option>
+              <option value="250"></option>
+              <option value="300"></option>
+            </datalist>
+          </div>
+          <!-- Bar Prononciation Slider -->
+          <div>
+            <label for="barSlider" class="slider-label">
+              Beat emphasis:
+              <span id="barSliderValue">0</span>%
+            </label>
+            <input
+              type="range"
+              title="Bar Prononciation"
+              id="barSlider"
+              min="00"
+              max="100"
+              step="5"
+              value="0"
+              list="barTickList"
+              oninput="barSliderValue.textContent = this.value"
+            />
+            <datalist id="barTickList">
+              <option value="0"></option>
+              <option value="10"></option>
+              <option value="20"></option>
+              <option value="30"></option>
+              <option value="40"></option>
+              <option value="50"></option>
+              <option value="60"></option>
+              <option value="70"></option>
+              <option value="80"></option>
+              <option value="90"></option>
+              <option value="100"></option>
+            </datalist>
+          </div>
+          <!-- Ball size Slider -->
+          <div>
+            <label for="ballSLider" class="slider-label">
+              Ball size:
+              <span id="ballSizeSliderValue">0</span>
+            </label>
+            <input
+              type="range"
+              title="Ball Size"
+              id="ballSizeSlider"
+              min="10"
+              max="50"
+              step="1"
+              value="0"
+              list="ballSizeTickList"
+              oninput="ballSizeSliderValue.textContent = this.value"
+            />
+            <datalist id="ballSizeTickList">
+              <option value="0"></option>
+              <option value="5"></option>
+              <option value="10"></option>
+              <option value="15"></option>
+              <option value="20"></option>
+              <option value="25"></option>
+              <option value="30"></option>
+              <option value="35"></option>
+              <option value="40"></option>
+              <option value="45"></option>
+              <option value="50"></option>
+            </datalist>
+          </div>
+        </settingsDiv>
+      </settingsArea>
+      <navSection></navSection>
+      <!-- Footer -->
+      <footer class="footer">
+        <a href="./disclaimer.html" style="float: left">Disclaimer</a>
+        <div style="float: right">
+          <a
+            rel="noopener"
+            href="https://github.com/AdminOfThis/Metronizer"
+            target="_blank"
+            >GitHub</a
+          >
+          <a
+            rel="noopener"
+            href="https://github.com/AdminOfThis/metronizer/issues"
+            target="_blank"
+            >Issues</a
+          >
+        </div>
+      </footer>
+      <script src="sketch.js"></script>
+    </main>
   </body>
 </html>
