@@ -144,7 +144,7 @@ function unhighlight() {
 }
 
 function hasAllowedExtension(fileName) {
-  return allowedExtensions.some((ext) => fileName.endsWith(ext));
+  return ALLOWED_EXTENSIONS.some((ext) => fileName.endsWith(ext));
 }
 
 function gotFile(file) {
@@ -448,7 +448,7 @@ function draw() {
     //console.log(index);
   }
 
-  if (timeSinceStart > totalLength + 30000) {
+  if (timeSinceStart > totalLength + 8000) {
     //console.log("RESET")
     reset();
   }
@@ -486,7 +486,6 @@ function drawCircle(ju, timeSinceStart, currentSubdivide, currentBlock) {
     } else {
       bounce = height / 5;
     }
-    // bounce = height / 5;
   }
   circle(circleX, circleY, circleRadius);
 }
