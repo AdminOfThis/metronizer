@@ -17,9 +17,11 @@ let font;
 let inputSections = [];
 
 // Button elements for user interactions: adding sections/comments, parsing input, and controlling playback
-let btnAddSection, btnAddComment, btnParse, btnPlayPause;
+let btnAddSection, btnAddComment, btnParse, btnPlayPause, btnExport;
 
 let sliderDensity, sliderPronounciation, sliderBallSize;
+
+let renderingWarning;
 
 // ##################### CODE ###################
 
@@ -28,6 +30,10 @@ let example_code = "1 120 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
 
 // Playback state: true when running, false when paused
 let play = true;
+
+P5_SAVE_FRAMES_OVERRIDE_FRAMERATE = 60;
+P5_SAVE_FRAMES_HIDE_UI = true;
+let recording = false;
 
 // Total duration (ms) of all parsed sections combined
 let totalLength;
@@ -55,6 +61,7 @@ function preload() {
 }
 
 function setup() {
+  frameRate(60);
   textFont(font);
 
   dropZone = select("#body");
@@ -128,6 +135,28 @@ function setup() {
     //add listener
     sliderBallSize.input(function () {
       circleRadius = sliderBallSize.value();
+    });
+  }
+
+  renderingWarning = select("#rendering");
+  renderingWarning.hide();
+
+  btnExport = select("#btnExport");
+  if (btnExport != null) {
+    btnExport.mouseReleased(function () {
+      recording = !recording;
+      if (recording) {
+        renderingWarning.show();
+        reset();
+        startCapturing();
+        play = true;
+      } else {
+        stopCapturing();
+        renderingWarning.hide();
+        reset();
+      }
+      // console.log(totalLength / 1000.0);
+      // saveCanvas("./test.png");
     });
   }
 
@@ -450,7 +479,15 @@ function draw() {
 
   if (timeSinceStart > totalLength + 8000) {
     //console.log("RESET")
+    if (recording) {
+      stopCapturing();
+      recording = false;
+    }
     reset();
+  }
+
+  if (recording) {
+    console.log(frameRate());
   }
 
   //noLoop();

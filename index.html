@@ -6,6 +6,7 @@
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.save-frames@latest/dist/p5.save-frames.umd.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,9 +26,7 @@
           <!-- <button id="btnSaveClip" class="control-button">Save as MP4</button> -->
         </div>
         <div style="text-align: center">
-          <h3 class="warning">
-            To load files, please drag and drop them into the window!
-          </h3>
+          <h3>To load files, please drag and drop them into the window!</h3>
         </div>
       </controlSection>
       <sectionSection>
@@ -141,7 +140,10 @@
               <option value="45"></option>
               <option value="50"></option>
             </datalist>
+            <!-- <input type="color" value="#ff0000" title="Color"/> -->
           </div>
+          <button id="btnExport">Export</button>
+          <h3 id="rendering" class="warning">Rendering, please wait</h3>
         </settingsDiv>
       </settingsArea>
       <navSection></navSection>

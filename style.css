@@ -150,6 +150,11 @@ input[type="range"] {
   margin-bottom: 10px;
 }
 
+.warning {
+  color: red;
+  border: solid;
+}
+
 .sections {
   /* justify-content: center; */
   /* width: auto; */
