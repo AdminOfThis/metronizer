@@ -31,7 +31,8 @@ let example_code = "1 120 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
 // Playback state: true when running, false when paused
 let play = true;
 
-P5_SAVE_FRAMES_OVERRIDE_FRAMERATE = 60;
+P5_SAVE_FRAMES_OVERRIDE_FRAMERATE = true;
+P5_SAVE_FRAMES_FRAMERATE = 60;
 P5_SAVE_FRAMES_HIDE_UI = true;
 let recording = false;
 
