@@ -225,6 +225,11 @@ progress::-webkit-progress-value {
   background-color: var(--color-primary)
 }
 
+progress::-moz-progress-bar {
+  background-color: var(--color-primary)
+}
+
+
 h3 {
   text-align: center;
   color: var(--color-primary);
