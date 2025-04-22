@@ -168,6 +168,7 @@ function setup() {
     recording = true;
     renderingWarning.show();
     btnPlayPause.attribute("disabled", "");
+    btnExport.attribute("disabled", "");
 
     reset();
     play = true;
@@ -186,6 +187,8 @@ function setup() {
     recording = false;
     renderingWarning.hide();
     btnPlayPause.removeAttribute("disabled");
+    btnExport.removeAttribute("disabled");
+
     reset();
     downloadZip();
   }
