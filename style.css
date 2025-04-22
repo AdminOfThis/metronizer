@@ -217,6 +217,14 @@ a:visited {
   color: var(--color-text-muted);
 }
 
+progress {
+  width: 100%;
+}
+
+progress::-webkit-progress-value {
+  background-color: var(--color-primary)
+}
+
 h3 {
   text-align: center;
   color: var(--color-primary);

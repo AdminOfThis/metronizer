@@ -21,20 +21,29 @@ let btnAddSection, btnAddComment, btnParse, btnPlayPause, btnExport;
 
 let sliderDensity, sliderPronounciation, sliderBallSize;
 
+let exportProgress, renderFrame;
+
 let renderingWarning;
+
+// ##################### EXPORT #################
+
+let zip = new JSZip();
+let imageCount = 0;
+
+let exportFrameRate = 60;
+
+let exportCanvas;
+
+let recording = false;
 
 // ##################### CODE ###################
 
 // Example raw code string for quick testing; uses line breaks
-let example_code = "1 120 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
+// let example_code = "1 120 4/4\r\nc 1 1 TEST";
+let example_code = "1 60 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
 
 // Playback state: true when running, false when paused
 let play = true;
-
-P5_SAVE_FRAMES_OVERRIDE_FRAMERATE = true;
-P5_SAVE_FRAMES_FRAMERATE = 60;
-P5_SAVE_FRAMES_HIDE_UI = true;
-let recording = false;
 
 // Total duration (ms) of all parsed sections combined
 let totalLength;
@@ -43,7 +52,7 @@ let totalLength;
 let bounce;
 
 // Visual properties for the bouncing circle
-let circleRadius = 25;
+let circleRadius = 35;
 
 // Movement speed: how many pixels the playhead travels per second
 let pixelPerSecond = 100;
@@ -139,25 +148,66 @@ function setup() {
     });
   }
 
-  renderingWarning = select("#rendering");
+  renderingWarning = select("#activeRender");
   renderingWarning.hide();
 
+  exportProgress = select("#progressRender");
+  exportProgress.value(0);
+
+  renderFrame = select("#renderFrame");
+
   btnExport = select("#btnExport");
+
   if (btnExport != null) {
     btnExport.mouseReleased(function () {
-      recording = !recording;
-      if (recording) {
-        renderingWarning.show();
-        reset();
-        startCapturing();
-        play = true;
-      } else {
-        stopCapturing();
-        renderingWarning.hide();
-        reset();
-      }
-      // console.log(totalLength / 1000.0);
-      // saveCanvas("./test.png");
+      exportToZip();
+    });
+  }
+
+  async function exportToZip() {
+    recording = true;
+    renderingWarning.show();
+    btnPlayPause.attribute("disabled", "");
+
+    reset();
+    play = true;
+    let neededNumberOfFrames = ceil(
+      ((totalLength + 16000) / 2.0 / 1000.0) * 60.0
+    );
+    exportCanvas = createGraphics(width, height);
+    while (imageCount <= neededNumberOfFrames) {
+      exportProgress.value(imageCount / neededNumberOfFrames);
+      renderFrame.html(imageCount + "/" + neededNumberOfFrames);
+      // Sleep to give GUI time to refresh
+      await sleep(0.1);
+      drawOnCanvas(exportCanvas, startTime + (1000.0 / 60.0) * imageCount);
+      saveFrameToZip();
+    }
+    recording = false;
+    renderingWarning.hide();
+    btnPlayPause.removeAttribute("disabled");
+    reset();
+    downloadZip();
+  }
+
+  function saveFrameToZip() {
+    let dataURL = exportCanvas.canvas.toDataURL("image/png");
+    let base64 = dataURL.replace(/^data:image\/png;base64,/, "");
+
+    let filename = `frame_${nf(imageCount++, 4)}.png`;
+    zip.file(filename, base64, { base64: true });
+  }
+
+  function downloadZip() {
+    zip.generateAsync({ type: "blob" }).then(function (content) {
+      let a = document.createElement("a");
+      a.href = URL.createObjectURL(content);
+      a.download = "canvas_frames.zip";
+      a.click();
+
+      // 🔥 Clear the zip after download
+      zip = new JSZip();
+      imageCount = 0;
     });
   }
 
@@ -270,10 +320,16 @@ let totalPause = 0;
 let pauseSinceStart = 0;
 
 function draw() {
-  try {
-    parse();
-  } catch {}
-  textSize(32);
+  if (!recording) {
+    try {
+      parse();
+    } catch {}
+    drawOnCanvas(this, millis());
+  }
+}
+
+function drawOnCanvas(cnv, time) {
+  cnv.textSize(32);
   if (startTime === lastPause) {
     // startTime = millis();
     totalLength = 0;
@@ -284,20 +340,20 @@ function draw() {
 
   if (!play) {
     //ongoing Pause + past pauses
-    pauseSinceStart = millis() - lastPause + totalPause;
+    pauseSinceStart = time - lastPause + totalPause;
   }
-  let timeSinceStart = millis() - pauseSinceStart - startTime;
+  let timeSinceStart = time - pauseSinceStart - startTime;
   //console.log(timeSinceStart/1000);
 
-  background(0);
-  stroke(255);
-  strokeWeight(0);
+  cnv.background(0);
+  cnv.stroke(255);
+  cnv.strokeWeight(0);
   let index = 0;
 
   // Takt Linie
-  fill(map(bounce, 0, height / 8, 0, 25));
+  cnv.fill(map(bounce, 0, height / 8, 0, 25));
   let nowLineWidth = rect_Width / 2;
-  rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
+  cnv.rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
 
   let currentBlock;
   let currentLength = 0;
@@ -311,17 +367,17 @@ function draw() {
     currentBlock = Section.list[0];
   }
 
-  drawComments(index, pixelPerSecond, timeSinceStart);
+  drawComments(cnv, index, pixelPerSecond, timeSinceStart);
 
   // TEMPO
   if (currentBlock != undefined) {
-    textAlign(LEFT, TOP);
-    fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
-    text(currentBlock.bpm + " BPM", 10, 10);
-    fill(map(bounce, 0, height / 8, 0, 255));
-    text(currentBlock.measure, 10, 50);
-    textAlign(LEFT, TOP);
-    text(msToTime(timeSinceStart), width - 135, 10);
+    cnv.textAlign(LEFT, TOP);
+    cnv.fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
+    cnv.text(currentBlock.bpm + " BPM", 10, 10);
+    cnv.fill(map(bounce, 0, height / 8, 0, 255));
+    cnv.text(currentBlock.measure, 10, 50);
+    cnv.textAlign(LEFT, TOP);
+    cnv.text(msToTime(timeSinceStart), width - 135, 10);
 
     // Calculate current bar, subdivide, etc
     // Abandon all hope ye who enter beyond this point
@@ -370,27 +426,27 @@ function draw() {
     );
 
     // DISPLAY BARS, SUBDIVIDE, ETC
-    textSize(48);
-    textAlign(CENTER, TOP);
+    cnv.textSize(48);
+    cnv.textAlign(CENTER, TOP);
     if (currentSubdivide > 0) {
-      fill(255);
-      text(
+      cnv.fill(255);
+      cnv.text(
         currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
         width / 2,
         10
       );
     } else {
       if (currentBlock.index > 0) {
-        fill(map(bounce, 0, height / 8, 0, 255));
-        text("END", width / 2, 10);
+        cnv.fill(map(bounce, 0, height / 8, 0, 255));
+        cnv.text("END", width / 2, 10);
       } else {
-        fill(map(bounce, 0, height / 8, 0, 255));
-        text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
+        cnv.fill(map(bounce, 0, height / 8, 0, 255));
+        cnv.text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
       }
     }
 
     //BOUNCE BALL
-    drawCircle(jump, timeSinceStart, currentSubdivide, currentBlock);
+    drawCircle(cnv, jump, timeSinceStart, currentSubdivide, currentBlock);
   }
 
   // TAKT LINES
@@ -400,16 +456,16 @@ function draw() {
     let blockX =
       width / 3 +
       (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
-    textAlign(LEFT, BOTTOM);
+    cnv.textAlign(LEFT, BOTTOM);
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
-      fill(min(map(blockX, 100, width / 3, 0, 255), 255));
-      textSize(32);
-      text(block.bpm, blockX, (height / 8) * 7.5);
+      cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255));
+      cnv.textSize(32);
+      cnv.text(block.bpm, blockX, (height / 8) * 7.5);
     }
     if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
-      fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
-      textSize(32);
-      text(block.measure, blockX, height - 10);
+      cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
+      cnv.textSize(32);
+      cnv.text(block.measure, blockX, height - 10);
     }
     for (let j = 0; j < block.count; j++) {
       let taktBegin =
@@ -417,14 +473,14 @@ function draw() {
         (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
       let x = width / 3 + taktBegin;
-      fill(255);
+      cnv.fill(255);
       let basecolor;
       if (!block.doNotCount) {
-        textAlign(LEFT, TOP);
+        cnv.textAlign(LEFT, TOP);
 
-        fill(min(map(x, 100, width / 3, 0, 255), 255));
+        cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         //TAKTZAHL
-        textSize(32);
+        cnv.textSize(32);
         let bbox = font.textBounds(
           taktCount + 1 + "",
           x,
@@ -434,21 +490,21 @@ function draw() {
         //fill(127);
         let textMargin = 5;
         let boxWidth = 2;
-        rect(
+        cnv.rect(
           bbox.x - textMargin - boxWidth,
           bbox.y - textMargin - boxWidth,
           bbox.w + 2 * (textMargin + boxWidth),
           bbox.h + 2 * (textMargin + boxWidth)
         );
-        fill(0);
-        rect(
+        cnv.fill(0);
+        cnv.rect(
           bbox.x - textMargin,
           bbox.y - textMargin,
           bbox.w + 2 * textMargin,
           bbox.h + 2 * textMargin
         );
-        fill(min(map(x, 100, width / 3, 0, 255), 255));
-        text(taktCount + 1, x, height / 1.35 + 10);
+        cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
+        cnv.text(taktCount + 1, x, height / 1.35 + 10);
 
         basecolor = 255;
       } else {
@@ -457,8 +513,8 @@ function draw() {
 
       //draw only required
       if (x >= -width && x <= width) {
-        fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-        rect(x - rect_Width / 2, height / 2, rect_Width * 1.5, height / 4);
+        cnv.fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
+        cnv.rect(x - rect_Width / 2, height / 2, rect_Width * 1.5, height / 4);
 
         for (let count_min = 1; count_min < block.measure_min; count_min++) {
           let addOffset =
@@ -466,8 +522,8 @@ function draw() {
             count_min *
             pixelPerSecond;
           x = width / 3 + taktBegin + addOffset;
-          fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
-          rect(x - rect_Width / 2, height / 2, rect_Width, height / 6);
+          cnv.fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
+          cnv.rect(x - rect_Width / 2, height / 2, rect_Width, height / 6);
         }
       }
       if (!block.doNotCount) {
@@ -480,15 +536,7 @@ function draw() {
 
   if (timeSinceStart > totalLength + 8000) {
     //console.log("RESET")
-    if (recording) {
-      stopCapturing();
-      recording = false;
-    }
     reset();
-  }
-
-  if (recording) {
-    console.log(frameRate());
   }
 
   //noLoop();
@@ -496,10 +544,10 @@ function draw() {
   //console.log(index + " " + pixelPerSecond + " " + timeSinceStart);
 }
 
-function drawCircle(ju, timeSinceStart, currentSubdivide, currentBlock) {
+function drawCircle(cnv, ju, timeSinceStart, currentSubdivide, currentBlock) {
   let circleY = height / 2 - ju - circleRadius / 2.0;
   let circleX = width / 3;
-  fill(255, 0, 0);
+  cnv.fill(255, 0, 0);
   // console.log(totalLength);
   if (
     play &&
@@ -525,20 +573,20 @@ function drawCircle(ju, timeSinceStart, currentSubdivide, currentBlock) {
       bounce = height / 5;
     }
   }
-  circle(circleX, circleY, circleRadius);
+  cnv.circle(circleX, circleY, circleRadius);
 }
 
-function drawComments(index, pixelPerSecond, timeSinceStart) {
-  textSize(32);
+function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
+  cnv.textSize(32);
   for (let c of Comment.list) {
     let x = calculateX(c, pixelPerSecond, timeSinceStart);
-    fill(min(map(x, 100, width / 3, 0, 255), 255));
-    textAlign(LEFT, TOP);
-    text(c.commentMessage, x, 100);
+    cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
+    cnv.textAlign(LEFT, TOP);
+    cnv.text(c.commentMessage, x, 100);
     // Takt Linie
     // fill(map(bounce, 0, height / 8, 0, 25));
     let nowLineWidth = rect_Width / 2;
-    rect(x - rect_Width / 2, 100, 1, 180);
+    cnv.rect(x - rect_Width / 2, 100, 1, 180);
   }
 }
 
@@ -590,6 +638,9 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
 }
 
 function reset() {
+  for (let i = 0; i < Section.list.length; i++) {
+    totalLength += Section.list[i].lengthTotal();
+  }
   lastPause = millis();
   timeSinceStart = 0;
   startTime = lastPause;
@@ -633,7 +684,7 @@ function windowResized() {
   let canvasWidth = (canvasHeight / 9.0) * 16.0;
   resizeCanvas(canvasWidth, canvasHeight);
   pixelsPerSecond = width / 10;
-  circleRadius = width / 25;
+  // circleRadius = width / 25;
 }
 
 function buttonPlayPause() {
@@ -647,11 +698,13 @@ function buttonPlayPause() {
   }
 }
 
-const msToTime = (miliseconds) => {
+const msToTime = (milliseconds) => {
   const pad = (n, z = 2) => ("00" + n).slice(-z);
-  const mm = pad(((miliseconds % 3.6e6) / 6e4) | 0);
-  const ss = pad(((miliseconds % 6e4) / 1000) | 0);
-  const MM = pad(miliseconds % 1000, 2);
+  const mm = pad(((milliseconds % 3.6e6) / 6e4) | 0);
+  const ss = pad(((milliseconds % 6e4) / 1000) | 0);
+  const MS = pad(Math.floor((milliseconds % 1000) / 10)); // get 2-digit ms
 
-  return `${mm}:${ss}.${MM}`;
+  return `${mm}:${ss}.${MS}`;
 };
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

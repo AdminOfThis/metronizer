@@ -6,7 +6,7 @@
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/p5.save-frames@latest/dist/p5.save-frames.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -143,7 +143,11 @@
             <!-- <input type="color" value="#ff0000" title="Color"/> -->
           </div>
           <button id="btnExport">Export</button>
-          <h3 id="rendering" class="warning">Rendering, please wait</h3>
+          <div id="activeRender">
+            <h3 id="rendering" class="warning">Rendering, please wait</h3>
+            <progress id="progressRender" value=".5">B</progress>
+            <h3 id ="renderFrame">xxx / XXX</h3>
+          </div>
         </settingsDiv>
       </settingsArea>
       <navSection></navSection>
