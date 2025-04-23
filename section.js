@@ -72,7 +72,7 @@ class Section {
       }.bind(this)
     );
     if (this.index > 0) {
-      select("#precountParent" + this.index).hide();
+      select("#precountParent" + this.index).style("visibility", "hidden");
     }
   }
 

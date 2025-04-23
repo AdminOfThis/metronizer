@@ -20,7 +20,9 @@
 
 html,
 body {
-  height: 100%;
+  height: 100vh;
+  overflow: hidden; /* Prevent whole page scroll */
+  /* overflow-y: hidden; */
 }
 
 * {
@@ -88,17 +90,22 @@ canvasSection {
 
 controlSection {
   grid-area: control;
-  justify-items: center;
+  justify-content: center;
+  display: grid;
 }
 
 sectionSection {
   grid-area: sections;
   justify-content: center;
+  flex: 1;
+  overflow-y: auto;
 }
 
 commentSection {
   grid-area: comments;
   justify-content: center;
+  flex: 1;
+  overflow-y: auto;
 }
 
 sectionSection > *,
@@ -143,10 +150,15 @@ input[type="range"] {
   accent-color: var(--color-primary);
 }
 
+input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}
+
 .control {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr; /* <- makes all buttons equal width */
+  justify-content: center; /* center the whole group */
   margin-bottom: 10px;
 }
 
@@ -155,29 +167,23 @@ input[type="range"] {
   border: solid;
 }
 
-.sections {
-  /* justify-content: center; */
-  /* width: auto; */
-  white-space: nowrap;
-  button:hover {
-    background-color: var(--color-hover);
-  }
-  button:active {
-    background-color: var(--color-primary);
-  }
-}
-
+.sections,
 .comments {
-  justify-self: center;
+  justify-self: left;
   width: auto;
   white-space: nowrap;
 }
 
+.sections *,
+.comments * {
+  margin-right: 10px;
+}
+
 button {
-  background-color: var(--color-surface);
+  background-color: var(--color-bg);
   border: solid;
   border-width: 2px;
-  border-color: var(--color-border);
+  border-color: var(--color-primary);
   color: var(--color-text);
   padding: 5px;
   text-align: center;
@@ -189,7 +195,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-hover);
+  background-color: var(--color-primary);
 }
 
 button:active {
@@ -197,7 +203,8 @@ button:active {
 }
 
 button:disabled {
-  background-color: var(--color-surface);
+  /* background-color: var(--color-surface); */
+  border-color: var(--color-border);
   color: var(--color-text-muted);
 }
 

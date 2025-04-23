@@ -17,7 +17,7 @@ let font;
 let inputSections = [];
 
 // Button elements for user interactions: adding sections/comments, parsing input, and controlling playback
-let btnAddSection, btnAddComment, btnParse, btnPlayPause, btnExport;
+let btnAddSection, btnAddComment, btnReset, btnPlayPause, btnExport;
 
 let sliderDensity, sliderPronounciation, sliderBallSize;
 
@@ -34,7 +34,7 @@ let exportFrameRate = 60;
 
 let exportCanvas;
 
-let recording = false;
+let exporting = false;
 
 // ##################### CODE ###################
 
@@ -94,8 +94,8 @@ function setup() {
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mouseReleased(buttonPlayPause.bind(this));
 
-  btnParse = select("#btnParse");
-  btnParse.mouseReleased(buttonReset);
+  btnReset = select("#btnParse");
+  btnReset.mouseReleased(buttonReset);
 
   btnSaveFile = select("#btnSaveFile");
   btnSaveFile.mouseReleased(buttonSave.bind(this));
@@ -165,32 +165,45 @@ function setup() {
   }
 
   async function exportToZip() {
-    recording = true;
-    renderingWarning.show();
-    btnPlayPause.attribute("disabled", "");
-    btnExport.attribute("disabled", "");
+    if (exporting) {
+      // is already exporting, so now cancel
+      exporting = false;
+    } else {
+      // start exporting
+      exporting = true;
+      renderingWarning.show();
+      btnPlayPause.attribute("disabled", "");
+      btnReset.attribute("disabled", "");
+      btnSaveFile.attribute("disabled", "");
+      btnExport.html("Cancel");
 
-    reset();
-    play = true;
-    let neededNumberOfFrames = ceil(
-      ((totalLength + 16000) / 2.0 / 1000.0) * 60.0
-    );
-    exportCanvas = createGraphics(width, height);
-    while (imageCount <= neededNumberOfFrames) {
-      exportProgress.value(imageCount / neededNumberOfFrames);
-      renderFrame.html(imageCount + "/" + neededNumberOfFrames +" Frames");
-      // Sleep to give GUI time to refresh
-      await sleep(0.1);
-      drawOnCanvas(exportCanvas, startTime + (1000.0 / 60.0) * imageCount);
-      saveFrameToZip();
+      reset();
+      play = true;
+      let neededNumberOfFrames = ceil(
+        ((totalLength + 16000) / 2.0 / 1000.0) * 60.0
+      );
+      exportCanvas = createGraphics(width, height);
+      while (imageCount <= neededNumberOfFrames && exporting) {
+        exportProgress.value(imageCount / neededNumberOfFrames);
+        renderFrame.html(imageCount + "/" + neededNumberOfFrames + " Frames");
+        // Sleep to give GUI time to refresh
+        await sleep(0.1);
+        drawOnCanvas(exportCanvas, startTime + (1000.0 / 60.0) * imageCount);
+        saveFrameToZip();
+      }
+      if (exporting) {
+        downloadZip();
+      }
+      exporting = false;
+      renderingWarning.hide();
+      btnPlayPause.removeAttribute("disabled");
+      btnReset.removeAttribute("disabled");
+      btnSaveFile.removeAttribute("disabled");
+      btnExport.html("Export");
+
+      resetExport();
+      reset();
     }
-    recording = false;
-    renderingWarning.hide();
-    btnPlayPause.removeAttribute("disabled");
-    btnExport.removeAttribute("disabled");
-
-    reset();
-    downloadZip();
   }
 
   function saveFrameToZip() {
@@ -207,11 +220,13 @@ function setup() {
       a.href = URL.createObjectURL(content);
       a.download = "canvas_frames.zip";
       a.click();
-
-      // 🔥 Clear the zip after download
-      zip = new JSZip();
-      imageCount = 0;
     });
+  }
+
+  function resetExport() {
+    // 🔥 Clear the zip after download
+    zip = new JSZip();
+    imageCount = 0;
   }
 
   windowResized();
@@ -323,7 +338,7 @@ let totalPause = 0;
 let pauseSinceStart = 0;
 
 function draw() {
-  if (!recording) {
+  if (!exporting) {
     try {
       parse();
     } catch {}
