@@ -178,7 +178,7 @@ function setup() {
     exportCanvas = createGraphics(width, height);
     while (imageCount <= neededNumberOfFrames) {
       exportProgress.value(imageCount / neededNumberOfFrames);
-      renderFrame.html(imageCount + "/" + neededNumberOfFrames);
+      renderFrame.html(imageCount + "/" + neededNumberOfFrames +" Frames");
       // Sleep to give GUI time to refresh
       await sleep(0.1);
       drawOnCanvas(exportCanvas, startTime + (1000.0 / 60.0) * imageCount);

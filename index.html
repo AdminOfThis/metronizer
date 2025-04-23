@@ -142,11 +142,16 @@
             </datalist>
             <!-- <input type="color" value="#ff0000" title="Color"/> -->
           </div>
+          <hr />
+          <p>
+            While the preview may stutter on large files,<br />the Export will
+            be created in exactly <strong>60 FPS</strong>.
+          </p>
           <button id="btnExport">Export</button>
           <div id="activeRender">
             <h3 id="rendering" class="warning">Rendering, please wait</h3>
             <progress id="progressRender" value=".5">B</progress>
-            <h3 id ="renderFrame">xxx / XXX</h3>
+            <h3 id="renderFrame">xxx / XXX</h3>
           </div>
         </settingsDiv>
       </settingsArea>
@@ -161,6 +166,7 @@
             target="_blank"
             >GitHub</a
           >
+          |
           <a
             rel="noopener"
             href="https://github.com/AdminOfThis/metronizer/issues"
