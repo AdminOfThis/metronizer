@@ -33,6 +33,7 @@ class Section {
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + ""); // Use the instance variable
     const newDiv = createDiv(str);
+    newDiv.class("row");
     newDiv.innerHTML = str;
 
     this.removeButton = select("#removeSectionButton" + this.index); // Use the instance variable

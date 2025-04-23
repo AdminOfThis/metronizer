@@ -24,6 +24,7 @@ class Comment {
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + "");
     const newDiv = createDiv(str);
+    newDiv.class("row");
     newDiv.innerHTML = str;
     this.removeButton = select("#removeCommentButton" + this.index);
     this.removeButton.mouseReleased(() => {

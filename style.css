@@ -96,16 +96,22 @@ controlSection {
 
 sectionSection {
   grid-area: sections;
-  justify-content: center;
-  flex: 1;
-  overflow-y: auto;
 }
-
 commentSection {
   grid-area: comments;
+}
+
+sectionSection,
+commentSection {
   justify-content: center;
-  flex: 1;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* You can tweak this */
+  width: 100%;
+  gap: 8px;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden; /* Contain scroll only inside comments */
 }
 
 sectionSection > *,
@@ -160,6 +166,7 @@ input[type="checkbox"] {
   grid-auto-columns: 1fr; /* <- makes all buttons equal width */
   justify-content: center; /* center the whole group */
   margin-bottom: 10px;
+  gap: 8px;
 }
 
 .warning {
@@ -172,11 +179,32 @@ input[type="checkbox"] {
   justify-self: left;
   width: auto;
   white-space: nowrap;
+  flex: 1;
+  overflow-y: auto;
+  border: 2px solid;
+  border-color: var(--color-primary);
+  padding: 8px;
+  gap: 8px;
 }
 
-.sections *,
-.comments * {
-  margin-right: 10px;
+.comments > div,
+.sections > div {
+  margin-bottom: 8px; /* or whatever spacing you want */
+}
+
+.comments > div:last-child,
+.sections > div:last-child {
+  margin-bottom: 0; /* optional: avoid extra space at the bottom */
+}
+
+.remove-button {
+  margin-left: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 button {
@@ -185,12 +213,12 @@ button {
   border-width: 2px;
   border-color: var(--color-primary);
   color: var(--color-text);
-  padding: 5px;
+  padding: 4px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px;
+  /* margin: 4px; */
   min-width: 50px;
 }
 
@@ -235,7 +263,8 @@ progress::-moz-progress-bar {
   background-color: var(--color-primary);
 }
 
-h3 {
+h3,
+h4 {
   text-align: center;
   color: var(--color-primary);
   margin: 5px;
