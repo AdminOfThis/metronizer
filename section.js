@@ -28,17 +28,19 @@ class Section {
     }
     this.index = select("#sections").elt.childElementCount; // Set the instance variable
 
+    // this.uuid = crypto.randomUUID();
+
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + ""); // Use the instance variable
     const newDiv = createDiv(str);
     newDiv.innerHTML = str;
 
-    let removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
-    removeButton.mouseReleased(() => {
+    this.removeButton = select("#removeSectionButton" + this.index); // Use the instance variable
+    this.removeButton.mouseReleased(() => {
       // newDiv.remove();
       this.remove();
     });
-    newDiv.child(removeButton);
+    newDiv.child(this.removeButton);
     newDiv.parent(select("#sections"));
 
     this.inputBars = select("#bars" + this.index);
@@ -71,7 +73,9 @@ class Section {
         this.doNotCount = select("#isPre" + this.index).checked();
       }.bind(this)
     );
-    if (this.index > 0) {
+    if (this.index == 0) {
+      select("#precountParent" + this.index).style("visibility", "visible");
+    } else {
       select("#precountParent" + this.index).style("visibility", "hidden");
     }
   }
@@ -83,6 +87,26 @@ class Section {
 
     // removing myself from the list
     Section.list.splice(Section.list.indexOf(this), 1);
+
+    for (let s of Section.list) {
+      s.renumber();
+    }
+  }
+
+  renumber() {
+    let newIndex = Section.list.indexOf(this);
+    this.inputBars.id("bars" + newIndex);
+    this.inputBPM.id("bpm" + newIndex);
+    this.inputMeasure.id("measure" + newIndex);
+    this.inputIsPre.id("isPre" + newIndex);
+    select("#precountParent" + this.index).id("precountParent" + newIndex);
+    if (newIndex === 0) {
+      select("#precountParent" + newIndex).style("visibility", "visible");
+    } else {
+      select("#precountParent" + newIndex).style("visibility", "hidden");
+    }
+    this.removeButton.id("removeSectionButton" + newIndex);
+    this.index = newIndex;
   }
 
   createString() {

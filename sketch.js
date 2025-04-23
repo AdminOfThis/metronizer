@@ -108,7 +108,12 @@ function setup() {
 
   btnAddSection = select("#btnAddSection");
   btnAddSection.mouseReleased(function () {
-    new Section(1, 60, "4/4");
+    if (Section.list.length > 0) {
+      let copyFrom = Section.list[Section.list.length - 1];
+      new Section(copyFrom.count, copyFrom.bpm, copyFrom.measure);
+    } else {
+      new Section(1, 60, "4/4");
+    }
     reset();
   });
   btnAddComment = select("#btnAddComment");

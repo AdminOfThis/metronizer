@@ -25,11 +25,11 @@ class Comment {
     str = str.replaceAll("XXX", this.index + "");
     const newDiv = createDiv(str);
     newDiv.innerHTML = str;
-    let removeButton = select("#removeCommentButton" + this.index);
-    removeButton.mouseReleased(() => {
+    this.removeButton = select("#removeCommentButton" + this.index);
+    this.removeButton.mouseReleased(() => {
       this.remove();
     });
-    newDiv.child(removeButton);
+    newDiv.child(this.removeButton);
     newDiv.parent(select("#comments"));
 
     this.inputBar = select("#commentBar" + this.index);
@@ -61,6 +61,19 @@ class Comment {
       .remove();
 
     Comment.list.splice(Comment.list.indexOf(this), 1);
+
+    for (let c of Comment.list) {
+      c.renumber();
+    }
+  }
+
+  renumber() {
+    let newIndex = Comment.list.indexOf(this);
+    this.inputBar.id("commentBar" + newIndex);
+    this.inputSubBar.id("commentSubBar" + newIndex);
+    this.inputComment.id("commentMessage" + newIndex);
+    this.removeButton.id("removeCommentButton" + newIndex);
+    this.index = newIndex;
   }
 
   createString() {
