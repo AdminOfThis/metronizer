@@ -176,6 +176,7 @@ input[type="checkbox"] {
 
 .sections,
 .comments {
+  
   justify-self: left;
   width: auto;
   white-space: nowrap;
@@ -187,9 +188,11 @@ input[type="checkbox"] {
   gap: 8px;
 }
 
+
 .comments > div,
 .sections > div {
   margin-bottom: 8px; /* or whatever spacing you want */
+  background-color: var(--color-active);
 }
 
 .comments > div:last-child,
