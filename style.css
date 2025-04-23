@@ -27,7 +27,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg2);
 
-  border-radius: 1px;
+  border-radius: 2.5px;
   margin: 0;
 }
 
@@ -151,7 +151,7 @@ input[type="range"] {
 }
 
 .warning {
-  color: red;
+  color: var(--color-secondary);
   border: solid;
 }
 
@@ -178,7 +178,6 @@ button {
   border: solid;
   border-width: 2px;
   border-color: var(--color-border);
-  border-radius: 1px;
   color: var(--color-text);
   padding: 5px;
   text-align: center;
@@ -222,16 +221,24 @@ progress {
 }
 
 progress::-webkit-progress-value {
-  background-color: var(--color-primary)
+  background-color: var(--color-primary);
 }
 
 progress::-moz-progress-bar {
-  background-color: var(--color-primary)
+  background-color: var(--color-primary);
 }
-
 
 h3 {
   text-align: center;
   color: var(--color-primary);
   margin: 5px;
+}
+
+p {
+  font-size: x-small;
+  text-align: center;
+}
+
+hr {
+  color: var(--color-border);
 }
