@@ -43,7 +43,7 @@ let exporting = false;
 let example_code = "1 60 4/4 x\r\n5 120 4/4 4\r\n4 120 3/4\r\nc 1 1 TEST";
 
 // Playback state: true when running, false when paused
-let play = true;
+window.play = false;
 
 // Total duration (ms) of all parsed sections combined
 let totalLength;
@@ -99,12 +99,6 @@ function setup() {
 
   btnSaveFile = select("#btnSaveFile");
   btnSaveFile.mouseReleased(buttonSave.bind(this));
-
-  // btnSaveClip = select("#btnSaveClip");
-  // btnSaveClip.attribute("disabled", '');
-  // btnSaveClip.attribute("hidden", '');
-
-  // btnSaveClip.mouseReleased(function () {console.log("BAM, WORKS")});
 
   btnAddSection = select("#btnAddSection");
   btnAddSection.mouseReleased(function () {
@@ -179,11 +173,11 @@ function setup() {
       renderingWarning.show();
       btnPlayPause.attribute("disabled", "");
       btnReset.attribute("disabled", "");
-      btnSaveFile.attribute("disabled", "");
+      // btnSaveFile.attribute("disabled", "");
       btnExport.html("Cancel");
 
       reset();
-      play = true;
+      window.play = true;
       let neededNumberOfFrames = ceil(
         ((totalLength + 16000) / 2.0 / 1000.0) * 60.0
       );
@@ -203,7 +197,7 @@ function setup() {
       renderingWarning.hide();
       btnPlayPause.removeAttribute("disabled");
       btnReset.removeAttribute("disabled");
-      btnSaveFile.removeAttribute("disabled");
+      // btnSaveFile.removeAttribute("disabled");
       btnExport.html("Export");
 
       resetExport();
@@ -670,11 +664,13 @@ function reset() {
   totalPause = 0;
   pauseSinceStart = 0;
   bounce = height / 4;
-  play = false;
-
-  try {
-    btnPlayPause.html("&#9654;");
-  } catch {}
+  window.play = false;
+  // Dispatch a CustomEvent that carries the new state
+  document.dispatchEvent(
+    new CustomEvent("btnPlayPause", {
+      detail: { isPlaying: play },
+    })
+  );
 }
 
 // // If the mouse is pressed,
@@ -711,14 +707,17 @@ function windowResized() {
 }
 
 function buttonPlayPause() {
-  play = !play;
+  window.play = !window.play;
   if (play) {
-    btnPlayPause.html("&#8214;");
     totalPause += millis() - lastPause;
   } else {
-    btnPlayPause.html("&#9654;");
     lastPause = millis();
   }
+  document.dispatchEvent(
+    new CustomEvent("btnPlayPause", {
+      detail: { isPlaying: play },
+    })
+  );
 }
 
 const msToTime = (milliseconds) => {

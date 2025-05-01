@@ -18,24 +18,32 @@
   font-family: "Segoe UI";
 }
 
+/* ===== Full-Page Layout ===== */
 html,
 body {
-  height: 100vh;
-  overflow: hidden; /* Prevent whole page scroll */
-  /* overflow-y: hidden; */
+  height: 100vh; /* Ensure viewport covers full browser height */
+  overflow: hidden; /* Disable scrolling to keep layout fixed */
 }
 
+/* ===== Global Reset & Base Styles ===== */
 * {
+  /* Apply default text color from theme */
   color: var(--color-text);
+  /* Apply default background color from theme */
   background-color: var(--color-bg2);
 
+  /* Slightly round all elements for consistency */
   border-radius: 2.5px;
+  /* Remove default browser margins */
   margin: 0;
 }
 
+/* ===== Main Layout Grid ===== */
 main {
-  display: grid;
-  height: 100%;
+  display: grid; /* Use CSS Grid for layout */
+  height: 100%; /* Fill available vertical space */
+
+  /* Define named grid areas for page structure */
   grid-template-areas:
     "top top top top"
     "nav canvas canvas settings"
@@ -43,82 +51,92 @@ main {
     "nav sections comments settings"
     "footer footer footer footer";
 
+  /* Column widths: hidden nav, two equal main areas, settings sidebar */
   grid-template-columns: 0fr 2fr 2fr 1fr;
+  /* Row heights: hidden header, auto rows, flexible middle, fixed footer */
   grid-template-rows: 0px auto auto 1fr 30px;
-  gap: 5px 5px;
+  gap: 5px 5px; /* Space between grid items */
 
-  background-color: var(--color-bg);
-  /* background-color: red; */
+  background-color: var(--color-bg); /* Background for main container */
+  /* background-color: red; */ /* Debugging: visualize grid */
 }
 
+/* Center content and add spacing for all direct children of main */
 main > * {
-  justify-items: center;
-  padding: 5px;
+  justify-items: center; /* Center items within each grid cell */
+  padding: 5px; /* Inner spacing around elements */
 }
 
-/* GRID Items */
+/* ===== Grid Items & Layout Areas ===== */
 headerSection {
-  grid-area: top;
+  grid-area: top; /* Assign headerSection to the “top” area spanning all columns */
 }
 navSection {
-  grid-area: nav;
+  grid-area: nav; /* Assign navSection to the “nav” sidebar area */
 }
 
+/* Hide header and nav placeholders (collapsed) */
 headerSection,
 navSection {
-  visibility: hidden;
-  min-width: 0;
-  width: 0;
-  max-width: 0;
-  padding: 0;
+  visibility: hidden; /* Keep elements in DOM but invisible */
+  min-width: 0; /* Prevent occupying horizontal space */
+  width: 0; /* Collapse width completely */
+  max-width: 0; /* Ensure no expansion beyond zero */
+  padding: 0; /* Remove any internal spacing */
 }
 
 settingsArea {
-  grid-area: settings;
-  min-width: 100px;
+  grid-area: settings; /* Place settingsArea in the settings sidebar */
+  min-width: 100px; /* Ensure settings area stays at least this wide */
 }
 
 settingsDiv {
   display: grid;
-  gap: 20px;
+  gap: 20px; /* Space between individual setting controls */
+}
+
+settingsDiv > button {
+  width: 100px; /* Set the width of the buttons to 100px */
+  justify-self: center; /* Center the button horizontally */
 }
 
 canvasSection {
-  grid-area: canvas;
-  height: auto;
+  grid-area: canvas; /* Place canvasSection in the main canvas area */
+  height: auto; /* Allow height to adjust to content or canvas size */
 }
 
 controlSection {
-  grid-area: control;
-  justify-content: center;
-  display: grid;
+  grid-area: control; /* Place controlSection in the control row */
+  justify-content: center; /* Center controls horizontally */
+  display: grid; /* Use grid for arranging control buttons */
 }
 
 sectionSection {
-  grid-area: sections;
+  grid-area: sections; /* Place sectionSection in the sections column */
 }
 commentSection {
-  grid-area: comments;
+  grid-area: comments; /* Place commentSection in the comments column */
 }
 
+/* Shared styling for sections and comments panels */
 sectionSection,
 commentSection {
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh; /* You can tweak this */
-  width: 100%;
-  gap: 8px;
-  padding: 1rem;
-  box-sizing: border-box;
-  overflow: hidden; /* Contain scroll only inside comments */
+  display: flex; /* Flex layout for vertical stacking */
+  flex-direction: column; /* Stack children top-to-bottom */
+  justify-content: center; /* Center content vertically when possible */
+  max-height: 90vh; /* Limit height to 90% of viewport */
+  width: 100%; /* Full width of grid cell */
+  gap: 8px; /* Space between items */
+  padding: 1rem; /* Internal padding */
+  box-sizing: border-box; /* Include padding in width/height */
+  overflow: hidden; /* Hide overflow; scroll only within panels */
 }
 
+/* Centering content inside individual items */
 sectionSection > *,
 commentSection > * {
-  /* grid-area: sections; */
-  justify-items: center;
-  justify-content: center;
+  justify-items: center; /* Center grid items if any nested grids exist */
+  justify-content: center; /* Center flex items horizontally */
 }
 
 footer {
@@ -163,9 +181,8 @@ input[type="checkbox"] {
 .control {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr; /* <- makes all buttons equal width */
-  justify-content: center; /* center the whole group */
-  margin-bottom: 10px;
+  grid-auto-columns: 1fr;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -174,9 +191,18 @@ input[type="checkbox"] {
   border: solid;
 }
 
+/* 
+  This rule targets elements with the class "no-background"
+  and all of their direct children.
+  It ensures that no background color is applied.
+*/
+.no-background,
+.no-background > * {
+  background-color: transparent; /* Removes any background color */
+}
+
 .sections,
 .comments {
-  
   justify-self: left;
   width: auto;
   white-space: nowrap;
@@ -187,7 +213,6 @@ input[type="checkbox"] {
   padding: 8px;
   gap: 8px;
 }
-
 
 .comments > div,
 .sections > div {
@@ -216,7 +241,7 @@ button {
   border-width: 2px;
   border-color: var(--color-primary);
   color: var(--color-text);
-  padding: 4px;
+  padding: 2px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -226,11 +251,11 @@ button {
 }
 
 button:hover {
-  background-color: var(--color-primary);
+  background-color: var(--color-active);
 }
 
 button:active {
-  background-color: var(--color-primary);
+  background-color: var(--color-surface);
 }
 
 button:disabled {
@@ -280,4 +305,18 @@ p {
 
 hr {
   color: var(--color-border);
+}
+
+.lottie-icon {
+  box-sizing: border-box; /*ensure width/height include borders if you add them */
+  height: 30px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+.lottie-icon svg {
+  padding: 10px;
+  height: 30px;
+  width: auto; /*fill the full width of the now-unpadded parent */
+  display: block; /*remove inline whitespace */
 }

@@ -7,6 +7,8 @@
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,31 +22,21 @@
       </canvasSection>
       <controlSection>
         <div id="control" class="control">
-          <button id="btnPlayPause">&#9654;</button>
-          <button id="btnParse">&#10227;</button>
-          <button id="btnSaveFile">Save File</button>
-        </div>
-        <div style="text-align: center">
-          <h4>To load files, please drag and drop them into the window!</h4>
+          <button id="btnPlayPause" type="button" aria-label="Play/Pause">
+            <div id="iconPlayPause" class="no-background lottie-icon"></div>
+          </button>
+          <button id="btnParse" type="button" aria-label="Reset">
+            <div id="iconReset" class="no-background lottie-icon"></div>
+          </button>
         </div>
       </controlSection>
       <sectionSection>
         <h3 class="h3">Sections</h3>
-        <!-- <div style="display: flex">
-          <div style="width: 58px">Bar</div>
-          <div style="width: 58px">Count</div>
-          <div style="width: 50px">Measure</div>
-        </div> -->
         <div id="sections" class="sections"></div>
         <button id="btnAddSection" class="centered-button">Add Section</button>
       </sectionSection>
       <commentSection>
         <h3 class="h3">Comments</h3>
-        <!-- <div style="display: flex">
-          <div style="width: 58px">Bar</div>
-          <div style="width: 58px">Count</div>
-          <div style="width: 50px">Comment</div>
-        </div> -->
         <div id="comments" class="comments"></div>
         <button id="btnAddComment" class="centered-button">Add Comment</button>
       </commentSection>
@@ -142,6 +134,9 @@
             <!-- <input type="color" value="#ff0000" title="Color"/> -->
           </div>
           <hr />
+          <p>To load files, please drag and drop them into the window.</p>
+          <button id="btnSaveFile">Save File</button>
+          <hr />
           <p>
             While the preview may stutter on large files,<br />the Export will
             be created in exactly <strong>60 FPS</strong>.
@@ -157,7 +152,8 @@
       <navSection></navSection>
       <!-- Footer -->
       <footer class="footer">
-        <a href="./disclaimer.html" style="float: left">Disclaimer</a>
+        <a href="https://lordicon.com/">Icons by Lordicon.com</a>
+        <!-- <a href="./disclaimer.html" style="float: left">Disclaimer</a> -->
         <div style="float: right">
           <a
             rel="noopener"
@@ -174,6 +170,8 @@
           >
         </div>
       </footer>
+
+      <script src="animatedButton.js"></script>
       <script src="sketch.js"></script>
     </main>
   </body>
