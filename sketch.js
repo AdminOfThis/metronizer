@@ -19,7 +19,7 @@ let inputSections = [];
 // Button elements for user interactions: adding sections/comments, parsing input, and controlling playback
 let btnAddSection, btnAddComment, btnReset, btnPlayPause, btnExport;
 
-let sliderDensity, sliderPronounciation, sliderBallSize;
+let sliderDensity, sliderPronounciation, sliderBallSize, sliderTime;
 
 let tglMetronome;
 
@@ -177,6 +177,14 @@ function setup() {
     //add listener
     sliderBallSize.input(function () {
       circleRadius = sliderBallSize.value();
+    });
+  }
+
+  sliderTime = select("#timeSlider");
+  if (sliderTime != null) {
+    sliderTime.input(function () {
+      startTime = lastPause + (-sliderTime.value() / 10000.0) * totalLength;
+      console.log(startTime);
     });
   }
 
@@ -398,6 +406,9 @@ function drawOnCanvas(cnv, time) {
     pauseSinceStart = time - lastPause + totalPause;
   }
   let timeSinceStart = time - pauseSinceStart - startTime;
+  if (sliderTime != null && play) {
+    sliderTime.value((timeSinceStart / totalLength) * 10000.0);
+  }
   //console.log(timeSinceStart/1000);
 
   cnv.background(0);
@@ -707,12 +718,18 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
 }
 
 function reset() {
+  if (sliderTime != null) {
+    sliderTime.value(0);
+  }
+  totalLength = 0;
   for (let i = 0; i < Section.list.length; i++) {
     totalLength += Section.list[i].lengthTotal();
   }
+
   lastPause = millis();
   timeSinceStart = 0;
   startTime = lastPause;
+
   totalPause = 0;
   pauseSinceStart = 0;
   bounce = height / 4;
