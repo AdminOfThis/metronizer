@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -132,7 +132,17 @@
               <option value="50"></option>
             </datalist>
             <!-- <input type="color" value="#ff0000" title="Color"/> -->
+            
           </div>
+          <div class="centered">
+              <label for="toggleMetronome" class="slider-label">
+              Metronome 
+              <label class="switch">
+                <input type="checkbox" id="toggleMetronome" checked>
+                <span class="slider round"></span>
+              </label>
+              </label>
+            </div>
           <hr />
           <p>To load files, please drag and drop them into the window.</p>
           <button id="btnSaveFile">Save File</button>
