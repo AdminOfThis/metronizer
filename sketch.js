@@ -66,7 +66,7 @@ const rect_Width = 5;
 // Timestamp when playback started or resumed (ms)
 let startTime;
 
-// Add after the global variables, before setup():
+let previousSubDivide = 1;
 
 // Sound variables
 let clickSound;
@@ -259,7 +259,6 @@ function setup() {
 
   windowResized();
   reset();
-  playSound("start");
 }
 
 function highlight() {
@@ -440,8 +439,6 @@ function drawOnCanvas(cnv, time) {
           // add the finished takt block counts
 
           currentTakt += parseInt(Section.list[i].count);
-          playSound("click");
-          console.log("CLICK");
         }
       } else {
         let addedTime = 0;
@@ -449,6 +446,7 @@ function drawOnCanvas(cnv, time) {
           //console.log(addedTime);
           addedTime += lengthOfMeasureMin;
           currentSubdivide++;
+
           if (currentSubdivide > currentBlock.measure_min) {
             currentSubdivide = 1;
           }
@@ -473,6 +471,19 @@ function drawOnCanvas(cnv, time) {
           currentBlock.measure_min
       ) * bounce
     );
+
+    // Play click sound
+    if (
+      (play && currentSubdivide > previousSubDivide) ||
+      (currentSubdivide == 1 && previousSubDivide > currentSubdivide)
+    ) {
+      if (currentSubdivide == 1) {
+        playSound("start");
+      } else {
+        playSound("click");
+      }
+      previousSubDivide = currentSubdivide;
+    }
 
     // DISPLAY BARS, SUBDIVIDE, ETC
     cnv.textSize(48);
@@ -697,6 +708,7 @@ function reset() {
   pauseSinceStart = 0;
   bounce = height / 4;
   window.play = false;
+  previousSubDivide = 1;
   // Dispatch a CustomEvent that carries the new state
   document.dispatchEvent(
     new CustomEvent("btnPlayPause", {
