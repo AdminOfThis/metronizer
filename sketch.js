@@ -21,6 +21,8 @@ let btnAddSection, btnAddComment, btnReset, btnPlayPause, btnExport;
 
 let sliderDensity, sliderPronounciation, sliderBallSize;
 
+let tglMetronome;
+
 let exportProgress, renderFrame;
 
 let renderingWarning;
@@ -67,6 +69,7 @@ const rect_Width = 5;
 let startTime;
 
 let previousSubDivide = 1;
+let bool_playSound = true;
 
 // Sound variables
 let clickSound;
@@ -74,6 +77,7 @@ let startSound;
 
 // Add the playSound function:
 function playSound(type) {
+  if (!bool_playSound) return;
   switch (type) {
     case "click":
       if (clickSound.isLoaded()) {
@@ -175,6 +179,11 @@ function setup() {
       circleRadius = sliderBallSize.value();
     });
   }
+
+  tglMetronome = select("#toggleMetronome");
+  tglMetronome.input(function () {
+    bool_playSound = tglMetronome.checked();
+  });
 
   renderingWarning = select("#activeRender");
   renderingWarning.hide();
