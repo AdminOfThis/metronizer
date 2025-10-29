@@ -66,8 +66,37 @@ const rect_Width = 5;
 // Timestamp when playback started or resumed (ms)
 let startTime;
 
+// Add after the global variables, before setup():
+
+// Sound variables
+let clickSound;
+let startSound;
+
+// Add the playSound function:
+function playSound(type) {
+  switch (type) {
+    case "click":
+      if (clickSound.isLoaded()) {
+        clickSound.play();
+      }
+      break;
+    case "start":
+      if (startSound.isLoaded()) {
+        startSound.play();
+      }
+      break;
+    default:
+      console.warn("Unknown sound type:", type);
+  }
+}
+
 function preload() {
   font = loadFont("assets/Roboto-Regular.ttf");
+
+  // Load sound files
+  soundFormats("mp3", "wav");
+  clickSound = loadSound("assets/sounds/perc_metronomequartz_hi.wav");
+  startSound = loadSound("assets/sounds/perc_metronomequartz_lo.wav");
 }
 
 function setup() {
@@ -230,6 +259,7 @@ function setup() {
 
   windowResized();
   reset();
+  playSound("start");
 }
 
 function highlight() {
@@ -410,6 +440,8 @@ function drawOnCanvas(cnv, time) {
           // add the finished takt block counts
 
           currentTakt += parseInt(Section.list[i].count);
+          playSound("click");
+          console.log("CLICK");
         }
       } else {
         let addedTime = 0;
