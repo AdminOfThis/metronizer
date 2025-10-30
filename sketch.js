@@ -228,7 +228,6 @@ function draw() {
     try {
       parse();
     } catch {}
-
     drawOnCanvas(highResCanvas, millis());
     image(
       highResCanvas,
