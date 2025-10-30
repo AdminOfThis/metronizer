@@ -263,7 +263,7 @@ button:active {
 }
 
 button:disabled {
-  /* background-color: var(--color-surface); */
+  background-color: var(--color-surface);
   border-color: var(--color-border);
   color: var(--color-text-muted);
 }
