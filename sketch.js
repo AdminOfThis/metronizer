@@ -54,16 +54,16 @@ let totalLength;
 let bounce;
 
 // Visual properties for the bouncing circle
-let circleRadius = 35;
+let circleRadius = 100;
 
 // Movement speed: how many pixels the playhead travels per second
-let pixelPerSecond = 100;
+let pixelPerSecond = 150;
 
 // How much the ball bounces higher on the measure start, measured in percentage from 1-100
 let barPronounciation = 0;
 
 // Width of each visual bar on the timeline
-const rect_Width = 5;
+const rect_Width = 10;
 
 // Timestamp when playback started or resumed (ms)
 let startTime;
@@ -79,6 +79,11 @@ let canvasHeight;
 let canvasWidth;
 
 let previewCanvas, highResCanvas;
+
+let width = 1920;
+let height = 1080;
+
+let bigTextSize = 96;
 
 // Add the playSound function:
 function playSound(type) {
@@ -223,14 +228,14 @@ function draw() {
     try {
       parse();
     } catch {}
-    
+
     drawOnCanvas(highResCanvas, millis());
     image(
       highResCanvas,
       0,
       0,
-      width, // scaled-down width
-      height // scaled-down height
+      previewCanvas.width, // scaled-down width
+      previewCanvas.height // scaled-down height
     );
   }
 }
@@ -439,7 +444,8 @@ let totalPause = 0;
 let pauseSinceStart = 0;
 
 function drawOnCanvas(cnv, time) {
-  cnv.textSize(32);
+  cnv.textFont(font);
+  cnv.textSize(bigTextSize);
   if (startTime === lastPause) {
     // startTime = millis();
     totalLength = 0;
@@ -488,9 +494,10 @@ function drawOnCanvas(cnv, time) {
     cnv.fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
     cnv.text(currentBlock.bpm + " BPM", 10, 10);
     cnv.fill(map(bounce, 0, height / 8, 0, 255));
-    cnv.text(currentBlock.measure, 10, 50);
+    cnv.text(currentBlock.measure, 10, bigTextSize + 10);
+    cnv.textAlign(RIGHT, TOP);
+    cnv.text(msToTime(timeSinceStart), width - 10, 10);
     cnv.textAlign(LEFT, TOP);
-    cnv.text(msToTime(timeSinceStart), width - 135, 10);
 
     // Calculate current bar, subdivide, etc
     // Abandon all hope ye who enter beyond this point
@@ -553,7 +560,7 @@ function drawOnCanvas(cnv, time) {
     }
 
     // DISPLAY BARS, SUBDIVIDE, ETC
-    cnv.textSize(48);
+    cnv.textSize(bigTextSize * 1.5);
     cnv.textAlign(CENTER, TOP);
     if (currentSubdivide > 0) {
       cnv.fill(255);
@@ -591,12 +598,12 @@ function drawOnCanvas(cnv, time) {
     cnv.textAlign(LEFT, BOTTOM);
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
       cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255));
-      cnv.textSize(32);
+      cnv.textSize(bigTextSize);
       cnv.text(block.bpm, blockX, (height / 8) * 7.5);
     }
     if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
       cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
-      cnv.textSize(32);
+      cnv.textSize(bigTextSize);
       cnv.text(block.measure, blockX, height - 10);
     }
     for (let j = 0; j < block.count; j++) {
@@ -605,38 +612,51 @@ function drawOnCanvas(cnv, time) {
         (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
       let x = width / 3 + taktBegin;
+      let y = (height / 4) * 3 + 25 + bigTextSize;
       cnv.fill(255);
       let basecolor;
       if (!block.doNotCount) {
-        cnv.textAlign(LEFT, TOP);
+        cnv.textAlign(LEFT, BOTTOM);
 
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         //TAKTZAHL
-        cnv.textSize(32);
-        let bbox = font.textBounds(
-          taktCount + 1 + "",
-          x,
-          height / 1.35 + 10,
-          32
-        );
-        //fill(127);
-        let textMargin = 5;
-        let boxWidth = 2;
+        cnv.textSize(bigTextSize);
+
+        let txt = (taktCount + 1).toString();
+
+        let bbox = font.textBounds(txt, x, y, bigTextSize);
+        cnv.fill(255, 0, 0);
+
+        // First get text dimensions
+        let textWidth = cnv.textWidth(txt);
+        let textHeight = bigTextSize; // Use font size as height
+        let padding = 5; // Padding around text
+        let boxWidth = 5;
+
+        // Calculate positions
+        let rectX = x - padding;
+        let rectY = y - textHeight - padding; // Move up by text height plus padding
+        let rectWidth = textWidth + padding * 2;
+        let rectHeight = textHeight + padding * 2;
+
+        // Draw background rectangle
+        cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         cnv.rect(
-          bbox.x - textMargin - boxWidth,
-          bbox.y - textMargin - boxWidth,
-          bbox.w + 2 * (textMargin + boxWidth),
-          bbox.h + 2 * (textMargin + boxWidth)
+          rectX - boxWidth,
+          rectY + textDescent() - boxWidth,
+          rectWidth + boxWidth * 2,
+          rectHeight - 2 * textAscent() - textDescent() + boxWidth * 2
         );
         cnv.fill(0);
         cnv.rect(
-          bbox.x - textMargin,
-          bbox.y - textMargin,
-          bbox.w + 2 * textMargin,
-          bbox.h + 2 * textMargin
+          rectX ,
+          rectY + textDescent() ,
+          rectWidth ,
+          rectHeight - 2 * textAscent() - textDescent() 
         );
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
-        cnv.text(taktCount + 1, x, height / 1.35 + 10);
+        cnv.textSize(bigTextSize);
+        cnv.text(txt, x, y);
 
         basecolor = 255;
       } else {
@@ -690,8 +710,8 @@ function drawCircle(cnv, ju, timeSinceStart, currentSubdivide, currentBlock) {
   if (play && timeToEnd > 0) {
     // Piece is over, having fun
     bounce *= 0.99;
-    circleY = min(height - circleRadius / 2, circleY + timeToEnd / 20);
-    circleX += (timeToEnd * timeToEnd) / 100000;
+    circleY = min(height - circleRadius / 2, circleY + timeToEnd / 5);
+    circleX += (timeToEnd * timeToEnd) / 20000;
   } else {
     if (currentSubdivide == currentBlock.measure_min) {
       // pronounce the bar opening
@@ -704,16 +724,16 @@ function drawCircle(cnv, ju, timeSinceStart, currentSubdivide, currentBlock) {
 }
 
 function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
-  cnv.textSize(32);
+  cnv.textSize(bigTextSize);
   for (let c of Comment.list) {
     let x = calculateX(c, pixelPerSecond, timeSinceStart);
     cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
     cnv.textAlign(LEFT, TOP);
-    cnv.text(c.commentMessage, x, 100);
+    cnv.text(c.commentMessage, x, height / 4);
     // Takt Linie
     // fill(map(bounce, 0, height / 8, 0, 25));
     let nowLineWidth = rect_Width / 2;
-    cnv.rect(x - rect_Width / 2, 100, 1, 180);
+    cnv.rect(x - rect_Width / 2, height / 4, 1, height / 2);
   }
 }
 
