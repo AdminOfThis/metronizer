@@ -77,7 +77,7 @@ let startSound;
 
 // Add the playSound function:
 function playSound(type) {
-  if (!bool_playSound) return;
+  if (!bool_playSound || exporting) return;
   switch (type) {
     case "click":
       if (clickSound.isLoaded()) {
