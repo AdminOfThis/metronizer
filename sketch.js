@@ -75,6 +75,11 @@ let bool_playSound = true;
 let clickSound;
 let startSound;
 
+let canvasHeight;
+let canvasWidth;
+
+let previewCanvas, highResCanvas;
+
 // Add the playSound function:
 function playSound(type) {
   if (!bool_playSound || exporting) return;
@@ -114,12 +119,13 @@ function setup() {
   dropZone.dragLeave(unhighlight);
   dropZone.drop(gotFile, unhighlight);
 
-  let canvasHeight = max(100, windowHeight / 4);
-  let canvasWidth = (canvasHeight / 9.0) * 16.0;
+  canvasHeight = max(100, windowHeight / 4);
+  canvasWidth = (canvasHeight / 9.0) * 16.0;
 
-  var cnv = createCanvas(canvasWidth, canvasHeight);
-  cnv.parent("canvas-parent");
-  cnv.class("canvas");
+  previewCanvas = createCanvas(480, 320); // will be resized later automatically
+  highResCanvas = createGraphics(1920, 1080);
+  previewCanvas.parent("canvas-parent");
+  previewCanvas.class("canvas");
   background(255);
 
   Section.list = parseInput(example_code);
@@ -184,7 +190,6 @@ function setup() {
   if (sliderTime != null) {
     sliderTime.input(function () {
       startTime = lastPause + (-sliderTime.value() / 10000.0) * totalLength;
-      console.log(startTime);
     });
   }
 
@@ -213,6 +218,23 @@ function setup() {
   reset();
 }
 
+function draw() {
+  if (!exporting) {
+    try {
+      parse();
+    } catch {}
+    
+    drawOnCanvas(highResCanvas, millis());
+    image(
+      highResCanvas,
+      0,
+      0,
+      width, // scaled-down width
+      height // scaled-down height
+    );
+  }
+}
+
 function resetExport() {
   // 🔥 Clear the zip after download
   imageCount = 0;
@@ -231,7 +253,7 @@ async function exportMP4() {
 
   // Create export canvas first
   if (!exportCanvas) {
-    exportCanvas = createGraphics(width, height);
+    exportCanvas = createGraphics(1920, 1080);
   }
   console.log("Canvas created:", exportCanvas.width, "x", exportCanvas.height);
 
@@ -261,9 +283,9 @@ async function exportMP4() {
 
   // Calculate total frames needed
   let neededNumberOfFrames = ceil(
-    ((totalLength + 8000)  / 1000.0) * exportFrameRate
+    ((totalLength + 8000) / 1000.0) * exportFrameRate
   );
-  console.log("Total frames needed:", neededNumberOfFrames);  
+  console.log("Total frames needed:", neededNumberOfFrames);
   let currentFrame = 0;
 
   console.log("Starting capture with", neededNumberOfFrames, "frames");
@@ -415,16 +437,6 @@ let timeSinceStart = 0;
 let lastPause = 0;
 let totalPause = 0;
 let pauseSinceStart = 0;
-
-function draw() {
-  if (!exporting) {
-    try {
-      parse();
-    } catch {}
-
-    drawOnCanvas(this, millis());
-  }
-}
 
 function drawOnCanvas(cnv, time) {
   cnv.textSize(32);
