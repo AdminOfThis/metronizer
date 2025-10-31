@@ -614,10 +614,10 @@ function drawOnCanvas(cnv, time) {
       //console.log("TAKT: " + taktBegin);
 
       // First get text dimensions
-      let txt = (taktCount + 1).toString();
-      let textWidth = cnv.textWidth(txt);
+      let txt = (taktCount + 1).toString().trim();
+      let textWidth = font.textBounds(txt, 0, 0, bigTextSize).w; // More accurate width
       let textHeight = bigTextSize; // Use font size as height
-      let padding = 5; // Padding around text
+      let padding = 10; // Padding around text
       let boxWidth = 5;
 
       let x = width / 3 + taktBegin;
@@ -635,7 +635,7 @@ function drawOnCanvas(cnv, time) {
         cnv.fill(255, 0, 0);
 
         // Calculate positions
-        let rectX = x - padding + boxWidth;
+        let rectX = x - rect_Width / 2;
         let rectY = y - textHeight - padding; // Move up by text height plus padding
         let rectWidth = textWidth + padding * 2;
         let rectHeight = textHeight + padding * 2;
@@ -643,21 +643,25 @@ function drawOnCanvas(cnv, time) {
         // Draw background rectangle
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         cnv.rect(
-          rectX - boxWidth,
-          rectY + textDescent() - boxWidth,
+          rectX,
+          rectY + textDescent(),
           rectWidth + boxWidth * 2,
           rectHeight - 2 * textAscent() - textDescent() + boxWidth * 2
         );
         cnv.fill(0);
         cnv.rect(
-          rectX,
-          rectY + textDescent(),
+          rectX + boxWidth,
+          rectY + textDescent() + boxWidth,
           rectWidth,
           rectHeight - 2 * textAscent() - textDescent()
         );
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         cnv.textSize(bigTextSize);
-        cnv.text(txt, x, y);
+        cnv.text(
+          txt,
+          x - boxWidth + padding,
+          y + textDescent() - boxWidth
+        );
 
         basecolor = 255;
       } else {
