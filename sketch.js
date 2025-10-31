@@ -41,8 +41,9 @@ let exporting = false;
 // ##################### CODE ###################
 
 // Example raw code string for quick testing; uses line breaks
-// let example_code = "1 120 4/4\r\nc 1 1 TEST";
-let example_code = "2 60 4/4\r\nc 1 1 TEST";
+// let example_code = "2 120 4/4 x\r\n3 120 4/4\r\n2 60 4/4\r\n2 120 3/4\r\nc 1 1 TEST";
+let example_code =
+  "1 120 4/4 x\r\n1 110 3/4\r\n1 120 4/4\r\n1 110 3/4\r\nc 1 1 Penis";
 
 // Playback state: true when running, false when paused
 window.play = false;
@@ -83,7 +84,7 @@ let previewCanvas, highResCanvas;
 let width = 1920;
 let height = 1080;
 
-let bigTextSize = 96;
+let bigTextSize = 80;
 
 // Add the playSound function:
 function playSound(type) {
@@ -470,7 +471,7 @@ function drawOnCanvas(cnv, time) {
 
   // Takt Linie
   cnv.fill(map(bounce, 0, height / 8, 0, 25));
-  let nowLineWidth = rect_Width / 2;
+  let nowLineWidth = rect_Width;
   cnv.rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
 
   let currentBlock;
@@ -594,15 +595,16 @@ function drawOnCanvas(cnv, time) {
     let blockX =
       width / 3 +
       (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
-    cnv.textAlign(LEFT, BOTTOM);
+    cnv.textAlign(LEFT, TOP);
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
       cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255));
       cnv.textSize(bigTextSize);
-      cnv.text(block.bpm, blockX, (height / 8) * 7.5);
+      cnv.text(block.bpm, blockX, (height / 4) * 3 + bigTextSize + 10);
     }
     if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
       cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
       cnv.textSize(bigTextSize);
+      cnv.textAlign(LEFT, BOTTOM);
       cnv.text(block.measure, blockX, height - 10);
     }
     for (let j = 0; j < block.count; j++) {
@@ -610,8 +612,16 @@ function drawOnCanvas(cnv, time) {
         (index + (j * block.length()) / 1000) * pixelPerSecond -
         (timeSinceStart / 1000) * pixelPerSecond;
       //console.log("TAKT: " + taktBegin);
+
+      // First get text dimensions
+      let txt = (taktCount + 1).toString();
+      let textWidth = cnv.textWidth(txt);
+      let textHeight = bigTextSize; // Use font size as height
+      let padding = 5; // Padding around text
+      let boxWidth = 5;
+
       let x = width / 3 + taktBegin;
-      let y = (height / 4) * 3 + 25 + bigTextSize;
+      let y = (height / 4) * 3 + boxWidth + 10 + bigTextSize;
       cnv.fill(255);
       let basecolor;
       if (!block.doNotCount) {
@@ -621,19 +631,11 @@ function drawOnCanvas(cnv, time) {
         //TAKTZAHL
         cnv.textSize(bigTextSize);
 
-        let txt = (taktCount + 1).toString();
-
         let bbox = font.textBounds(txt, x, y, bigTextSize);
         cnv.fill(255, 0, 0);
 
-        // First get text dimensions
-        let textWidth = cnv.textWidth(txt);
-        let textHeight = bigTextSize; // Use font size as height
-        let padding = 5; // Padding around text
-        let boxWidth = 5;
-
         // Calculate positions
-        let rectX = x - padding;
+        let rectX = x - padding + boxWidth;
         let rectY = y - textHeight - padding; // Move up by text height plus padding
         let rectWidth = textWidth + padding * 2;
         let rectHeight = textHeight + padding * 2;
@@ -648,10 +650,10 @@ function drawOnCanvas(cnv, time) {
         );
         cnv.fill(0);
         cnv.rect(
-          rectX ,
-          rectY + textDescent() ,
-          rectWidth ,
-          rectHeight - 2 * textAscent() - textDescent() 
+          rectX,
+          rectY + textDescent(),
+          rectWidth,
+          rectHeight - 2 * textAscent() - textDescent()
         );
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         cnv.textSize(bigTextSize);
@@ -661,6 +663,12 @@ function drawOnCanvas(cnv, time) {
       } else {
         basecolor = 127;
       }
+
+      // DEBUG
+      // cnv.fill(255, 0, 0, 50);
+      // cnv.rect(width - 50, height / 2, width, height / 4);
+      // cnv.fill(0, 255, 0, 50);
+      // cnv.rect(width -50, height / 2, width, -height / 4);
 
       //draw only required
       if (x >= -width && x <= width) {
@@ -732,7 +740,8 @@ function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
     // Takt Linie
     // fill(map(bounce, 0, height / 8, 0, 25));
     let nowLineWidth = rect_Width / 2;
-    cnv.rect(x - rect_Width / 2, height / 4, 1, height / 2);
+    cnv.fill(min(map(x, 100, width / 3, 0, 255), 127));
+    cnv.rect(x - rect_Width / 2, height / 4, nowLineWidth, height / 2);
   }
 }
 
@@ -754,20 +763,24 @@ function calculateX(c, pixelPerSecond, timeSinceStart) {
   // }
 
   while (currentBar <= c.bar) {
-    if (Section.list[currentBlock].doNotCount) {
-      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+    if (Section.list[currentBlock] != null) {
+      if (Section.list[currentBlock].doNotCount) {
+        x +=
+          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
 
-      currentBlock++;
-    } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
-      // add total of previous block
-      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
-      currentBar += parseInt(Section.list[currentBlock].count);
+        currentBlock++;
+      } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
+        // add total of previous block
+        x +=
+          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+        currentBar += parseInt(Section.list[currentBlock].count);
 
-      currentBlock++;
-    } else {
-      // add a bar at a time
-      if (currentBar < c.bar) {
-        x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
+        currentBlock++;
+      } else {
+        // add a bar at a time
+        if (currentBar < c.bar) {
+          x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
+        }
       }
       currentBar++;
     }
