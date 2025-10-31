@@ -43,7 +43,7 @@ let exporting = false;
 // Example raw code string for quick testing; uses line breaks
 // let example_code = "2 120 4/4 x\r\n3 120 4/4\r\n2 60 4/4\r\n2 120 3/4\r\nc 1 1 TEST";
 let example_code =
-  "1 120 4/4 x\r\n1 110 3/4\r\n1 120 4/4\r\n1 110 3/4\r\nc 1 1 Penis";
+  "1 120 4/4 x\r\n1 120 4/4\r\n1 110 4/4\r\n1 110 3/4\r\nc 1 1 Test comment";
 
 // Playback state: true when running, false when paused
 window.play = false;
@@ -229,7 +229,6 @@ function draw() {
     try {
       parse();
     } catch {}
-
     drawOnCanvas(highResCanvas, millis());
     image(
       highResCanvas,
