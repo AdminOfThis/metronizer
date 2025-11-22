@@ -445,7 +445,9 @@ function drawOnCanvas(cnv, time) {
 
   // Calculate current playback time
   const timeSinceStart = calculateTimeSinceStart(time);
-  updateTimeSlider(timeSinceStart);
+  if (!exporting) {
+    updateTimeSlider(timeSinceStart);
+  }
 
   // Get current section
   const currentBlock = getCurrentSection(timeSinceStart);
@@ -473,8 +475,10 @@ function drawOnCanvas(cnv, time) {
     // Calculate ball jump
     const jump = calculateBallJump(timeSinceStart, currentLength, currentBlock);
 
-    // Handle sound playback
-    handleSoundPlayback(currentSubdivide);
+    // Handle sound playback (skip during export)
+    if (!exporting) {
+      handleSoundPlayback(currentSubdivide);
+    }
 
     // Draw bar counter display
     drawBarCounter(
@@ -1389,25 +1393,31 @@ async function exportMP4() {
 
   capturer.start();
 
-  // Render each frame
+  // Render frames in batches for better performance
+  const BATCH_SIZE = 10; // Process multiple frames before yielding to UI
+  const startRenderTime = performance.now();
+
   while (currentFrame < neededNumberOfFrames && exporting) {
-    const frameTime = startTime + (1000.0 / exportFrameRate) * currentFrame;
+    // Process a batch of frames
+    for (let i = 0; i < BATCH_SIZE && currentFrame < neededNumberOfFrames && exporting; i++) {
+      const frameTime = startTime + (1000.0 / exportFrameRate) * currentFrame;
+      drawOnCanvas(exportCanvas, frameTime);
+      capturer.capture(exportCanvas.canvas);
+      currentFrame++;
+    }
 
-    drawOnCanvas(exportCanvas, frameTime);
-    capturer.capture(exportCanvas.canvas);
-
-    // Update progress
-    currentFrame++;
+    // Update progress after each batch
     const progress = currentFrame / neededNumberOfFrames;
+    const elapsed = (performance.now() - startRenderTime) / 1000;
+    const remaining = currentFrame/neededNumberOfFrames*100 ;
+
     exportProgress.value(progress);
     renderFrame.html(
-      `${currentFrame}/${neededNumberOfFrames} Frames (${Math.round(
-        progress * 100
-      )}%)`
+      `${currentFrame} / ${neededNumberOfFrames} (${remaining.toFixed(2)}%)`
     );
 
-    // Allow UI updates
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    // Use requestAnimationFrame for smoother UI updates
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
   // Finish capture
