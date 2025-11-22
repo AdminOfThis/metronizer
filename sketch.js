@@ -33,7 +33,12 @@ let font;
 let inputSections = [];
 
 /** Button elements */
-let btnAddSection, btnAddComment, btnReset, btnPlayPause, btnExport, btnSaveFile;
+let btnAddSection,
+  btnAddComment,
+  btnReset,
+  btnPlayPause,
+  btnExport,
+  btnSaveFile;
 
 /** Slider elements */
 let sliderDensity, sliderPronounciation, sliderBallSize, sliderTime;
@@ -108,7 +113,7 @@ let bounce;
 let circleRadius = 100;
 
 /** Pixels traveled per second on timeline */
-let pixelPerSecond = 150;
+let pixelPerSecond = 200;
 
 /** Extra bounce height on bar start (0-100%) */
 let barPronounciation = 0;
@@ -222,13 +227,7 @@ function draw() {
       parse();
     } catch {}
     drawOnCanvas(highResCanvas, millis());
-    image(
-      highResCanvas,
-      0,
-      0,
-      previewCanvas.width,
-      previewCanvas.height
-    );
+    image(highResCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
   }
 }
 
@@ -438,7 +437,13 @@ function drawOnCanvas(cnv, time) {
     handleSoundPlayback(currentSubdivide);
 
     // Draw bar counter display
-    drawBarCounter(cnv, currentTakt, currentSubdivide, currentBlock, timeSinceStart);
+    drawBarCounter(
+      cnv,
+      currentTakt,
+      currentSubdivide,
+      currentBlock,
+      timeSinceStart
+    );
 
     // Draw bouncing ball
     drawCircle(cnv, jump, timeSinceStart, currentSubdivide, currentBlock);
@@ -494,7 +499,13 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
  * @param {Section} currentBlock - Current section
  * @param {number} timeSinceStart - Elapsed time in ms
  */
-function drawBarCounter(cnv, currentTakt, currentSubdivide, currentBlock, timeSinceStart) {
+function drawBarCounter(
+  cnv,
+  currentTakt,
+  currentSubdivide,
+  currentBlock,
+  timeSinceStart
+) {
   cnv.textSize(BIG_TEXT_SIZE * 1.5);
   cnv.textAlign(CENTER, TOP);
 
@@ -529,7 +540,9 @@ function drawTaktLines(cnv, timeSinceStart) {
 
   for (let i = 0; i < Section.list.length; i++) {
     let block = Section.list[i];
-    let blockX = width / 3 + (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
+    let blockX =
+      width / 3 +
+      (index * pixelPerSecond - (timeSinceStart / 1000) * pixelPerSecond);
 
     // Draw BPM change indicator
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
@@ -551,7 +564,8 @@ function drawTaktLines(cnv, timeSinceStart) {
 
     // Draw individual bars in this section
     for (let j = 0; j < block.count; j++) {
-      let taktBegin = (index + (j * block.length()) / 1000) * pixelPerSecond -
+      let taktBegin =
+        (index + (j * block.length()) / 1000) * pixelPerSecond -
         (timeSinceStart / 1000) * pixelPerSecond;
 
       let x = width / 3 + taktBegin;
@@ -565,16 +579,29 @@ function drawTaktLines(cnv, timeSinceStart) {
       // Draw beat lines (only if visible)
       if (x >= -width && x <= width) {
         // Main bar line
-        let amt = min(map(x, 100, width / 3, 0, basecolor / 255), basecolor / 255);
-        cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
+        let amt = min(
+          map(x, 100, width / 3, 0, basecolor / 255),
+          basecolor / 255
+        );
+        cnv.fill(
+          lerpColor(color(colorBackground), color(colorForeground), amt)
+        );
         cnv.rect(x - RECT_WIDTH / 2, height / 2, RECT_WIDTH * 1.5, height / 4);
 
         // Subdivision lines
         for (let count_min = 1; count_min < block.measure_min; count_min++) {
-          let addOffset = (block.length() / 1000 / block.measure_min) * count_min * pixelPerSecond;
+          let addOffset =
+            (block.length() / 1000 / block.measure_min) *
+            count_min *
+            pixelPerSecond;
           let subX = width / 3 + taktBegin + addOffset;
-          let subAmt = min(map(subX, 100, width / 3, 0, basecolor / 255), basecolor / 255);
-          cnv.fill(lerpColor(color(colorBackground), color(colorForeground), subAmt));
+          let subAmt = min(
+            map(subX, 100, width / 3, 0, basecolor / 255),
+            basecolor / 255
+          );
+          cnv.fill(
+            lerpColor(color(colorBackground), color(colorForeground), subAmt)
+          );
           cnv.rect(subX - RECT_WIDTH / 2, height / 2, RECT_WIDTH, height / 6);
         }
       }
@@ -616,21 +643,11 @@ function drawBarNumberBox(cnv, x, barNumber) {
   // Draw outer box (left edge aligned with left edge of bar line)
   let boxX = x - RECT_WIDTH / 2;
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-  cnv.rect(
-    boxX,
-    boxY - outerHeight / 2,
-    outerWidth,
-    outerHeight
-  );
+  cnv.rect(boxX, boxY - outerHeight / 2, outerWidth, outerHeight);
 
   // Draw inner box
   cnv.fill(color(colorBackground));
-  cnv.rect(
-    boxX + boxWidth,
-    boxY - innerHeight / 2,
-    innerWidth,
-    innerHeight
-  );
+  cnv.rect(boxX + boxWidth, boxY - innerHeight / 2, innerWidth, innerHeight);
 
   // Draw number (centered in box)
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
@@ -690,7 +707,9 @@ function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
 
     // Draw comment marker line
     let nowLineWidth = RECT_WIDTH / 2;
-    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
+    cnv.fill(
+      lerpColor(color(colorBackground), color(colorForeground), amt * 0.5)
+    );
     cnv.rect(x - RECT_WIDTH / 2, height / 4, nowLineWidth, height / 2);
   }
 }
@@ -769,7 +788,8 @@ function calculateCurrentBarAndBeat(timeSinceStart, currentBlock) {
   let currentLength = 0;
 
   for (let i = 0; i < Section.list.length; i++) {
-    let lengthOfMeasureMin = Section.list[i].length() / currentBlock.measure_min;
+    let lengthOfMeasureMin =
+      Section.list[i].length() / currentBlock.measure_min;
     currentLength += Section.list[i].lengthTotal();
 
     if (t + Section.list[i].lengthTotal() <= timeSinceStart) {
@@ -788,10 +808,13 @@ function calculateCurrentBarAndBeat(timeSinceStart, currentBlock) {
       }
 
       if (!Section.list[i].doNotCount) {
-        currentTakt += floor(
-          (addedTime - Section.list[i].length() / Section.list[i].measure_min + 5) /
-          Section.list[i].length()
-        ) + 1;
+        currentTakt +=
+          floor(
+            (addedTime -
+              Section.list[i].length() / Section.list[i].measure_min +
+              5) /
+              Section.list[i].length()
+          ) + 1;
       }
       break;
     }
@@ -811,8 +834,8 @@ function calculateBallJump(timeSinceStart, currentLength, currentBlock) {
   return abs(
     sin(
       ((timeSinceStart - currentLength) / currentBlock.length()) *
-      PI *
-      currentBlock.measure_min
+        PI *
+        currentBlock.measure_min
     ) * bounce
   );
 }
@@ -826,7 +849,10 @@ function calculateTimeToEnd(timeSinceStart) {
   if (Section.list.length === 0) return 0;
 
   const lastSection = Section.list[Section.list.length - 1];
-  return timeSinceStart - (totalLength - lastSection.length() / lastSection.measure_min);
+  return (
+    timeSinceStart -
+    (totalLength - lastSection.length() / lastSection.measure_min)
+  );
 }
 
 /**
@@ -834,8 +860,10 @@ function calculateTimeToEnd(timeSinceStart) {
  * @param {number} currentSubdivide - Current beat number
  */
 function handleSoundPlayback(currentSubdivide) {
-  if ((play && currentSubdivide > previousSubDivide) ||
-      (currentSubdivide == 1 && previousSubDivide > currentSubdivide)) {
+  if (
+    (play && currentSubdivide > previousSubDivide) ||
+    (currentSubdivide == 1 && previousSubDivide > currentSubdivide)
+  ) {
     if (currentSubdivide == 1) {
       playSound("start");
     } else {
@@ -864,10 +892,12 @@ function calculateCommentX(c, pixelPerSecond, timeSinceStart) {
   while (currentBar <= c.bar) {
     if (Section.list[currentBlock] != null) {
       if (Section.list[currentBlock].doNotCount) {
-        x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+        x +=
+          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
         currentBlock++;
       } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
-        x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+        x +=
+          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
         currentBar += parseInt(Section.list[currentBlock].count);
         currentBlock++;
       } else {
@@ -1135,7 +1165,9 @@ async function exportMP4() {
   startTime = millis();
 
   // Calculate frames needed
-  let neededNumberOfFrames = ceil(((totalLength + 8000) / 1000.0) * exportFrameRate);
+  let neededNumberOfFrames = ceil(
+    ((totalLength + 8000) / 1000.0) * exportFrameRate
+  );
   let currentFrame = 0;
 
   capturer.start();
@@ -1152,7 +1184,9 @@ async function exportMP4() {
     const progress = currentFrame / neededNumberOfFrames;
     exportProgress.value(progress);
     renderFrame.html(
-      `${currentFrame}/${neededNumberOfFrames} Frames (${Math.round(progress * 100)}%)`
+      `${currentFrame}/${neededNumberOfFrames} Frames (${Math.round(
+        progress * 100
+      )}%)`
     );
 
     // Allow UI updates
@@ -1184,10 +1218,88 @@ async function exportMP4() {
  * Handles key press events.
  */
 function keyPressed() {
-  if (keyCode === ESCAPE) {
-    fullscreen(false);
-  } else if (keyCode === ENTER) {
+  if (key === " ") {
     buttonPlayPause();
+  } else if (keyCode === LEFT_ARROW) {
+    seekToPreviousBar();
+  } else if (keyCode === RIGHT_ARROW) {
+    seekToNextBar();
+  }
+}
+
+/**
+ * Seeks to the previous bar.
+ */
+function seekToPreviousBar() {
+  if (Section.list.length === 0) return;
+
+  const currentTime = calculateTimeSinceStart(millis());
+  const barTimes = getBarStartTimes();
+
+  // Find the bar before current position
+  let targetTime = 0;
+  for (let i = barTimes.length - 1; i >= 0; i--) {
+    if (barTimes[i] < currentTime - 100) { // 100ms threshold to avoid getting stuck
+      targetTime = barTimes[i];
+      break;
+    }
+  }
+
+  seekToTime(targetTime);
+}
+
+/**
+ * Seeks to the next bar.
+ */
+function seekToNextBar() {
+  if (Section.list.length === 0) return;
+
+  const currentTime = calculateTimeSinceStart(millis());
+  const barTimes = getBarStartTimes();
+
+  // Find the bar after current position
+  let targetTime = totalLength;
+  for (let i = 0; i < barTimes.length; i++) {
+    if (barTimes[i] > currentTime + 100) { // 100ms threshold
+      targetTime = barTimes[i];
+      break;
+    }
+  }
+
+  seekToTime(targetTime);
+}
+
+/**
+ * Gets the start times of all bars.
+ * @returns {number[]} Array of bar start times in ms
+ */
+function getBarStartTimes() {
+  const times = [0];
+  let currentTime = 0;
+
+  for (let block of Section.list) {
+    const barLength = block.length();
+    for (let bar = 0; bar < block.count; bar++) {
+      currentTime += barLength;
+      times.push(currentTime);
+    }
+  }
+
+  return times;
+}
+
+/**
+ * Seeks to a specific time position.
+ * @param {number} targetTime - Target time in ms
+ */
+function seekToTime(targetTime) {
+  const currentTime = calculateTimeSinceStart(millis());
+  const delta = targetTime - currentTime;
+  startTime -= delta;
+
+  // Update slider
+  if (sliderTime != null) {
+    sliderTime.value((targetTime / totalLength) * 10000.0);
   }
 }
 
