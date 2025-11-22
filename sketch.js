@@ -889,23 +889,25 @@ function calculateCommentX(c, pixelPerSecond, timeSinceStart) {
     return 0;
   }
 
-  while (currentBar <= c.bar) {
-    if (Section.list[currentBlock] != null) {
-      if (Section.list[currentBlock].doNotCount) {
-        x +=
-          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
-        currentBlock++;
-      } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
-        x +=
-          (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
-        currentBar += parseInt(Section.list[currentBlock].count);
-        currentBlock++;
-      } else {
-        if (currentBar < c.bar) {
-          x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
-        }
+  while (currentBar <= c.bar && currentBlock < Section.list.length) {
+    if (Section.list[currentBlock].doNotCount) {
+      // doNotCount sections add time but don't increment bar numbers
+      x +=
+        (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBlock++;
+    } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
+      // Skip entire section - it's before our target bar
+      x +=
+        (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      currentBar += parseInt(Section.list[currentBlock].count);
+      currentBlock++;
+    } else {
+      // Target bar is within this section
+      while (currentBar < c.bar) {
+        x += (Section.list[currentBlock].length() / 1000.0) * pixelPerSecond;
+        currentBar++;
       }
-      currentBar++;
+      break;
     }
   }
 
