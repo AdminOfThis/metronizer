@@ -162,9 +162,9 @@ let startSound;
 // Example Data
 // ===========================
 
-/** Example metronome data for testing */
-let example_code =
-  "1 110 4/4 x\r\n2 120 4/4\r\n3 130 4/4\r\n4 140 3/4\r\nc 1 1 Test comment";
+/** Example metronome data loaded from file */
+let example_code;
+let exampleLines;
 
 // ===========================
 // Sound Functions
@@ -205,6 +205,9 @@ function preload() {
   soundFormats("mp3", "wav");
   clickSound = loadSound("assets/sounds/perc_metronomequartz_hi.wav");
   startSound = loadSound("assets/sounds/perc_metronomequartz_lo.wav");
+
+  // Load example data
+  exampleLines = loadStrings("assets/example.met");
 }
 
 /**
@@ -221,6 +224,7 @@ function setup() {
   setupExportUI();
 
   // Load example data
+  example_code = exampleLines.join("\n");
   Section.list = parseInput(example_code);
 
   windowResized();
@@ -1174,7 +1178,7 @@ function parseInput(input) {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x";
         const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
-        blocks[i] = b;
+        blocks.push(b);
       }
     }
   }
@@ -1421,8 +1425,15 @@ async function exportMP4() {
 /**
  * Handles key press events.
  */
-function keyPressed() {
-  // Ignore shortcuts when typing in input fields
+function keyPressed(e) {
+  // Handle Ctrl+S to save file
+  if ((e.ctrlKey || e.metaKey) && key === 's') {
+    e.preventDefault();
+    buttonSave();
+    return false;
+  }
+
+  // Ignore other shortcuts when typing in input fields
   let activeTag = document.activeElement.tagName.toLowerCase();
   if (activeTag === 'input' || activeTag === 'textarea') {
     return;

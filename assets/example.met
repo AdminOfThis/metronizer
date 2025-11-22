@@ -1,0 +1,6 @@
+settings {"title":"Metronizer Test Piece v2.1","speed":200,"beatEmphasis":0,"ballSize":100,"showTimeRemaining":false,"showHeaderBoxes":false,"colorForeground":"#ffffff","colorBackground":"#000000","colorAccent":"#ff0000","playSound":true}
+1 110 4/4 x
+2 120 4/4
+3 130 4/4
+4 140 3/4
+c 1 1 Test comment
