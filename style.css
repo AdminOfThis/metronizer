@@ -505,8 +505,15 @@ input:checked + .slider:before {
 }
 
 .keyboard-shortcuts li kbd {
-  min-width: 50px;
+  min-width: 30px;
   text-align: center;
+  display: inline-block;
+}
+
+.shortcut-keys {
+  display: inline-block;
+  min-width: 120px;
+  text-align: left;
 }
 
 kbd {
