@@ -710,7 +710,7 @@ function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
     cnv.fill(
       lerpColor(color(colorBackground), color(colorForeground), amt * 0.5)
     );
-    cnv.rect(x - RECT_WIDTH / 2, height / 4, nowLineWidth, height / 2);
+    cnv.rect(x - RECT_WIDTH / 2, height / 4, nowLineWidth, height / 4);
   }
 }
 
