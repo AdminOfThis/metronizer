@@ -614,7 +614,8 @@ function drawBarCounter(
   let counterY = 10;
   if (displayTitle && displayTitle.trim() !== "") {
     cnv.textSize(BIG_TEXT_SIZE * 0.8);
-    cnv.fill(color(colorForeground));
+    let amt = map(bounce, 0, height / 8, 0, 1);
+    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
     cnv.text(displayTitle, width / 2, 10);
     counterY = 10 + BIG_TEXT_SIZE * 0.8 + 5;
   }
@@ -1421,6 +1422,12 @@ async function exportMP4() {
  * Handles key press events.
  */
 function keyPressed() {
+  // Ignore shortcuts when typing in input fields
+  let activeTag = document.activeElement.tagName.toLowerCase();
+  if (activeTag === 'input' || activeTag === 'textarea') {
+    return;
+  }
+
   if (key === " ") {
     buttonPlayPause();
   } else if (keyCode === LEFT_ARROW) {
