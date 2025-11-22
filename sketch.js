@@ -428,7 +428,7 @@ function drawOnCanvas(cnv, time) {
 
     // Calculate bar and beat
     const { currentTakt, currentSubdivide, currentLength } =
-      calculateCurrentBarAndBeat(timeSinceStart, currentBlock);
+      calculateCurrentBarAndBeat(timeSinceStart);
 
     // Calculate ball jump
     const jump = calculateBallJump(timeSinceStart, currentLength, currentBlock);
@@ -778,10 +778,9 @@ function getCurrentSection(timeSinceStart) {
 /**
  * Calculates current bar number and beat within the bar.
  * @param {number} timeSinceStart - Elapsed time in ms
- * @param {Section} currentBlock - Current section
  * @returns {{currentTakt: number, currentSubdivide: number, currentLength: number}}
  */
-function calculateCurrentBarAndBeat(timeSinceStart, currentBlock) {
+function calculateCurrentBarAndBeat(timeSinceStart) {
   let currentTakt = 0;
   let currentSubdivide = 0;
   let t = 0;
@@ -789,11 +788,11 @@ function calculateCurrentBarAndBeat(timeSinceStart, currentBlock) {
 
   for (let i = 0; i < Section.list.length; i++) {
     let lengthOfMeasureMin =
-      Section.list[i].length() / currentBlock.measure_min;
-    currentLength += Section.list[i].lengthTotal();
+      Section.list[i].length() / Section.list[i].measure_min;
 
     if (t + Section.list[i].lengthTotal() <= timeSinceStart) {
       t += Section.list[i].lengthTotal();
+      currentLength = t; // Track cumulative time up to current section
       if (!Section.list[i].doNotCount) {
         currentTakt += parseInt(Section.list[i].count);
       }
@@ -802,7 +801,7 @@ function calculateCurrentBarAndBeat(timeSinceStart, currentBlock) {
       while (t + addedTime <= timeSinceStart) {
         addedTime += lengthOfMeasureMin;
         currentSubdivide++;
-        if (currentSubdivide > currentBlock.measure_min) {
+        if (currentSubdivide > Section.list[i].measure_min) {
           currentSubdivide = 1;
         }
       }
