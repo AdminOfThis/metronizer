@@ -510,7 +510,16 @@ function drawPlayheadLine(cnv) {
   let amt = map(bounce, 0, height / 8, 0, 0.1);
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   let nowLineWidth = RECT_WIDTH;
-  cnv.rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
+
+  // Start below header boxes if enabled
+  let startY = 0;
+  if (showHeaderBoxes) {
+    let padding = 12;
+    let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2 ;
+    startY = boxHeight ; // Add some margin
+  }
+
+  cnv.rect(width / 3 - nowLineWidth / 2, startY, nowLineWidth, height - startY);
 }
 
 /**
