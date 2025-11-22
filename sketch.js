@@ -1422,6 +1422,12 @@ async function exportMP4() {
  * Handles key press events.
  */
 function keyPressed() {
+  // Ignore shortcuts when typing in input fields
+  let activeTag = document.activeElement.tagName.toLowerCase();
+  if (activeTag === 'input' || activeTag === 'textarea') {
+    return;
+  }
+
   if (key === " ") {
     buttonPlayPause();
   } else if (keyCode === LEFT_ARROW) {
