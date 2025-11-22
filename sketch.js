@@ -1064,7 +1064,16 @@ function gotFile(file) {
       Comment.list[0].remove();
     }
 
-    parseInput(file.data);
+    // Always use FileReader for consistent text reading
+    if (file.file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        parseInput(e.target.result);
+      };
+      reader.readAsText(file.file);
+    } else if (file.data && typeof file.data === 'string') {
+      parseInput(file.data);
+    }
   }
 }
 
@@ -1073,7 +1082,8 @@ function gotFile(file) {
  */
 function buttonSave() {
   let contentArray = [getStrings()];
-  saveStrings(contentArray, "output.txt");
+  let filename = displayTitle.trim() || "output";
+  saveStrings(contentArray, filename, "met");
 }
 
 /**
@@ -1083,10 +1093,23 @@ function buttonSave() {
 function getStrings() {
   let result = "";
 
+  // Add settings as first line
+  let settings = {
+    title: displayTitle,
+    speed: pixelPerSecond,
+    beatEmphasis: barPronounciation,
+    ballSize: circleRadius,
+    showTimeRemaining: showTimeRemaining,
+    showHeaderBoxes: showHeaderBoxes,
+    colorForeground: colorForeground,
+    colorBackground: colorBackground,
+    colorAccent: colorAccent,
+    playSound: bool_playSound
+  };
+  result += "settings " + JSON.stringify(settings);
+
   for (let i = 0; i < Section.list.length; i++) {
-    if (i > 0) {
-      result += "\r\n";
-    }
+    result += "\r\n";
     result += Section.list[i].createString();
   }
 
@@ -1122,12 +1145,23 @@ function parse() {
  * @returns {Section[]} Array of created sections
  */
 function parseInput(input) {
-  let splits = input.split("\r\n");
+  // Normalize line endings to handle both \r\n and \n
+  let normalized = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  let splits = normalized.split("\n");
   let blocks = [];
 
   for (let i = 0; i < splits.length; i++) {
     if (splits[i] !== "") {
-      if (splits[i].startsWith("c")) {
+      if (splits[i].startsWith("settings ")) {
+        // Parse settings
+        let jsonStr = splits[i].substring(9);
+        try {
+          let settings = JSON.parse(jsonStr);
+          applySettings(settings);
+        } catch (e) {
+          console.error("Failed to parse settings:", e);
+        }
+      } else if (splits[i].startsWith("c")) {
         // Parse comment
         let s = splits[i].split(" ");
         let message = splits[i]
@@ -1146,6 +1180,73 @@ function parseInput(input) {
 
   reset();
   return blocks;
+}
+
+/**
+ * Applies loaded settings to variables and UI elements.
+ * @param {Object} settings - Settings object from file
+ */
+function applySettings(settings) {
+  // Apply to variables
+  if (settings.title !== undefined) {
+    displayTitle = settings.title;
+    let titleInput = select("#titleInput");
+    if (titleInput) titleInput.value(displayTitle);
+  }
+  if (settings.speed !== undefined) {
+    pixelPerSecond = settings.speed;
+    let sizeSlider = select("#sizeSlider");
+    if (sizeSlider) {
+      sizeSlider.value(pixelPerSecond);
+      select("#sizeValue").html(pixelPerSecond);
+    }
+  }
+  if (settings.beatEmphasis !== undefined) {
+    barPronounciation = settings.beatEmphasis;
+    let barSlider = select("#barSlider");
+    if (barSlider) {
+      barSlider.value(barPronounciation);
+      select("#barSliderValue").html(barPronounciation);
+    }
+  }
+  if (settings.ballSize !== undefined) {
+    circleRadius = settings.ballSize;
+    let ballSizeSlider = select("#ballSizeSlider");
+    if (ballSizeSlider) {
+      ballSizeSlider.value(circleRadius);
+      select("#ballSizeSliderValue").html(circleRadius);
+    }
+  }
+  if (settings.showTimeRemaining !== undefined) {
+    showTimeRemaining = settings.showTimeRemaining;
+    let toggle = select("#toggleTimeRemaining");
+    if (toggle) toggle.checked(showTimeRemaining);
+  }
+  if (settings.showHeaderBoxes !== undefined) {
+    showHeaderBoxes = settings.showHeaderBoxes;
+    let toggle = select("#toggleHeaderBoxes");
+    if (toggle) toggle.checked(showHeaderBoxes);
+  }
+  if (settings.colorForeground !== undefined) {
+    colorForeground = settings.colorForeground;
+    let picker = select("#colorForeground");
+    if (picker) picker.value(colorForeground);
+  }
+  if (settings.colorBackground !== undefined) {
+    colorBackground = settings.colorBackground;
+    let picker = select("#colorBackground");
+    if (picker) picker.value(colorBackground);
+  }
+  if (settings.colorAccent !== undefined) {
+    colorAccent = settings.colorAccent;
+    let picker = select("#colorAccent");
+    if (picker) picker.value(colorAccent);
+  }
+  if (settings.playSound !== undefined) {
+    bool_playSound = settings.playSound;
+    let toggle = select("#toggleMetronome");
+    if (toggle) toggle.checked(bool_playSound);
+  }
 }
 
 /**
