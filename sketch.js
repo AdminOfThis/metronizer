@@ -596,46 +596,47 @@ function drawTaktLines(cnv, timeSinceStart) {
  */
 function drawBarNumberBox(cnv, x, barNumber) {
   let txt = barNumber.toString().trim();
-  let textWidthVal = font.textBounds(txt, 0, 0, BIG_TEXT_SIZE).w;
-  let textHeight = BIG_TEXT_SIZE;
+  let bounds = font.textBounds(txt, 0, 0, BIG_TEXT_SIZE);
   let padding = 10;
   let boxWidth = 5;
-  let y = (height / 4) * 3 + boxWidth + 10 + BIG_TEXT_SIZE;
 
-  cnv.textAlign(LEFT, BOTTOM);
-  cnv.textSize(BIG_TEXT_SIZE);
+  // Center position for text and box
+  let textY = (height / 4) * 3 + BIG_TEXT_SIZE / 2;
+  let boxY = textY + 10; // Box slightly lower than text
 
-  // Calculate positions
-  let rectX = x - RECT_WIDTH / 2;
-  let rectY = y - textHeight - padding;
-  let rectWidth = textWidthVal + padding * 2;
-  let rectHeight = textHeight + padding * 2;
+  // Box dimensions
+  let innerWidth = bounds.w + padding * 2;
+  let innerHeight = bounds.h + padding * 2;
+  let outerWidth = innerWidth + boxWidth * 2;
+  let outerHeight = innerHeight + boxWidth * 2;
 
   // Calculate color amount based on position
   let amt = min(map(x, 100, width / 3, 0, 1), 1);
 
-  // Draw outer box
+  // Draw outer box (left edge aligned with left edge of bar line)
+  let boxX = x - RECT_WIDTH / 2;
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   cnv.rect(
-    rectX,
-    rectY + textDescent(),
-    rectWidth + boxWidth * 2,
-    rectHeight - 2 * textAscent() - textDescent() + boxWidth * 2
+    boxX,
+    boxY - outerHeight / 2,
+    outerWidth,
+    outerHeight
   );
 
   // Draw inner box
   cnv.fill(color(colorBackground));
   cnv.rect(
-    rectX + boxWidth,
-    rectY + textDescent() + boxWidth,
-    rectWidth,
-    rectHeight - 2 * textAscent() - textDescent()
+    boxX + boxWidth,
+    boxY - innerHeight / 2,
+    innerWidth,
+    innerHeight
   );
 
-  // Draw number
+  // Draw number (centered in box)
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   cnv.textSize(BIG_TEXT_SIZE);
-  cnv.text(txt, x - boxWidth + padding, y + textDescent() - boxWidth);
+  cnv.textAlign(CENTER, CENTER);
+  cnv.text(txt, boxX + outerWidth / 2, textY);
 }
 
 /**
