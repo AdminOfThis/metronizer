@@ -212,11 +212,12 @@ input[type="range"] {
 }
 
 .title-input-row .slider-label {
-  flex-shrink: 0;
+  flex: 1;
 }
 
 .title-input-row input[type="text"] {
-  flex: 1;
+  width: 200px;
+  flex-shrink: 0;
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
