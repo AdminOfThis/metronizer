@@ -66,7 +66,7 @@
               title="Density"
               id="sizeSlider"
               min="50"
-              max="500"
+              max="550"
               step="10"
               value="200"
               list="sizeTicks"
@@ -79,6 +79,11 @@
               <option value="200"></option>
               <option value="250"></option>
               <option value="300"></option>
+              <option value="350"></option>
+              <option value="400"></option>
+              <option value="450"></option>
+              <option value="500"></option>
+              <option value="550"></option>
             </datalist>
           </div>
           <!-- Bar Prononciation Slider -->
@@ -130,45 +135,33 @@
               oninput="ballSizeSliderValue.textContent = this.value"
             />
             <datalist id="ballSizeTickList">
-              <option value="0"></option>
-              <option value="5"></option>
-              <option value="10"></option>
-              <option value="15"></option>
-              <option value="20"></option>
-              <option value="25"></option>
-              <option value="30"></option>
-              <option value="35"></option>
-              <option value="40"></option>
-              <option value="45"></option>
               <option value="50"></option>
+              <option value="65"></option>
+              <option value="80"></option>
+              <option value="95"></option>
+              <option value="110"></option>
+              <option value="125"></option>
+              <option value="140"></option>
+              <option value="155"></option>
+              <option value="170"></option>
+              <option value="185"></option>
+              <option value="200"></option>
             </datalist>
           </div>
-          <!-- Beat Flash Slider -->
-          <div>
-            <label for="beatFlashSlider" class="slider-label">
-              Beat flash:
-              <span id="beatFlashSliderValue">0</span>%
+          <div class="toggle-row">
+            <label for="toggleTimeRemaining" class="slider-label">Show Time Remaining</label>
+            <label class="switch">
+              <input type="checkbox" id="toggleTimeRemaining" title="Show Time Remaining">
+              <span class="slider round"></span>
             </label>
-            <input
-              type="range"
-              title="Beat Flash Intensity"
-              id="beatFlashSlider"
-              min="0"
-              max="100"
-              step="1"
-              value="0"
-              oninput="beatFlashSliderValue.textContent = this.value"
-            />
           </div>
-          <div>
-              <label for="toggleTimeRemaining" class="slider-label">
-              <label class="switch">
-                <input type="checkbox" id="toggleTimeRemaining">
-                <span class="slider round"></span>
-              </label>
-              Show Time Remaining
-              </label>
-            </div>
+          <div class="toggle-row">
+            <label for="toggleHeaderBoxes" class="slider-label">Show Header Borders</label>
+            <label class="switch">
+              <input type="checkbox" id="toggleHeaderBoxes" title="Show Header Borders">
+              <span class="slider round"></span>
+            </label>
+          </div>
           <hr />
           <!-- Color Pickers -->
           <details class="color-section">
@@ -189,15 +182,13 @@
             </div>
           </details>
           <hr />
-          <div>
-              <label for="toggleMetronome" class="slider-label">
-              <label class="switch">
-                <input type="checkbox" id="toggleMetronome" checked>
-                <span class="slider round"></span>
-              </label>
-              Play Sound
-              </label>
-            </div>
+          <div class="toggle-row">
+            <label for="toggleMetronome" class="slider-label">Play Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="toggleMetronome" checked title="Play Sound">
+              <span class="slider round"></span>
+            </label>
+          </div>
           
           <hr />
           <p>To load files, please drag and drop them into the window.</p>

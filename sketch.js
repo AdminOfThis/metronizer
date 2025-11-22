@@ -118,11 +118,11 @@ let pixelPerSecond = 200;
 /** Extra bounce height on bar start (0-100%) */
 let barPronounciation = 0;
 
-/** Beat flash intensity (0-100%) */
-let beatFlashIntensity = 0;
-
 /** Whether to show time remaining */
 let showTimeRemaining = false;
+
+/** Whether to show header boxes */
+let showHeaderBoxes = false;
 
 /** Background color */
 let colorBackground = "#000000";
@@ -334,16 +334,6 @@ function setupSliders() {
     });
   }
 
-  // Beat flash slider
-  let sliderBeatFlash = select("#beatFlashSlider");
-  if (sliderBeatFlash != null) {
-    sliderBeatFlash.value(beatFlashIntensity);
-    select("#beatFlashSliderValue").html(beatFlashIntensity);
-    sliderBeatFlash.input(function () {
-      beatFlashIntensity = sliderBeatFlash.value();
-    });
-  }
-
   // Time slider
   sliderTime = select("#timeSlider");
   if (sliderTime != null) {
@@ -364,6 +354,15 @@ function setupSliders() {
     showTimeRemaining = tglTimeRemaining.checked();
     tglTimeRemaining.input(function () {
       showTimeRemaining = tglTimeRemaining.checked();
+    });
+  }
+
+  // Header boxes toggle
+  let tglHeaderBoxes = select("#toggleHeaderBoxes");
+  if (tglHeaderBoxes != null) {
+    showHeaderBoxes = tglHeaderBoxes.checked();
+    tglHeaderBoxes.input(function () {
+      showHeaderBoxes = tglHeaderBoxes.checked();
     });
   }
 
@@ -435,22 +434,8 @@ function drawOnCanvas(cnv, time) {
   // Get current section
   const currentBlock = getCurrentSection(timeSinceStart);
 
-  // Calculate beat flash for background
-  let flashAmount = 0;
-  if (currentBlock != undefined && beatFlashIntensity > 0) {
-    const { currentLength } = calculateCurrentBarAndBeat(timeSinceStart);
-    const jump = calculateBallJump(timeSinceStart, currentLength, currentBlock);
-    // Flash when ball is near bottom (jump close to 0)
-    const normalizedJump = jump / (height / 5);
-    flashAmount = (1 - normalizedJump) * (beatFlashIntensity / 100);
-  }
-
-  // Draw background with flash
-  if (flashAmount > 0) {
-    cnv.background(lerpColor(color(colorBackground), color(colorForeground), flashAmount * 0.3));
-  } else {
-    cnv.background(color(colorBackground));
-  }
+  // Draw background
+  cnv.background(color(colorBackground));
   cnv.stroke(color(colorForeground));
   cnv.strokeWeight(0);
   drawPlayheadLine(cnv);
@@ -520,6 +505,50 @@ function drawPlayheadLine(cnv) {
  */
 function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   let amt = map(bounce, 0, height / 8, 0, 1);
+  let padding = 12;
+  let boxHeight = BIG_TEXT_SIZE * 2 + padding * 2 + 10; // Fits two lines of text
+
+  // Draw header boxes if enabled
+  if (showHeaderBoxes) {
+    cnv.noFill();
+    cnv.stroke(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
+    cnv.strokeWeight(10);
+
+    // Calculate left box dimensions
+    let leftText1 = currentBlock.bpm + " BPM";
+    let leftText2 = currentBlock.measure;
+    let leftBounds1 = font.textBounds(leftText1, 0, 0, BIG_TEXT_SIZE);
+    let leftBounds2 = font.textBounds(leftText2, 0, 0, BIG_TEXT_SIZE);
+    let leftContentWidth = max(leftBounds1.w, leftBounds2.w);
+
+    // Calculate right box dimensions (include time remaining with "-" prefix)
+    let rightText1 = msToTime(timeSinceStart);
+    let rightText2 = "-" + msToTime(max(0, totalLength - timeSinceStart));
+    let rightBounds1 = font.textBounds(rightText1, 0, 0, BIG_TEXT_SIZE);
+    let rightBounds2 = font.textBounds(rightText2, 0, 0, BIG_TEXT_SIZE);
+    let rightContentWidth = max(rightBounds1.w, rightBounds2.w);
+
+    // Use same width for both boxes (max of left and right)
+    let sideBoxWidth = max(leftContentWidth, rightContentWidth) + padding * 3;
+
+    let leftX = 10 - padding;
+    let rightX = width - 10 - sideBoxWidth + padding;
+
+    // Draw left box
+    cnv.rect(leftX, 10 - padding, sideBoxWidth, boxHeight);
+
+    // Draw middle box (stretches between left and right)
+    let middleX = leftX + sideBoxWidth;
+    let middleWidth = rightX - middleX;
+    cnv.rect(middleX, 10 - padding, middleWidth, boxHeight);
+
+    // Draw right box
+    cnv.rect(rightX, 10 - padding, sideBoxWidth, boxHeight);
+
+    cnv.strokeWeight(0);
+  }
+
+  // Draw text
   cnv.textAlign(LEFT, TOP);
   cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
   cnv.text(currentBlock.bpm + " BPM", 10, 10);
@@ -555,24 +584,26 @@ function drawBarCounter(
   cnv.textSize(BIG_TEXT_SIZE * 1.5);
   cnv.textAlign(CENTER, TOP);
 
+  let counterText;
   if (currentSubdivide > 0) {
-    cnv.fill(color(colorForeground));
-    cnv.text(
-      currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
-      width / 2,
-      10
-    );
+    counterText = currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min;
   } else {
     let timeToEnd = calculateTimeToEnd(timeSinceStart);
-    let amt = map(bounce, 0, height / 8, 0, 1);
     if (timeToEnd > 0) {
-      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-      cnv.text("END", width / 2, 10);
+      counterText = "END";
     } else {
-      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-      cnv.text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
+      counterText = "0 | 0/" + currentBlock.measure_min;
     }
   }
+
+  // Draw text
+  if (currentSubdivide > 0) {
+    cnv.fill(color(colorForeground));
+  } else {
+    let amt = map(bounce, 0, height / 8, 0, 1);
+    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
+  }
+  cnv.text(counterText, width / 2, 10);
 }
 
 /**
