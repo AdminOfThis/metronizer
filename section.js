@@ -6,7 +6,9 @@ class Section {
   }
 
   constructor(count, bpm, measure, dnc) {
+    
     Section.list.push(this);
+    this.index = Section.list.length - 1;
 
     this.count = count;
     this.bpm = bpm;
@@ -26,8 +28,7 @@ class Section {
     for (let i = 1; i < data.length - 1; i++) {
       str += data[i];
     }
-    this.index = select("#sections").elt.childElementCount; // Set the instance variable
-
+    console.log("Creating section with index: " + this.index);
     // this.uuid = crypto.randomUUID();
 
     str = str.replaceAll(">  <", "><");
@@ -42,7 +43,15 @@ class Section {
       this.remove();
     });
     newDiv.child(this.removeButton);
-    newDiv.parent(select("#sections"));
+
+    // Insert at correct position based on index
+    const sectionsContainer = select("#sections").elt;
+    const existingChildren = sectionsContainer.children;
+    if (this.index >= existingChildren.length) {
+      sectionsContainer.appendChild(newDiv.elt);
+    } else {
+      sectionsContainer.insertBefore(newDiv.elt, existingChildren[this.index]);
+    }
 
     this.inputBars = select("#bars" + this.index);
     this.inputBars.value(this.count);

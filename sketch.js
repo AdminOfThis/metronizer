@@ -43,7 +43,7 @@ let exporting = false;
 // Example raw code string for quick testing; uses line breaks
 // let example_code = "2 120 4/4 x\r\n3 120 4/4\r\n2 60 4/4\r\n2 120 3/4\r\nc 1 1 TEST";
 let example_code =
-  "1 120 4/4 x\r\n1 120 4/4\r\n1 110 4/4\r\n1 110 3/4\r\nc 1 1 Test comment";
+  "1 110 4/4 x\r\n2 120 4/4\r\n3 130 4/4\r\n4 140 3/4\r\nc 1 1 Test comment";
 
 // Playback state: true when running, false when paused
 window.play = false;
@@ -426,6 +426,7 @@ function parseInput(input) {
         const s = splits[i].split(" ");
         const dnc = s.length > 3 && s[3] === "x"; // does not count
         const b = new Section(parseInt(s[0]), parseInt(s[1]), s[2], dnc);
+        console.log("New Section at index ", i, b);
         blocks[i] = b;
       }
     }
@@ -657,11 +658,7 @@ function drawOnCanvas(cnv, time) {
         );
         cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
         cnv.textSize(bigTextSize);
-        cnv.text(
-          txt,
-          x - boxWidth + padding,
-          y + textDescent() - boxWidth
-        );
+        cnv.text(txt, x - boxWidth + padding, y + textDescent() - boxWidth);
 
         basecolor = 255;
       } else {
