@@ -123,7 +123,7 @@
               title="Ball Size"
               id="ballSizeSlider"
               min="50"
-              max="250"
+              max="200"
               step="1"
               value="100"
               list="ballSizeTickList"
@@ -142,12 +142,30 @@
               <option value="45"></option>
               <option value="50"></option>
             </datalist>
-            <!-- <input type="color" value="#ff0000" title="Color"/> -->
-            
           </div>
+          <hr />
+          <!-- Color Pickers -->
+          <details class="color-section">
+            <summary class="slider-label">Colors</summary>
+            <div class="color-picker-group">
+              <label class="color-picker-row">
+                <input type="color" id="colorForeground" value="#ffffff" title="Foreground Color"/>
+                <span>Foreground</span>
+              </label>
+              <label class="color-picker-row">
+                <input type="color" id="colorBackground" value="#000000" title="Background Color"/>
+                <span>Background</span>
+              </label>
+              <label class="color-picker-row">
+                <input type="color" id="colorAccent" value="#ff0000" title="Accent Color"/>
+                <span>Accent</span>
+              </label>
+            </div>
+          </details>
+          <hr />
           <div class="centered">
               <label for="toggleMetronome" class="slider-label">
-              Metronome 
+              Play Sound 
               <label class="switch">
                 <input type="checkbox" id="toggleMetronome" checked>
                 <span class="slider round"></span>
@@ -168,6 +186,16 @@
             <progress id="progressRender" value=".5">B</progress>
             <h3 id="renderFrame">xxx / XXX</h3>
           </div>
+          <hr />
+          <div class="keyboard-shortcuts">
+            <strong>Keyboard Shortcuts</strong>
+            <ul>
+              <li><kbd>Space</kbd> Play/Pause</li>
+              <li><kbd>←</kbd> Previous bar</li>
+              <li><kbd>→</kbd> Next bar</li>
+            </ul>
+          </div>
+          
         </settingsDiv>
       </settingsArea>
       <navSection></navSection>
