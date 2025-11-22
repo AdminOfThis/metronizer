@@ -41,6 +41,9 @@ let sliderDensity, sliderPronounciation, sliderBallSize, sliderTime;
 /** Toggle elements */
 let tglMetronome;
 
+/** Color picker elements */
+let pickerBackground, pickerForeground, pickerAccent;
+
 /** Export UI elements */
 let exportProgress, renderFrame, renderingWarning;
 
@@ -109,6 +112,15 @@ let pixelPerSecond = 150;
 
 /** Extra bounce height on bar start (0-100%) */
 let barPronounciation = 0;
+
+/** Background color */
+let colorBackground = "#000000";
+
+/** Foreground color */
+let colorForeground = "#ffffff";
+
+/** Accent color */
+let colorAccent = "#ff0000";
 
 // ===========================
 // Canvas Elements
@@ -330,6 +342,28 @@ function setupSliders() {
   tglMetronome.input(function () {
     bool_playSound = tglMetronome.checked();
   });
+
+  // Color pickers
+  pickerBackground = select("#colorBackground");
+  if (pickerBackground != null) {
+    pickerBackground.input(function () {
+      colorBackground = this.value();
+    });
+  }
+
+  pickerForeground = select("#colorForeground");
+  if (pickerForeground != null) {
+    pickerForeground.input(function () {
+      colorForeground = this.value();
+    });
+  }
+
+  pickerAccent = select("#colorAccent");
+  if (pickerAccent != null) {
+    pickerAccent.input(function () {
+      colorAccent = this.value();
+    });
+  }
 }
 
 /**
@@ -375,8 +409,8 @@ function drawOnCanvas(cnv, time) {
   updateTimeSlider(timeSinceStart);
 
   // Draw background and playhead
-  cnv.background(0);
-  cnv.stroke(255);
+  cnv.background(color(colorBackground));
+  cnv.stroke(color(colorForeground));
   cnv.strokeWeight(0);
   drawPlayheadLine(cnv);
 
@@ -428,7 +462,8 @@ function drawOnCanvas(cnv, time) {
  * @param {p5.Graphics} cnv - Canvas to draw on
  */
 function drawPlayheadLine(cnv) {
-  cnv.fill(map(bounce, 0, height / 8, 0, 25));
+  let amt = map(bounce, 0, height / 8, 0, 0.1);
+  cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   let nowLineWidth = RECT_WIDTH;
   cnv.rect(width / 3 - nowLineWidth / 2, 0, nowLineWidth, height);
 }
@@ -440,10 +475,11 @@ function drawPlayheadLine(cnv) {
  * @param {number} timeSinceStart - Elapsed time in ms
  */
 function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
+  let amt = map(bounce, 0, height / 8, 0, 1);
   cnv.textAlign(LEFT, TOP);
-  cnv.fill(map(bounce, 0, height / 8, 0, 255), 0, 0);
+  cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
   cnv.text(currentBlock.bpm + " BPM", 10, 10);
-  cnv.fill(map(bounce, 0, height / 8, 0, 255));
+  cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   cnv.text(currentBlock.measure, 10, BIG_TEXT_SIZE + 10);
   cnv.textAlign(RIGHT, TOP);
   cnv.text(msToTime(timeSinceStart), width - 10, 10);
@@ -463,7 +499,7 @@ function drawBarCounter(cnv, currentTakt, currentSubdivide, currentBlock, timeSi
   cnv.textAlign(CENTER, TOP);
 
   if (currentSubdivide > 0) {
-    cnv.fill(255);
+    cnv.fill(color(colorForeground));
     cnv.text(
       currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
       width / 2,
@@ -471,11 +507,12 @@ function drawBarCounter(cnv, currentTakt, currentSubdivide, currentBlock, timeSi
     );
   } else {
     let timeToEnd = calculateTimeToEnd(timeSinceStart);
+    let amt = map(bounce, 0, height / 8, 0, 1);
     if (timeToEnd > 0) {
-      cnv.fill(map(bounce, 0, height / 8, 0, 255));
+      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
       cnv.text("END", width / 2, 10);
     } else {
-      cnv.fill(map(bounce, 0, height / 8, 0, 255));
+      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
       cnv.text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
     }
   }
@@ -497,14 +534,16 @@ function drawTaktLines(cnv, timeSinceStart) {
     // Draw BPM change indicator
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
       cnv.textAlign(LEFT, TOP);
-      cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255));
+      let amt = min(map(blockX, 100, width / 3, 0, 1), 1);
+      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
       cnv.textSize(BIG_TEXT_SIZE);
       cnv.text(block.bpm, blockX, (height / 4) * 3 + BIG_TEXT_SIZE + 10);
     }
 
     // Draw time signature change indicator
     if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
-      cnv.fill(min(map(blockX, 100, width / 3, 0, 255), 255), 0, 0);
+      let amt = min(map(blockX, 100, width / 3, 0, 1), 1);
+      cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
       cnv.textSize(BIG_TEXT_SIZE);
       cnv.textAlign(LEFT, BOTTOM);
       cnv.text(block.measure, blockX, height - 10);
@@ -526,14 +565,16 @@ function drawTaktLines(cnv, timeSinceStart) {
       // Draw beat lines (only if visible)
       if (x >= -width && x <= width) {
         // Main bar line
-        cnv.fill(min(map(x, 100, width / 3, 0, basecolor), basecolor));
+        let amt = min(map(x, 100, width / 3, 0, basecolor / 255), basecolor / 255);
+        cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
         cnv.rect(x - RECT_WIDTH / 2, height / 2, RECT_WIDTH * 1.5, height / 4);
 
         // Subdivision lines
         for (let count_min = 1; count_min < block.measure_min; count_min++) {
           let addOffset = (block.length() / 1000 / block.measure_min) * count_min * pixelPerSecond;
           let subX = width / 3 + taktBegin + addOffset;
-          cnv.fill(min(map(subX, 100, width / 3, 0, basecolor), basecolor));
+          let subAmt = min(map(subX, 100, width / 3, 0, basecolor / 255), basecolor / 255);
+          cnv.fill(lerpColor(color(colorBackground), color(colorForeground), subAmt));
           cnv.rect(subX - RECT_WIDTH / 2, height / 2, RECT_WIDTH, height / 6);
         }
       }
@@ -570,8 +611,11 @@ function drawBarNumberBox(cnv, x, barNumber) {
   let rectWidth = textWidthVal + padding * 2;
   let rectHeight = textHeight + padding * 2;
 
+  // Calculate color amount based on position
+  let amt = min(map(x, 100, width / 3, 0, 1), 1);
+
   // Draw outer box
-  cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
+  cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   cnv.rect(
     rectX,
     rectY + textDescent(),
@@ -580,7 +624,7 @@ function drawBarNumberBox(cnv, x, barNumber) {
   );
 
   // Draw inner box
-  cnv.fill(0);
+  cnv.fill(color(colorBackground));
   cnv.rect(
     rectX + boxWidth,
     rectY + textDescent() + boxWidth,
@@ -589,7 +633,7 @@ function drawBarNumberBox(cnv, x, barNumber) {
   );
 
   // Draw number
-  cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
+  cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   cnv.textSize(BIG_TEXT_SIZE);
   cnv.text(txt, x - boxWidth + padding, y + textDescent() - boxWidth);
 }
@@ -605,7 +649,7 @@ function drawBarNumberBox(cnv, x, barNumber) {
 function drawCircle(cnv, jump, timeSinceStart, currentSubdivide, currentBlock) {
   let circleY = height / 2 - jump - circleRadius / 2.0;
   let circleX = width / 3;
-  cnv.fill(255, 0, 0);
+  cnv.fill(color(colorAccent));
 
   let timeToEnd = calculateTimeToEnd(timeSinceStart);
 
@@ -638,13 +682,14 @@ function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
 
   for (let c of Comment.list) {
     let x = calculateCommentX(c, pixelPerSecond, timeSinceStart);
-    cnv.fill(min(map(x, 100, width / 3, 0, 255), 255));
+    let amt = min(map(x, 100, width / 3, 0, 1), 1);
+    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
     cnv.textAlign(LEFT, TOP);
     cnv.text(c.commentMessage, x, height / 4);
 
     // Draw comment marker line
     let nowLineWidth = RECT_WIDTH / 2;
-    cnv.fill(min(map(x, 100, width / 3, 0, 255), 127));
+    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
     cnv.rect(x - RECT_WIDTH / 2, height / 4, nowLineWidth, height / 2);
   }
 }

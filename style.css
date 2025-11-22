@@ -389,4 +389,44 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
-} 
+}
+
+/* Color Picker Section */
+.color-section {
+  margin: 10px 0;
+}
+
+.color-section summary {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.color-section summary:hover {
+  opacity: 0.8;
+}
+
+.color-picker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-left: 5px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.color-picker-row input[type="color"] {
+  width: 40px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+

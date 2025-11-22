@@ -142,9 +142,25 @@
               <option value="45"></option>
               <option value="50"></option>
             </datalist>
-            <!-- <input type="color" value="#ff0000" title="Color"/> -->
-            
           </div>
+          <!-- Color Pickers -->
+          <details class="color-section">
+            <summary class="slider-label">Colors</summary>
+            <div class="color-picker-group">
+              <label class="color-picker-row">
+                <input type="color" id="colorForeground" value="#ffffff" title="Foreground Color"/>
+                <span>Foreground</span>
+              </label>
+              <label class="color-picker-row">
+                <input type="color" id="colorBackground" value="#000000" title="Background Color"/>
+                <span>Background</span>
+              </label>
+              <label class="color-picker-row">
+                <input type="color" id="colorAccent" value="#ff0000" title="Accent Color"/>
+                <span>Accent</span>
+              </label>
+            </div>
+          </details>
           <div class="centered">
               <label for="toggleMetronome" class="slider-label">
               Play Sound 
