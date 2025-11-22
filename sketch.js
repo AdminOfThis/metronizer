@@ -1223,10 +1223,56 @@ function keyPressed() {
   if (key === " ") {
     buttonPlayPause();
   } else if (keyCode === LEFT_ARROW) {
-    seekToPreviousBar();
+    seekToPreviousSection();
   } else if (keyCode === RIGHT_ARROW) {
+    seekToNextSection();
+  } else if (keyCode === DOWN_ARROW) {
+    seekToPreviousBar();
+  } else if (keyCode === UP_ARROW) {
     seekToNextBar();
   }
+}
+
+/**
+ * Seeks to the previous section.
+ */
+function seekToPreviousSection() {
+  if (Section.list.length === 0) return;
+
+  const currentTime = calculateTimeSinceStart(millis());
+  const sectionTimes = getSectionStartTimes();
+
+  // Find the section before current position
+  let targetTime = 0;
+  for (let i = sectionTimes.length - 1; i >= 0; i--) {
+    if (sectionTimes[i] < currentTime - 500) { // 500ms threshold
+      targetTime = sectionTimes[i];
+      break;
+    }
+  }
+
+  seekToTime(targetTime);
+}
+
+/**
+ * Seeks to the next section.
+ */
+function seekToNextSection() {
+  if (Section.list.length === 0) return;
+
+  const currentTime = calculateTimeSinceStart(millis());
+  const sectionTimes = getSectionStartTimes();
+
+  // Find the section after current position
+  let targetTime = totalLength;
+  for (let i = 0; i < sectionTimes.length; i++) {
+    if (sectionTimes[i] > currentTime + 100) { // 100ms threshold
+      targetTime = sectionTimes[i];
+      break;
+    }
+  }
+
+  seekToTime(targetTime);
 }
 
 /**
@@ -1241,7 +1287,7 @@ function seekToPreviousBar() {
   // Find the bar before current position
   let targetTime = 0;
   for (let i = barTimes.length - 1; i >= 0; i--) {
-    if (barTimes[i] < currentTime - 500) { // 500ms threshold - if close to bar start, go to previous
+    if (barTimes[i] < currentTime - 500) { // 500ms threshold
       targetTime = barTimes[i];
       break;
     }
@@ -1269,6 +1315,22 @@ function seekToNextBar() {
   }
 
   seekToTime(targetTime);
+}
+
+/**
+ * Gets the start times of all sections.
+ * @returns {number[]} Array of section start times in ms
+ */
+function getSectionStartTimes() {
+  const times = [0];
+  let currentTime = 0;
+
+  for (let block of Section.list) {
+    currentTime += block.lengthTotal();
+    times.push(currentTime);
+  }
+
+  return times;
 }
 
 /**
