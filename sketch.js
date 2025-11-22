@@ -118,11 +118,14 @@ let pixelPerSecond = 200;
 /** Extra bounce height on bar start (0-100%) */
 let barPronounciation = 0;
 
-/** Beat flash intensity (0-100%) */
-let beatFlashIntensity = 0;
-
 /** Whether to show time remaining */
 let showTimeRemaining = false;
+
+/** Whether to show header boxes */
+let showHeaderBoxes = false;
+
+/** Display title */
+let displayTitle = "";
 
 /** Background color */
 let colorBackground = "#000000";
@@ -334,16 +337,6 @@ function setupSliders() {
     });
   }
 
-  // Beat flash slider
-  let sliderBeatFlash = select("#beatFlashSlider");
-  if (sliderBeatFlash != null) {
-    sliderBeatFlash.value(beatFlashIntensity);
-    select("#beatFlashSliderValue").html(beatFlashIntensity);
-    sliderBeatFlash.input(function () {
-      beatFlashIntensity = sliderBeatFlash.value();
-    });
-  }
-
   // Time slider
   sliderTime = select("#timeSlider");
   if (sliderTime != null) {
@@ -364,6 +357,24 @@ function setupSliders() {
     showTimeRemaining = tglTimeRemaining.checked();
     tglTimeRemaining.input(function () {
       showTimeRemaining = tglTimeRemaining.checked();
+    });
+  }
+
+  // Header boxes toggle
+  let tglHeaderBoxes = select("#toggleHeaderBoxes");
+  if (tglHeaderBoxes != null) {
+    showHeaderBoxes = tglHeaderBoxes.checked();
+    tglHeaderBoxes.input(function () {
+      showHeaderBoxes = tglHeaderBoxes.checked();
+    });
+  }
+
+  // Title input
+  let titleInput = select("#titleInput");
+  if (titleInput != null) {
+    displayTitle = titleInput.value();
+    titleInput.input(function () {
+      displayTitle = titleInput.value();
     });
   }
 
@@ -435,22 +446,8 @@ function drawOnCanvas(cnv, time) {
   // Get current section
   const currentBlock = getCurrentSection(timeSinceStart);
 
-  // Calculate beat flash for background
-  let flashAmount = 0;
-  if (currentBlock != undefined && beatFlashIntensity > 0) {
-    const { currentLength } = calculateCurrentBarAndBeat(timeSinceStart);
-    const jump = calculateBallJump(timeSinceStart, currentLength, currentBlock);
-    // Flash when ball is near bottom (jump close to 0)
-    const normalizedJump = jump / (height / 5);
-    flashAmount = (1 - normalizedJump) * (beatFlashIntensity / 100);
-  }
-
-  // Draw background with flash
-  if (flashAmount > 0) {
-    cnv.background(lerpColor(color(colorBackground), color(colorForeground), flashAmount * 0.3));
-  } else {
-    cnv.background(color(colorBackground));
-  }
+  // Draw background
+  cnv.background(color(colorBackground));
   cnv.stroke(color(colorForeground));
   cnv.strokeWeight(0);
   drawPlayheadLine(cnv);
@@ -520,18 +517,65 @@ function drawPlayheadLine(cnv) {
  */
 function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   let amt = map(bounce, 0, height / 8, 0, 1);
+  let padding = 12;
+  let strokeW = 10;
+  // Height fits title + counter (or two lines for sides)
+  let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2 ;
+
+  // Draw header boxes if enabled
+  if (showHeaderBoxes) {
+    cnv.noFill();
+    cnv.stroke(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
+    cnv.strokeWeight(strokeW);
+
+    // Calculate left box dimensions
+    let leftText1 = currentBlock.bpm + " BPM";
+    let leftText2 = currentBlock.measure;
+    let leftBounds1 = font.textBounds(leftText1, 0, 0, BIG_TEXT_SIZE);
+    let leftBounds2 = font.textBounds(leftText2, 0, 0, BIG_TEXT_SIZE);
+    let leftContentWidth = max(leftBounds1.w, leftBounds2.w);
+
+    // Calculate right box dimensions using fixed reference for consistent width
+    let timeFormat = totalLength >= 3600000 ? "00:00:00" : "00:00";
+    let rightBounds = font.textBounds("-" + timeFormat, 0, 0, BIG_TEXT_SIZE);
+    let rightContentWidth = rightBounds.w;
+
+    // Use same width for both boxes (max of left and right)
+    let sideBoxWidth = max(leftContentWidth, rightContentWidth) + padding * 3+10;
+
+    // Position boxes with offset for stroke width
+    let boxY = strokeW / 2;
+    let leftX = strokeW / 2;
+    let rightX = width - strokeW / 2 - sideBoxWidth;
+
+    // Draw left box
+    cnv.rect(leftX, boxY, sideBoxWidth, boxHeight);
+
+    // Draw middle box (stretches between left and right)
+    let middleX = leftX + sideBoxWidth;
+    let middleWidth = rightX - middleX;
+    cnv.rect(middleX, boxY, middleWidth, boxHeight);
+
+    // Draw right box
+    cnv.rect(rightX, boxY, sideBoxWidth, boxHeight);
+
+    cnv.strokeWeight(0);
+  }
+
+  // Draw text
+  let textMargin = 20;
   cnv.textAlign(LEFT, TOP);
   cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
-  cnv.text(currentBlock.bpm + " BPM", 10, 10);
+  cnv.text(currentBlock.bpm + " BPM", textMargin, 10);
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-  cnv.text(currentBlock.measure, 10, BIG_TEXT_SIZE + 10);
+  cnv.text(currentBlock.measure, textMargin, BIG_TEXT_SIZE + 10);
   cnv.textAlign(RIGHT, TOP);
-  cnv.text(msToTime(timeSinceStart), width - 10, 10);
+  cnv.text(msToTime(timeSinceStart), width - textMargin, 10);
 
   // Show time remaining if enabled
   if (showTimeRemaining) {
     let timeRemaining = max(0, totalLength - timeSinceStart);
-    cnv.text("-" + msToTime(timeRemaining), width - 10, BIG_TEXT_SIZE + 10);
+    cnv.text("-" + msToTime(timeRemaining), width - textMargin, BIG_TEXT_SIZE + 10);
   }
 
   cnv.textAlign(LEFT, TOP);
@@ -552,27 +596,38 @@ function drawBarCounter(
   currentBlock,
   timeSinceStart
 ) {
-  cnv.textSize(BIG_TEXT_SIZE * 1.5);
   cnv.textAlign(CENTER, TOP);
 
+  let counterText;
   if (currentSubdivide > 0) {
-    cnv.fill(color(colorForeground));
-    cnv.text(
-      currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min,
-      width / 2,
-      10
-    );
+    counterText = currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min;
   } else {
     let timeToEnd = calculateTimeToEnd(timeSinceStart);
-    let amt = map(bounce, 0, height / 8, 0, 1);
     if (timeToEnd > 0) {
-      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-      cnv.text("END", width / 2, 10);
+      counterText = "END";
     } else {
-      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-      cnv.text("0 | 0/" + currentBlock.measure_min, width / 2, 10);
+      counterText = "0 | 0/" + currentBlock.measure_min;
     }
   }
+
+  // Draw title if set
+  let counterY = 10;
+  if (displayTitle && displayTitle.trim() !== "") {
+    cnv.textSize(BIG_TEXT_SIZE * 0.8);
+    cnv.fill(color(colorForeground));
+    cnv.text(displayTitle, width / 2, 10);
+    counterY = 10 + BIG_TEXT_SIZE * 0.8 + 5;
+  }
+
+  // Draw counter text
+  cnv.textSize(BIG_TEXT_SIZE * 1.5);
+  if (currentSubdivide > 0) {
+    cnv.fill(color(colorForeground));
+  } else {
+    let amt = map(bounce, 0, height / 8, 0, 1);
+    cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
+  }
+  cnv.text(counterText, width / 2, counterY);
 }
 
 /**
@@ -1009,7 +1064,16 @@ function gotFile(file) {
       Comment.list[0].remove();
     }
 
-    parseInput(file.data);
+    // Always use FileReader for consistent text reading
+    if (file.file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        parseInput(e.target.result);
+      };
+      reader.readAsText(file.file);
+    } else if (file.data && typeof file.data === 'string') {
+      parseInput(file.data);
+    }
   }
 }
 
@@ -1018,7 +1082,8 @@ function gotFile(file) {
  */
 function buttonSave() {
   let contentArray = [getStrings()];
-  saveStrings(contentArray, "output.txt");
+  let filename = displayTitle.trim() || "output";
+  saveStrings(contentArray, filename, "met");
 }
 
 /**
@@ -1028,10 +1093,23 @@ function buttonSave() {
 function getStrings() {
   let result = "";
 
+  // Add settings as first line
+  let settings = {
+    title: displayTitle,
+    speed: pixelPerSecond,
+    beatEmphasis: barPronounciation,
+    ballSize: circleRadius,
+    showTimeRemaining: showTimeRemaining,
+    showHeaderBoxes: showHeaderBoxes,
+    colorForeground: colorForeground,
+    colorBackground: colorBackground,
+    colorAccent: colorAccent,
+    playSound: bool_playSound
+  };
+  result += "settings " + JSON.stringify(settings);
+
   for (let i = 0; i < Section.list.length; i++) {
-    if (i > 0) {
-      result += "\r\n";
-    }
+    result += "\r\n";
     result += Section.list[i].createString();
   }
 
@@ -1067,12 +1145,23 @@ function parse() {
  * @returns {Section[]} Array of created sections
  */
 function parseInput(input) {
-  let splits = input.split("\r\n");
+  // Normalize line endings to handle both \r\n and \n
+  let normalized = input.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  let splits = normalized.split("\n");
   let blocks = [];
 
   for (let i = 0; i < splits.length; i++) {
     if (splits[i] !== "") {
-      if (splits[i].startsWith("c")) {
+      if (splits[i].startsWith("settings ")) {
+        // Parse settings
+        let jsonStr = splits[i].substring(9);
+        try {
+          let settings = JSON.parse(jsonStr);
+          applySettings(settings);
+        } catch (e) {
+          console.error("Failed to parse settings:", e);
+        }
+      } else if (splits[i].startsWith("c")) {
         // Parse comment
         let s = splits[i].split(" ");
         let message = splits[i]
@@ -1091,6 +1180,73 @@ function parseInput(input) {
 
   reset();
   return blocks;
+}
+
+/**
+ * Applies loaded settings to variables and UI elements.
+ * @param {Object} settings - Settings object from file
+ */
+function applySettings(settings) {
+  // Apply to variables
+  if (settings.title !== undefined) {
+    displayTitle = settings.title;
+    let titleInput = select("#titleInput");
+    if (titleInput) titleInput.value(displayTitle);
+  }
+  if (settings.speed !== undefined) {
+    pixelPerSecond = settings.speed;
+    let sizeSlider = select("#sizeSlider");
+    if (sizeSlider) {
+      sizeSlider.value(pixelPerSecond);
+      select("#sizeValue").html(pixelPerSecond);
+    }
+  }
+  if (settings.beatEmphasis !== undefined) {
+    barPronounciation = settings.beatEmphasis;
+    let barSlider = select("#barSlider");
+    if (barSlider) {
+      barSlider.value(barPronounciation);
+      select("#barSliderValue").html(barPronounciation);
+    }
+  }
+  if (settings.ballSize !== undefined) {
+    circleRadius = settings.ballSize;
+    let ballSizeSlider = select("#ballSizeSlider");
+    if (ballSizeSlider) {
+      ballSizeSlider.value(circleRadius);
+      select("#ballSizeSliderValue").html(circleRadius);
+    }
+  }
+  if (settings.showTimeRemaining !== undefined) {
+    showTimeRemaining = settings.showTimeRemaining;
+    let toggle = select("#toggleTimeRemaining");
+    if (toggle) toggle.checked(showTimeRemaining);
+  }
+  if (settings.showHeaderBoxes !== undefined) {
+    showHeaderBoxes = settings.showHeaderBoxes;
+    let toggle = select("#toggleHeaderBoxes");
+    if (toggle) toggle.checked(showHeaderBoxes);
+  }
+  if (settings.colorForeground !== undefined) {
+    colorForeground = settings.colorForeground;
+    let picker = select("#colorForeground");
+    if (picker) picker.value(colorForeground);
+  }
+  if (settings.colorBackground !== undefined) {
+    colorBackground = settings.colorBackground;
+    let picker = select("#colorBackground");
+    if (picker) picker.value(colorBackground);
+  }
+  if (settings.colorAccent !== undefined) {
+    colorAccent = settings.colorAccent;
+    let picker = select("#colorAccent");
+    if (picker) picker.value(colorAccent);
+  }
+  if (settings.playSound !== undefined) {
+    bool_playSound = settings.playSound;
+    let toggle = select("#toggleMetronome");
+    if (toggle) toggle.checked(bool_playSound);
+  }
 }
 
 /**

@@ -171,9 +171,58 @@ footer {
   display: flex;
 }
 
+/* Slider container layout */
+settingsDiv > div:has(input[type="range"]) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+settingsDiv > div:has(input[type="range"]) .slider-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
 input[type="range"] {
-  width: 100%; /* or any other unit like %, vw, etc. */
+  width: 200px;
+  flex-shrink: 0;
   accent-color: var(--color-primary);
+}
+
+/* Toggle row layout */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-row .slider-label {
+  flex: 1;
+}
+
+.toggle-row .switch {
+  flex-shrink: 0;
+}
+
+/* Title input row */
+.title-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-input-row .slider-label {
+  flex: 1;
+}
+
+.title-input-row input[type="text"] {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
 }
 
 input[type="checkbox"] {
