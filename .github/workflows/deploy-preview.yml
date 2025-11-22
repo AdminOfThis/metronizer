@@ -1,0 +1,39 @@
+name: Deploy preview for PR
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # If your site is static HTML, remove or modify this step
+      - name: Build site files
+        run: |
+          mkdir -p ./public
+          cp -r * ./public || true
+
+      # Upload PR build as an artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to Pages (Preview)
+        id: deployment
+        uses: actions/deploy-pages@v4
