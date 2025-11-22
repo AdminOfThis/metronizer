@@ -1239,7 +1239,7 @@ function seekToPreviousBar() {
   // Find the bar before current position
   let targetTime = 0;
   for (let i = barTimes.length - 1; i >= 0; i--) {
-    if (barTimes[i] < currentTime - 100) { // 100ms threshold to avoid getting stuck
+    if (barTimes[i] < currentTime - 500) { // 500ms threshold - if close to bar start, go to previous
       targetTime = barTimes[i];
       break;
     }
