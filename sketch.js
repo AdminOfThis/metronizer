@@ -118,6 +118,12 @@ let pixelPerSecond = 200;
 /** Extra bounce height on bar start (0-100%) */
 let barPronounciation = 0;
 
+/** Beat flash intensity (0-100%) */
+let beatFlashIntensity = 0;
+
+/** Whether to show time remaining */
+let showTimeRemaining = false;
+
 /** Background color */
 let colorBackground = "#000000";
 
@@ -328,6 +334,16 @@ function setupSliders() {
     });
   }
 
+  // Beat flash slider
+  let sliderBeatFlash = select("#beatFlashSlider");
+  if (sliderBeatFlash != null) {
+    sliderBeatFlash.value(beatFlashIntensity);
+    select("#beatFlashSliderValue").html(beatFlashIntensity);
+    sliderBeatFlash.input(function () {
+      beatFlashIntensity = sliderBeatFlash.value();
+    });
+  }
+
   // Time slider
   sliderTime = select("#timeSlider");
   if (sliderTime != null) {
@@ -341,6 +357,15 @@ function setupSliders() {
   tglMetronome.input(function () {
     bool_playSound = tglMetronome.checked();
   });
+
+  // Time remaining toggle
+  let tglTimeRemaining = select("#toggleTimeRemaining");
+  if (tglTimeRemaining != null) {
+    showTimeRemaining = tglTimeRemaining.checked();
+    tglTimeRemaining.input(function () {
+      showTimeRemaining = tglTimeRemaining.checked();
+    });
+  }
 
   // Color pickers
   pickerBackground = select("#colorBackground");
@@ -407,14 +432,28 @@ function drawOnCanvas(cnv, time) {
   const timeSinceStart = calculateTimeSinceStart(time);
   updateTimeSlider(timeSinceStart);
 
-  // Draw background and playhead
-  cnv.background(color(colorBackground));
+  // Get current section
+  const currentBlock = getCurrentSection(timeSinceStart);
+
+  // Calculate beat flash for background
+  let flashAmount = 0;
+  if (currentBlock != undefined && beatFlashIntensity > 0) {
+    const { currentLength } = calculateCurrentBarAndBeat(timeSinceStart);
+    const jump = calculateBallJump(timeSinceStart, currentLength, currentBlock);
+    // Flash when ball is near bottom (jump close to 0)
+    const normalizedJump = jump / (height / 5);
+    flashAmount = (1 - normalizedJump) * (beatFlashIntensity / 100);
+  }
+
+  // Draw background with flash
+  if (flashAmount > 0) {
+    cnv.background(lerpColor(color(colorBackground), color(colorForeground), flashAmount * 0.3));
+  } else {
+    cnv.background(color(colorBackground));
+  }
   cnv.stroke(color(colorForeground));
   cnv.strokeWeight(0);
   drawPlayheadLine(cnv);
-
-  // Get current section
-  const currentBlock = getCurrentSection(timeSinceStart);
   if (currentBlock == undefined && Section.list.length > 0) {
     return;
   }
@@ -488,6 +527,13 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   cnv.text(currentBlock.measure, 10, BIG_TEXT_SIZE + 10);
   cnv.textAlign(RIGHT, TOP);
   cnv.text(msToTime(timeSinceStart), width - 10, 10);
+
+  // Show time remaining if enabled
+  if (showTimeRemaining) {
+    let timeRemaining = max(0, totalLength - timeSinceStart);
+    cnv.text("-" + msToTime(timeRemaining), width - 10, BIG_TEXT_SIZE + 10);
+  }
+
   cnv.textAlign(LEFT, TOP);
 }
 

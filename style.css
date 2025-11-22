@@ -88,6 +88,8 @@ navSection {
 settingsArea {
   grid-area: settings; /* Place settingsArea in the settings sidebar */
   min-width: 100px; /* Ensure settings area stays at least this wide */
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 settingsDiv {

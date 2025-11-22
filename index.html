@@ -143,6 +143,32 @@
               <option value="50"></option>
             </datalist>
           </div>
+          <!-- Beat Flash Slider -->
+          <div>
+            <label for="beatFlashSlider" class="slider-label">
+              Beat flash:
+              <span id="beatFlashSliderValue">0</span>%
+            </label>
+            <input
+              type="range"
+              title="Beat Flash Intensity"
+              id="beatFlashSlider"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+              oninput="beatFlashSliderValue.textContent = this.value"
+            />
+          </div>
+          <div>
+              <label for="toggleTimeRemaining" class="slider-label">
+              <label class="switch">
+                <input type="checkbox" id="toggleTimeRemaining">
+                <span class="slider round"></span>
+              </label>
+              Show Time Remaining
+              </label>
+            </div>
           <hr />
           <!-- Color Pickers -->
           <details class="color-section">
@@ -163,15 +189,16 @@
             </div>
           </details>
           <hr />
-          <div class="centered">
+          <div>
               <label for="toggleMetronome" class="slider-label">
-              Play Sound 
               <label class="switch">
                 <input type="checkbox" id="toggleMetronome" checked>
                 <span class="slider round"></span>
               </label>
+              Play Sound
               </label>
             </div>
+          
           <hr />
           <p>To load files, please drag and drop them into the window.</p>
           <button id="btnSaveFile">Save File</button>
