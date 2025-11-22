@@ -124,6 +124,9 @@ let showTimeRemaining = false;
 /** Whether to show header boxes */
 let showHeaderBoxes = false;
 
+/** Display title */
+let displayTitle = "";
+
 /** Background color */
 let colorBackground = "#000000";
 
@@ -366,6 +369,15 @@ function setupSliders() {
     });
   }
 
+  // Title input
+  let titleInput = select("#titleInput");
+  if (titleInput != null) {
+    displayTitle = titleInput.value();
+    titleInput.input(function () {
+      displayTitle = titleInput.value();
+    });
+  }
+
   // Color pickers
   pickerBackground = select("#colorBackground");
   if (pickerBackground != null) {
@@ -506,13 +518,15 @@ function drawPlayheadLine(cnv) {
 function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   let amt = map(bounce, 0, height / 8, 0, 1);
   let padding = 12;
-  let boxHeight = BIG_TEXT_SIZE * 2 + padding * 2 + 10; // Fits two lines of text
+  let strokeW = 10;
+  // Height fits title + counter (or two lines for sides)
+  let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2 ;
 
   // Draw header boxes if enabled
   if (showHeaderBoxes) {
     cnv.noFill();
     cnv.stroke(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
-    cnv.strokeWeight(10);
+    cnv.strokeWeight(strokeW);
 
     // Calculate left box dimensions
     let leftText1 = currentBlock.bpm + " BPM";
@@ -521,46 +535,47 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
     let leftBounds2 = font.textBounds(leftText2, 0, 0, BIG_TEXT_SIZE);
     let leftContentWidth = max(leftBounds1.w, leftBounds2.w);
 
-    // Calculate right box dimensions (include time remaining with "-" prefix)
-    let rightText1 = msToTime(timeSinceStart);
-    let rightText2 = "-" + msToTime(max(0, totalLength - timeSinceStart));
-    let rightBounds1 = font.textBounds(rightText1, 0, 0, BIG_TEXT_SIZE);
-    let rightBounds2 = font.textBounds(rightText2, 0, 0, BIG_TEXT_SIZE);
-    let rightContentWidth = max(rightBounds1.w, rightBounds2.w);
+    // Calculate right box dimensions using fixed reference for consistent width
+    let timeFormat = totalLength >= 3600000 ? "00:00:00" : "00:00";
+    let rightBounds = font.textBounds("-" + timeFormat, 0, 0, BIG_TEXT_SIZE);
+    let rightContentWidth = rightBounds.w;
 
     // Use same width for both boxes (max of left and right)
-    let sideBoxWidth = max(leftContentWidth, rightContentWidth) + padding * 3;
+    let sideBoxWidth = max(leftContentWidth, rightContentWidth) + padding * 3+10;
 
-    let leftX = 10 - padding;
-    let rightX = width - 10 - sideBoxWidth + padding;
+    // Position boxes with offset for stroke width
+    let boxY = strokeW / 2;
+    let leftX = strokeW / 2;
+    let rightX = width - strokeW / 2 - sideBoxWidth;
 
     // Draw left box
-    cnv.rect(leftX, 10 - padding, sideBoxWidth, boxHeight);
+    cnv.rect(leftX, boxY, sideBoxWidth, boxHeight);
 
     // Draw middle box (stretches between left and right)
     let middleX = leftX + sideBoxWidth;
     let middleWidth = rightX - middleX;
-    cnv.rect(middleX, 10 - padding, middleWidth, boxHeight);
+    cnv.rect(middleX, boxY, middleWidth, boxHeight);
 
     // Draw right box
-    cnv.rect(rightX, 10 - padding, sideBoxWidth, boxHeight);
+    cnv.rect(rightX, boxY, sideBoxWidth, boxHeight);
 
     cnv.strokeWeight(0);
   }
 
   // Draw text
+  let textMargin = 20;
   cnv.textAlign(LEFT, TOP);
   cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
-  cnv.text(currentBlock.bpm + " BPM", 10, 10);
+  cnv.text(currentBlock.bpm + " BPM", textMargin, 10);
   cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
-  cnv.text(currentBlock.measure, 10, BIG_TEXT_SIZE + 10);
+  cnv.text(currentBlock.measure, textMargin, BIG_TEXT_SIZE + 10);
   cnv.textAlign(RIGHT, TOP);
-  cnv.text(msToTime(timeSinceStart), width - 10, 10);
+  cnv.text(msToTime(timeSinceStart), width - textMargin, 10);
 
   // Show time remaining if enabled
   if (showTimeRemaining) {
     let timeRemaining = max(0, totalLength - timeSinceStart);
-    cnv.text("-" + msToTime(timeRemaining), width - 10, BIG_TEXT_SIZE + 10);
+    cnv.text("-" + msToTime(timeRemaining), width - textMargin, BIG_TEXT_SIZE + 10);
   }
 
   cnv.textAlign(LEFT, TOP);
@@ -581,7 +596,6 @@ function drawBarCounter(
   currentBlock,
   timeSinceStart
 ) {
-  cnv.textSize(BIG_TEXT_SIZE * 1.5);
   cnv.textAlign(CENTER, TOP);
 
   let counterText;
@@ -596,14 +610,24 @@ function drawBarCounter(
     }
   }
 
-  // Draw text
+  // Draw title if set
+  let counterY = 10;
+  if (displayTitle && displayTitle.trim() !== "") {
+    cnv.textSize(BIG_TEXT_SIZE * 0.8);
+    cnv.fill(color(colorForeground));
+    cnv.text(displayTitle, width / 2, 10);
+    counterY = 10 + BIG_TEXT_SIZE * 0.8 + 5;
+  }
+
+  // Draw counter text
+  cnv.textSize(BIG_TEXT_SIZE * 1.5);
   if (currentSubdivide > 0) {
     cnv.fill(color(colorForeground));
   } else {
     let amt = map(bounce, 0, height / 8, 0, 1);
     cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
   }
-  cnv.text(counterText, width / 2, 10);
+  cnv.text(counterText, width / 2, counterY);
 }
 
 /**

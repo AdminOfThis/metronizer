@@ -204,6 +204,26 @@ input[type="range"] {
   flex-shrink: 0;
 }
 
+/* Title input row */
+.title-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-input-row .slider-label {
+  flex-shrink: 0;
+}
+
+.title-input-row input[type="text"] {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+}
+
 input[type="checkbox"] {
   accent-color: var(--color-primary);
 }
