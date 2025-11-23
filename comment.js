@@ -96,6 +96,69 @@ class Comment {
         this.commentMessage = select("#commentMessage" + this.index).value();
       }.bind(this)
     );
+
+    // Store reference to parent div and set up drag and drop
+    this.parentDiv = newDiv;
+    this.setupDragAndDrop(newDiv);
+  }
+
+  /**
+   * Sets up drag and drop functionality for reordering comments.
+   * @param {p5.Element} div - The container div element
+   * @private
+   */
+  setupDragAndDrop(div) {
+    const elt = div.elt;
+    elt.draggable = true;
+    elt.style.cursor = "grab";
+
+    elt.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", this.index);
+      elt.style.opacity = "0.5";
+    });
+
+    elt.addEventListener("dragend", () => {
+      elt.style.opacity = "1";
+    });
+
+    elt.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      elt.style.borderTop = "2px solid var(--color-primary)";
+    });
+
+    elt.addEventListener("dragleave", () => {
+      elt.style.borderTop = "";
+    });
+
+    elt.addEventListener("drop", (e) => {
+      e.preventDefault();
+      elt.style.borderTop = "";
+
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = this.index;
+
+      if (fromIndex !== toIndex) {
+        // Reorder array
+        const [movedComment] = Comment.list.splice(fromIndex, 1);
+        Comment.list.splice(toIndex, 0, movedComment);
+
+        // Reorder DOM
+        const container = select("#comments").elt;
+        const children = Array.from(container.children);
+        const movedElement = children[fromIndex];
+
+        if (toIndex < fromIndex) {
+          container.insertBefore(movedElement, children[toIndex]);
+        } else {
+          container.insertBefore(movedElement, children[toIndex + 1] || null);
+        }
+
+        // Renumber all comments
+        for (let c of Comment.list) {
+          c.renumber();
+        }
+      }
+    });
   }
 
   /**
