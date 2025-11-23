@@ -6,6 +6,9 @@ class Section {
   /** @type {Section[]} All active sections in order */
   static list = [];
 
+  /** @type {boolean} Whether first section has precount enabled */
+  static hasPreCount = false;
+
   /**
    * Creates a default section with initial values.
    * @returns {Section} A new section with 1 bar at 60 BPM in 4/4 time
@@ -28,7 +31,7 @@ class Section {
     this.count = count;
     this.bpm = bpm;
     this.measure = measure;
-    this.doNotCount = dnc;
+    this.doNotCount = dnc || false;
 
     this.measure_min = parseInt(measure.split("/")[0]);
     this.measure_maj = parseInt(measure.split("/")[1]);
@@ -66,13 +69,22 @@ class Section {
     });
     newDiv.child(this.removeButton);
 
-    // Insert at correct position to maintain order regardless of async timing
+    // Insert at correct position by counting how many lower-indexed sections are already loaded
+    let insertPosition = 0;
+    for (let i = 0; i < this.index; i++) {
+      if (Section.list[i].parentDiv) {
+        insertPosition++;
+      }
+    }
     const sectionsContainer = select("#sections").elt;
     const existingChildren = sectionsContainer.children;
-    if (this.index >= existingChildren.length) {
+    if (insertPosition >= existingChildren.length) {
       sectionsContainer.appendChild(newDiv.elt);
     } else {
-      sectionsContainer.insertBefore(newDiv.elt, existingChildren[this.index]);
+      sectionsContainer.insertBefore(
+        newDiv.elt,
+        existingChildren[insertPosition]
+      );
     }
 
     // Initialize bars input
@@ -110,15 +122,89 @@ class Section {
     this.inputIsPre.changed(
       function () {
         this.doNotCount = select("#isPre" + this.index).checked();
+        // Update static hasPreCount if this is the first section
+        if (this.index === 0) {
+          Section.hasPreCount = this.doNotCount;
+        }
       }.bind(this)
     );
+    this.precountParent = select("#precountParent" + this.index);
 
-    // Only show precount option for the first section
-    if (this.index == 0) {
-      select("#precountParent" + this.index).style("visibility", "visible");
-    } else {
-      select("#precountParent" + this.index).style("visibility", "hidden");
-    }
+    // Store reference to parent div and set up drag and drop
+    this.parentDiv = newDiv;
+    this.setupDragAndDrop(newDiv);
+
+    this.updatePreCount(this.index);
+  }
+
+  /**
+   * Sets up drag and drop functionality for reordering sections.
+   * @param {p5.Element} div - The container div element
+   * @private
+   */
+  setupDragAndDrop(div) {
+    const elt = div.elt;
+    elt.draggable = true;
+    elt.style.cursor = "grab";
+
+    elt.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", this.index);
+      elt.style.opacity = "0.5";
+    });
+
+    elt.addEventListener("dragend", () => {
+      elt.style.opacity = "1";
+    });
+
+    elt.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      elt.style.borderTop = "2px solid var(--color-primary)";
+    });
+
+    elt.addEventListener("dragleave", () => {
+      elt.style.borderTop = "";
+    });
+
+    elt.addEventListener("drop", (e) => {
+      e.preventDefault();
+      elt.style.borderTop = "";
+
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = this.index;
+
+      if (fromIndex !== toIndex) {
+        // Save precount state of old first section
+        const oldFirstHadPreCount = Section.hasPreCount;
+
+        // Reorder array
+        const [movedSection] = Section.list.splice(fromIndex, 1);
+        Section.list.splice(toIndex, 0, movedSection);
+
+        // Reorder DOM
+        const container = select("#sections").elt;
+        const children = Array.from(container.children);
+        const movedElement = children[fromIndex];
+
+        if (toIndex < fromIndex) {
+          container.insertBefore(movedElement, children[toIndex]);
+        } else {
+          container.insertBefore(movedElement, children[toIndex + 1] || null);
+        }
+
+        // Renumber all sections
+        for (let s of Section.list) {
+          s.renumber();
+        }
+
+        // Transfer precount to new first section if old first had it
+        if (oldFirstHadPreCount && Section.list.length > 0) {
+          const newFirst = Section.list[0];
+          newFirst.doNotCount = true;
+          newFirst.inputIsPre.checked(true);
+          Section.hasPreCount = true;
+        }
+      }
+    });
   }
 
   /**
@@ -149,21 +235,29 @@ class Section {
     let newIndex = Section.list.indexOf(this);
 
     // Update all element IDs
-    this.inputBars.id("bars" + newIndex);
-    this.inputBPM.id("bpm" + newIndex);
-    this.inputMeasure.id("measure" + newIndex);
-    this.inputIsPre.id("isPre" + newIndex);
-    select("#precountParent" + this.index).id("precountParent" + newIndex);
-    this.removeButton.id("removeSectionButton" + newIndex);
+    this.inputBars.elt.id = "bars" + newIndex;
+    this.inputBPM.elt.id = "bpm" + newIndex;
+    this.inputMeasure.elt.id = "measure" + newIndex;
+    this.inputIsPre.elt.id = "isPre" + newIndex;
+    this.precountParent.elt.id = "precountParent" + newIndex;
+    this.removeButton.elt.id = "removeSectionButton" + newIndex;
 
-    // Update precount visibility
-    if (newIndex === 0) {
-      select("#precountParent" + newIndex).style("visibility", "visible");
-    } else {
-      select("#precountParent" + newIndex).style("visibility", "hidden");
-    }
+    // Update precount visibility and reset value if not first
+    this.updatePreCount(newIndex);
 
     this.index = newIndex;
+  }
+
+  updatePreCount(newIndex) {
+    if (newIndex === 0) {
+      this.precountParent.style("visibility", "visible");
+      // Update static hasPreCount
+      Section.hasPreCount = this.doNotCount;
+    } else {
+      this.precountParent.style("visibility", "hidden");
+      this.doNotCount = false;
+      this.inputIsPre.checked(false);
+    }
   }
 
   /**

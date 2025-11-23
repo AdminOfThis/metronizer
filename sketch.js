@@ -127,6 +127,17 @@ let showHeaderBoxes = false;
 /** Display title */
 let displayTitle = "";
 
+/** Animation type enum */
+const AnimationType = {
+  BOUNCE: "bounce",
+  TRIANGLE: "triangle",
+  SAWTOOTH: "sawtooth",
+  SAWTOOTH_INV: "sawtooth_inv"
+};
+
+/** Ball animation type */
+let animationType = AnimationType.BOUNCE;
+
 /** Background color */
 let colorBackground = "#000000";
 
@@ -285,6 +296,37 @@ function setupButtons() {
   btnSaveFile = select("#btnSaveFile");
   btnSaveFile.mouseReleased(buttonSave.bind(this));
 
+  // Load button
+  let btnLoadFile = select("#btnLoadFile");
+  let fileInput = select("#fileInput");
+  if (btnLoadFile && fileInput) {
+    btnLoadFile.mouseReleased(function() {
+      fileInput.elt.click();
+    });
+    fileInput.elt.addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        let file = e.target.files[0];
+        if (hasAllowedExtension(file.name)) {
+          // Clear existing sections and comments
+          while (Section.list.length > 0) {
+            Section.list[0].remove();
+          }
+          while (Comment.list.length > 0) {
+            Comment.list[0].remove();
+          }
+          // Read file
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            parseInput(event.target.result);
+          };
+          reader.readAsText(file);
+        }
+        // Reset input so same file can be loaded again
+        e.target.value = '';
+      }
+    });
+  }
+
   btnAddSection = select("#btnAddSection");
   btnAddSection.mouseReleased(handleAddSection);
 
@@ -354,6 +396,15 @@ function setupSliders() {
   tglMetronome.input(function () {
     bool_playSound = tglMetronome.checked();
   });
+
+  // Animation type dropdown
+  let animationSelect = select("#animationType");
+  if (animationSelect != null) {
+    animationType = animationSelect.value();
+    animationSelect.input(function () {
+      animationType = animationSelect.value();
+    });
+  }
 
   // Time remaining toggle
   let tglTimeRemaining = select("#toggleTimeRemaining");
@@ -949,13 +1000,23 @@ function calculateCurrentBarAndBeat(timeSinceStart) {
  * @returns {number} Jump height in pixels
  */
 function calculateBallJump(timeSinceStart, currentLength, currentBlock) {
-  return abs(
-    sin(
-      ((timeSinceStart - currentLength) / currentBlock.length()) *
-        PI *
-        currentBlock.measure_min
-    ) * bounce
-  );
+  const progress = ((timeSinceStart - currentLength) / currentBlock.length()) * currentBlock.measure_min;
+  const phase = progress % 1;
+
+  switch (animationType) {
+    case AnimationType.TRIANGLE:
+      // Triangle wave - linear up and down
+      return (phase < 0.5 ? phase * 2 : 2 - phase * 2) * bounce;
+    case AnimationType.SAWTOOTH:
+      // Sawtooth wave - instant rise, gradual fall
+      return (1 - phase) * bounce;
+    case AnimationType.SAWTOOTH_INV:
+      // Inverted sawtooth wave - gradual rise, instant drop
+      return phase * bounce;
+    default:
+      // Bounce - sine wave
+      return abs(sin(progress * PI) * bounce);
+  }
 }
 
 /**
@@ -1122,7 +1183,8 @@ function getStrings() {
     colorForeground: colorForeground,
     colorBackground: colorBackground,
     colorAccent: colorAccent,
-    playSound: bool_playSound
+    playSound: bool_playSound,
+    animationType: animationType
   };
   result += "settings " + JSON.stringify(settings);
 
@@ -1264,6 +1326,11 @@ function applySettings(settings) {
     bool_playSound = settings.playSound;
     let toggle = select("#toggleMetronome");
     if (toggle) toggle.checked(bool_playSound);
+  }
+  if (settings.animationType !== undefined) {
+    animationType = settings.animationType;
+    let animationSelect = select("#animationType");
+    if (animationSelect) animationSelect.value(animationType);
   }
 }
 
