@@ -58,7 +58,7 @@
         <settingsDiv>
           <!-- Title Input -->
           <div class="title-input-row">
-            <label for="titleInput" class="slider-label">Title:</label>
+            <label for="titleInput" class="slider-label">Title</label>
             <input
               type="text"
               id="titleInput"
@@ -69,10 +69,8 @@
           </div>
           <!-- Density Slider -->
           <div>
-            <label for="sizeSlider" class="slider-label">
-              Speed:
-              <span id="sizeValue">50</span>
-            </label>
+            <label for="sizeSlider" class="slider-label">Speed</label>
+            <span id="sizeValue" class="slider-value">50</span>
             <input
               type="range"
               title="Density"
@@ -100,10 +98,8 @@
           </div>
           <!-- Bar Prononciation Slider -->
           <div>
-            <label for="barSlider" class="slider-label">
-              Beat emphasis:
-              <span id="barSliderValue">0</span>%
-            </label>
+            <label for="barSlider" class="slider-label">Beat Emphasis</label>
+            <span class="slider-value"><span id="barSliderValue">0</span>%</span>
             <input
               type="range"
               title="Bar Prononciation"
@@ -131,10 +127,8 @@
           </div>
           <!-- Ball size Slider -->
           <div>
-            <label for="ballSLider" class="slider-label">
-              Ball size:
-              <span id="ballSizeSliderValue">0</span>
-            </label>
+            <label for="ballSizeSlider" class="slider-label">Ball Size</label>
+            <span id="ballSizeSliderValue" class="slider-value">0</span>
             <input
               type="range"
               title="Ball Size"
@@ -160,6 +154,16 @@
               <option value="200"></option>
             </datalist>
           </div>
+          <!-- Animation Type -->
+          <div class="dropdown-row">
+            <label for="animationType" class="slider-label">Ball Animation</label>
+            <select id="animationType" title="Ball Animation Type">
+              <option value="bounce">Bounce</option>
+              <option value="triangle">Triangle</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="sawtooth_inv">Inverted Sawtooth</option>
+            </select>
+          </div>
           <div class="toggle-row">
             <label for="toggleTimeRemaining" class="slider-label">Show Time Remaining</label>
             <label class="switch">
@@ -179,18 +183,18 @@
           <details class="color-section">
             <summary class="slider-label">Colors</summary>
             <div class="color-picker-group">
-              <label class="color-picker-row">
+              <div class="color-picker-row">
+                <label for="colorForeground" class="slider-label">Foreground</label>
                 <input type="color" id="colorForeground" value="#ffffff" title="Foreground Color"/>
-                <span>Foreground</span>
-              </label>
-              <label class="color-picker-row">
+              </div>
+              <div class="color-picker-row">
+                <label for="colorBackground" class="slider-label">Background</label>
                 <input type="color" id="colorBackground" value="#000000" title="Background Color"/>
-                <span>Background</span>
-              </label>
-              <label class="color-picker-row">
+              </div>
+              <div class="color-picker-row">
+                <label for="colorAccent" class="slider-label">Accent</label>
                 <input type="color" id="colorAccent" value="#ff0000" title="Accent Color"/>
-                <span>Accent</span>
-              </label>
+              </div>
             </div>
           </details>
           <hr />
@@ -203,14 +207,24 @@
           </div>
           
           <hr />
-          <p>To load files, please drag and drop them into the window.</p>
-          <button id="btnSaveFile">Save File</button>
+          <div class="button-row">
+            <span class="button-label">Load file</span>
+            <button id="btnLoadFile">Load</button>
+            <input type="file" id="fileInput" accept=".met,.txt" title="Load file" />
+          </div>
+          <div class="button-row">
+            <span class="button-label">Save to file</span>
+            <button id="btnSaveFile">Save</button>
+          </div>
           <hr />
-          <p>
-            While the preview may stutter on large files,<br />the Export will
-            be created in exactly <strong>60 FPS</strong>.
-          </p>
-          <button id="btnExport">Export</button>
+          <div class="button-row">
+            <table class="export-info">
+              <tr><td>Resolution</td><td>1920×1080</td></tr>
+              <tr><td>FPS</td><td>60</td></tr>
+              <tr><td>Format</td><td>WebM</td></tr>
+            </table>
+            <button id="btnExport">Export</button>
+          </div>
           <div id="activeRender">
             <h3 id="rendering" class="warning">Rendering, please wait</h3>
             <progress id="progressRender" value=".5">B</progress>

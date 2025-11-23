@@ -94,12 +94,55 @@ settingsArea {
 
 settingsDiv {
   display: grid;
-  gap: 20px; /* Space between individual setting controls */
+  gap: 18px; /* Space between individual setting controls */
+  padding-right: 15px;
 }
 
-settingsDiv > button {
-  width: 100px; /* Set the width of the buttons to 100px */
-  justify-self: center; /* Center the button horizontally */
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-label {
+  flex: 1;
+}
+
+.button-row button {
+  width: 80px;
+  flex-shrink: 0;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.button-row-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.button-row-simple button {
+  width: 80px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.export-info {
+  flex: 1;
+  font-size: 0.85em;
+}
+
+.export-info td {
+  padding: 2px 8px 2px 0;
+}
+
+.export-info td:last-child {
+  font-weight: bold;
+}
+
+#fileInput {
+  display: none;
 }
 
 canvasSection {
@@ -183,10 +226,37 @@ settingsDiv > div:has(input[type="range"]) .slider-label {
   white-space: nowrap;
 }
 
+.slider-value {
+  min-width: 35px;
+  text-align: right;
+  font-weight: bold;
+}
+
 input[type="range"] {
   width: 200px;
   flex-shrink: 0;
   accent-color: var(--color-primary);
+}
+
+/* Dropdown row layout */
+.dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-row .slider-label {
+  flex: 1;
+}
+
+.dropdown-row select {
+  width: 200px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
 }
 
 /* Toggle row layout */
@@ -223,6 +293,7 @@ input[type="range"] {
   border-radius: 4px;
   background: #333;
   color: #fff;
+  box-sizing: border-box;
 }
 
 input[type="checkbox"] {
@@ -469,20 +540,24 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
+}
+
+.color-picker-row .slider-label {
+  flex: 1;
 }
 
 .color-picker-row input[type="color"] {
-  width: 40px;
+  width: 200px;
   height: 30px;
   padding: 0;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .keyboard-shortcuts {
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .keyboard-shortcuts summary {
