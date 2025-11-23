@@ -667,7 +667,7 @@ function drawTaktLines(cnv, timeSinceStart) {
     if (i > 0 && Section.list[i].bpm != Section.list[i - 1].bpm) {
       cnv.textAlign(LEFT, TOP);
       let amt = min(map(blockX, 100, width / 3, 0, 1), 1);
-      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
+      cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
       cnv.textSize(BIG_TEXT_SIZE);
       cnv.text(block.bpm, blockX, (height / 4) * 3 + BIG_TEXT_SIZE + 10);
     }
@@ -675,7 +675,7 @@ function drawTaktLines(cnv, timeSinceStart) {
     // Draw time signature change indicator
     if (i > 0 && Section.list[i].measure !== Section.list[i - 1].measure) {
       let amt = min(map(blockX, 100, width / 3, 0, 1), 1);
-      cnv.fill(lerpColor(color(colorBackground), color(colorAccent), amt));
+      cnv.fill(lerpColor(color(colorBackground), color(colorForeground), amt));
       cnv.textSize(BIG_TEXT_SIZE);
       cnv.textAlign(LEFT, BOTTOM);
       cnv.text(block.measure, blockX, height - 10);
