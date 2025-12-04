@@ -87,7 +87,7 @@ navSection {
 
 settingsArea {
   grid-area: settings; /* Place settingsArea in the settings sidebar */
-  min-width: 100px; /* Ensure settings area stays at least this wide */
+  min-width: 400px; /* Ensure settings area stays at least this wide */
   max-height: 100vh;
   overflow-y: auto;
 }
@@ -359,6 +359,7 @@ input[type="checkbox"] {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
 button {
