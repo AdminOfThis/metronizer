@@ -64,7 +64,7 @@ main {
 /* Center content and add spacing for all direct children of main */
 main > * {
   justify-items: center; /* Center items within each grid cell */
-  padding: 5px; /* Inner spacing around elements */
+  padding: 0px; /* Inner spacing around elements */
 }
 
 /* ===== Grid Items & Layout Areas ===== */
@@ -171,7 +171,7 @@ commentSection {
   justify-content: center; /* Center content vertically when possible */
   max-height: 90vh; /* Limit height to 90% of viewport */
   width: 100%; /* Full width of grid cell */
-  gap: 8px; /* Space between items */
+  gap: 5px; /* Space between items */
   padding: 1rem; /* Internal padding */
   box-sizing: border-box; /* Include padding in width/height */
   overflow: hidden; /* Hide overflow; scroll only within panels */
