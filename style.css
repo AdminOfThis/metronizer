@@ -422,7 +422,7 @@ h3,
 h4 {
   text-align: center;
   color: var(--color-primary);
-  margin: 5px;
+  /*margin: 5px;*/
 }
 
 p {
