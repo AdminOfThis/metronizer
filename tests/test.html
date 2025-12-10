@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metronizer Tests</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #mocha {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <!-- Test dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.7/chai.min.js"></script>
+
+  <!-- Mock p5.js functions for testing -->
+  <script src="mocks.js"></script>
+
+  <!-- Source files -->
+  <script src="../section.js"></script>
+  <script src="../comment.js"></script>
+
+  <!-- Test setup -->
+  <script>
+    mocha.setup('bdd');
+    const expect = chai.expect;
+  </script>
+
+  <!-- Test files -->
+  <script src="section.test.js"></script>
+  <script src="comment.test.js"></script>
+
+  <!-- Run tests -->
+  <script>
+    mocha.run();
+  </script>
+</body>
+</html>
