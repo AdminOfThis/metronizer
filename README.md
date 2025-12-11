@@ -1,7 +1,9 @@
 
 # [Metronizer](https://adminofthis.github.io/metronizer/)
-[![Deployment](https://github.com/AdminOfThis/metronizer/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/AdminOfThis/metronizer/actions/workflows/deploy.yml)
 A Metronome tool for supporting orchestral live performances.
+<br>
+<br>
+[![Deployment](https://github.com/AdminOfThis/metronizer/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/AdminOfThis/metronizer/actions/workflows/deploy.yml)
 
 ## Usecase
 
