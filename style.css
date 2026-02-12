@@ -521,14 +521,11 @@ button img {
     brightness(100%) contrast(100%);
 }
 
-a:link {
+a:link,
+a:visited {
   color: var(--color-text);
   background-color: transparent;
   text-decoration: none;
-}
-
-a:visited {
-  color: var(--color-text-muted);
 }
 
 progress {
