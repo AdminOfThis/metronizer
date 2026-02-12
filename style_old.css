@@ -69,10 +69,10 @@ main > * {
 
 /* ===== Grid Items & Layout Areas ===== */
 headerSection {
-  grid-area: top; /* Assign headerSection to the "top" area spanning all columns */
+  grid-area: top; /* Assign headerSection to the “top” area spanning all columns */
 }
 navSection {
-  grid-area: nav; /* Assign navSection to the "nav" sidebar area */
+  grid-area: nav; /* Assign navSection to the “nav” sidebar area */
 }
 
 /* Hide header and nav placeholders (collapsed) */
@@ -92,8 +92,10 @@ settingsArea {
   overflow-y: auto;
 }
 
-.settingsHeader {
-  margin-bottom: 15px;
+settingsDiv {
+  display: grid;
+  gap: 18px; /* Space between individual setting controls */
+  padding-right: 15px;
 }
 
 .footerGithubDiv {
@@ -216,27 +218,16 @@ footer {
   display: flex;
 }
 
-settingsDiv {
-  display: grid;
-  gap: 18px; /* Space between individual setting controls */
-  padding-right: 15px;
-}
-
 /* Slider container layout */
-settingsDiv > div {
+settingsDiv > div:has(input[type="range"]) {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-settingsDiv > div .slider-label {
+settingsDiv > div:has(input[type="range"]) .slider-label {
   flex: 1;
   white-space: nowrap;
-}
-
-settingsDiv > div > input,
-settingsDiv > div > select {
-  width: 200px;
 }
 
 .slider-value {
@@ -245,171 +236,72 @@ settingsDiv > div > select {
   font-weight: bold;
 }
 
-/*########################################### Default input styling ################################################*/
-input {
-  padding: 4px 8px;
-  border: solid;
-  border-width: 2px;
-  border-color: var(--color-primary);
-  border-radius: 2.5px;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-input:hover {
-  background-color: var(--color-active);
-}
-
-input:focus {
-  outline: none;
-  background-color: var(--color-surface);
-}
-
 input[type="range"] {
   width: 200px;
   flex-shrink: 0;
   accent-color: var(--color-primary);
-  padding: 0;
-  border: none;
-  background-color: transparent;
 }
 
-input[type="range"]:hover,
-input[type="range"]:focus {
-  background-color: transparent;
+/* Dropdown row layout */
+.dropdown-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-input[type="number"] {
+.dropdown-row .slider-label {
+  flex: 1;
+}
+
+.dropdown-row select {
+  width: 200px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Toggle row layout */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-row .slider-label {
+  flex: 1;
+}
+
+.toggle-row .switch {
   flex-shrink: 0;
+}
+
+/* Title input row */
+.title-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-input-row .slider-label {
+  flex: 1;
+}
+
+.title-input-row input[type="text"] {
+  width: 200px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  box-sizing: border-box;
 }
 
 input[type="checkbox"] {
-  appearance: none;
-  padding: 0;
-  position: relative;
-  width: 1.35rem;
-  height: 1.35rem;
-  /* border: px solid; */
-  line-height: 1;
-}
-
-input[type="checkbox"]::before {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  white-space: pre;
-  content: " ";
   accent-color: var(--color-primary);
-  background-color: var(--color-bg);
-}
-
-input[type="checkbox"]:checked::before {
-  background-color: var(--color-bg);
-  content: "X";
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--color-text-muted);
-  -webkit-transition: 0.1s;
-  transition: 0.1s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: 0.1s;
-  transition: 0.1s;
-}
-
-input:checked + .slider {
-  background-color: var(--color-primary);
-}
-
-input:focus + .slider {
-  box-shadow: 1 0 5px red;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-input[type="color"] {
-  width: 200px;
-  height: 30px;
-  padding: 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 24px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-select {
-  /* width: 200px; */
-  padding: 4px 8px;
-  border: solid;
-  border-width: 2px;
-  border-color: var(--color-primary);
-  border-radius: 2.5px;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 16px;
-}
-
-select:hover {
-  background-color: var(--color-active);
-}
-
-select:focus {
-  outline: none;
-  background-color: var(--color-surface);
-}
-
-.commentMessage {
-  min-width: 50px;
-  flex: 1;
-  /* margin-right: 20px; */
 }
 
 .control {
@@ -465,19 +357,6 @@ select:focus {
 
 .remove-button {
   margin-left: auto;
-}
-
-.header-row {
-  display: flex;
-  justify-content: flex-start;
-  padding-left: 15px;
-}
-
-.header-row > * {
-  width: 86.25px;
-  font-weight: bold;
-  text-align: left;
-  white-space: nowrap; /* prevents wrapping */
 }
 
 .row {
@@ -573,6 +452,69 @@ hr {
   display: block; /*remove inline whitespace */
 }
 
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-text-muted);
+  -webkit-transition: 0.1s;
+  transition: 0.1s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.1s;
+  transition: 0.1s;
+}
+
+input:checked + .slider {
+  background-color: var(--color-primary);
+}
+
+input:focus + .slider {
+  box-shadow: 1 0 5px red;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 /* Color Picker Section */
 .color-section {
   margin: 0;
@@ -606,11 +548,18 @@ hr {
   flex: 1;
 }
 
+.color-picker-row input[type="color"] {
+  width: 200px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .keyboard-shortcuts {
   margin-top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .keyboard-shortcuts summary {
@@ -620,7 +569,6 @@ hr {
 }
 
 .keyboard-shortcuts ul {
-  align-self: baseline;
   margin: 8px 0 0 0;
   padding-left: 0;
   list-style: none;
@@ -653,11 +601,4 @@ kbd {
   font-family: monospace;
   font-size: 0.9em;
   color: #fff;
-}
-
-.checkboxContainer {
-  padding-right: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }

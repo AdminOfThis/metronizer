@@ -7,7 +7,6 @@
     placeholder="Bars"
     min="1"
     max="999"
-    style="width: 40px"
   />
   <input
     title="Count"
@@ -17,9 +16,8 @@
     placeholder="BPM"
     min="1"
     max="300"
-    style="width: 40px"
   />
-  <select title="Measure" name="measure" id="measureXXX" style="width: 48px">
+  <select title="Measure" name="measure" id="measureXXX">
     <option value="1/4">1/4</option>
     <option value="2/4">2/4</option>
     <option value="3/4">3/4</option>
@@ -33,8 +31,11 @@
     <option value="8/8">8/8</option>
     <option value="9/8">9/8</option>
   </select>
-  <div id="precountParentXXX" class="no-background">
-    <input type="checkbox" id="isPreXXX" name="horns" />
+  <div
+    id="precountParentXXX"
+    class="checkboxContainer"
+  >
+    <input type="checkbox" id="isPreXXX" />
     <label for="isPreXXX">Pre-Count</label>
   </div>
 

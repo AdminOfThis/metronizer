@@ -1,10 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Metronizer</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script data-goatcounter="https://metronizer.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+    <script
+      data-goatcounter="https://metronizer.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
@@ -26,14 +29,15 @@
       </canvasSection>
       <controlSection>
         <div>
-            <input
+          <input
             type="range"
-              title="Time"
-              id="timeSlider"
-              min="0"
-              max="10000"
-              value="0"></input>
-          </div>
+            title="Time"
+            id="timeSlider"
+            min="0"
+            max="10000"
+            value="0"
+          />
+        </div>
         <div id="control" class="control">
           <button id="btnPlayPause" type="button" aria-label="Play/Pause">
             <div id="iconPlayPause" class="no-background lottie-icon"></div>
@@ -44,31 +48,31 @@
         </div>
       </controlSection>
       <sectionSection>
-        <h3 class="h3">Sections</h3>
-        <div class="row" style="width: fit-content;font-size: small;font-weight: bold;margin-left: 10px;">
-          <div style="width: 47.2px; text-align: left;">Bars</div>
-          <div style="width: 47.2px; text-align: left;">BPM</div>
-          <div style="width: 47.2px; text-align: left;">Measure</div>
+        <h3>Sections</h3>
+        <div class="header-row">
+          <div>Bars</div>
+          <div>BPM</div>
+          <div>Measure</div>
         </div>
         <div id="sections" class="sections"></div>
         <button id="btnAddSection" class="centered-button">Add Section</button>
       </sectionSection>
       <commentSection>
-        <h3 class="h3">Comments</h3>
-        <div class="row" style="width: fit-content;font-size: small;font-weight: bold;margin-left: 10px;">
-          <div style="width: 47.2px; text-align: left;">Bar</div>
-          <div style="width: 47.2px; text-align: left;">Count</div>
-          <div style="width: 47.2px; text-align: left;">Comment</div>
+        <h3>Comments</h3>
+        <div class="header-row">
+          <div>Bar</div>
+          <div>Count</div>
+          <div>Comment</div>
         </div>
         <div id="comments" class="comments"></div>
         <button id="btnAddComment" class="centered-button">Add Comment</button>
       </commentSection>
       <!-- SETTINGS -->
       <settingsArea>
-        <h3>Settings</h3>
+        <h3 class="settingsHeader">Settings</h3>
         <settingsDiv>
           <!-- Title Input -->
-          <div class="title-input-row">
+          <div>
             <label for="titleInput" class="slider-label">Title</label>
             <input
               type="text"
@@ -78,6 +82,7 @@
               title="Display title"
             />
           </div>
+          <hr />
           <!-- Density Slider -->
           <div>
             <label for="sizeSlider" class="slider-label">Speed</label>
@@ -110,7 +115,9 @@
           <!-- Bar Prononciation Slider -->
           <div>
             <label for="barSlider" class="slider-label">Beat Emphasis</label>
-            <span class="slider-value"><span id="barSliderValue">0</span>%</span>
+            <span class="slider-value"
+              ><span id="barSliderValue">0</span>%</span
+            >
             <input
               type="range"
               title="Bar Prononciation"
@@ -166,9 +173,11 @@
             </datalist>
           </div>
           <!-- Animation Type -->
-          <div class="dropdown-row">
-            <label for="animationType" class="slider-label">Ball Animation</label>
-            <select id="animationType" title="Ball Animation Type" >
+          <div>
+            <label for="animationType" class="slider-label"
+              >Ball Animation</label
+            >
+            <select id="animationType" title="Ball Animation Type">
               <option value="none">None</option>
               <option value="bounce" selected>Bounce</option>
               <option value="triangle">Triangle</option>
@@ -177,16 +186,28 @@
             </select>
           </div>
           <div class="toggle-row">
-            <label for="toggleTimeRemaining" class="slider-label">Show Time Remaining</label>
+            <label for="toggleTimeRemaining" class="slider-label"
+              >Show Time Remaining</label
+            >
             <label class="switch">
-              <input type="checkbox" id="toggleTimeRemaining" title="Show Time Remaining">
+              <input
+                type="checkbox"
+                id="toggleTimeRemaining"
+                title="Show Time Remaining"
+              />
               <span class="slider round"></span>
             </label>
           </div>
           <div class="toggle-row">
-            <label for="toggleHeaderBoxes" class="slider-label">Show Header Borders</label>
+            <label for="toggleHeaderBoxes" class="slider-label"
+              >Show Header Borders</label
+            >
             <label class="switch">
-              <input type="checkbox" id="toggleHeaderBoxes" title="Show Header Borders">
+              <input
+                type="checkbox"
+                id="toggleHeaderBoxes"
+                title="Show Header Borders"
+              />
               <span class="slider round"></span>
             </label>
           </div>
@@ -196,16 +217,35 @@
             <summary class="slider-label">Colors</summary>
             <div class="color-picker-group">
               <div class="color-picker-row">
-                <label for="colorForeground" class="slider-label">Foreground</label>
-                <input type="color" id="colorForeground" value="#ffffff" title="Foreground Color"/>
+                <label for="colorForeground" class="slider-label"
+                  >Foreground</label
+                >
+                <input
+                  type="color"
+                  id="colorForeground"
+                  value="#ffffff"
+                  title="Foreground Color"
+                />
               </div>
               <div class="color-picker-row">
-                <label for="colorBackground" class="slider-label">Background</label>
-                <input type="color" id="colorBackground" value="#000000" title="Background Color"/>
+                <label for="colorBackground" class="slider-label"
+                  >Background</label
+                >
+                <input
+                  type="color"
+                  id="colorBackground"
+                  value="#000000"
+                  title="Background Color"
+                />
               </div>
               <div class="color-picker-row">
                 <label for="colorAccent" class="slider-label">Accent</label>
-                <input type="color" id="colorAccent" value="#ff0000" title="Accent Color"/>
+                <input
+                  type="color"
+                  id="colorAccent"
+                  value="#ff0000"
+                  title="Accent Color"
+                />
               </div>
             </div>
           </details>
@@ -213,16 +253,26 @@
           <div class="toggle-row">
             <label for="toggleMetronome" class="slider-label">Play Sound</label>
             <label class="switch">
-              <input type="checkbox" id="toggleMetronome" checked title="Play Sound">
+              <input
+                type="checkbox"
+                id="toggleMetronome"
+                checked
+                title="Play Sound"
+              />
               <span class="slider round"></span>
             </label>
           </div>
-          
+
           <hr />
           <div class="button-row">
             <span class="button-label">Load file</span>
             <button id="btnLoadFile">Load</button>
-            <input type="file" id="fileInput" accept=".met,.txt" title="Load file" />
+            <input
+              type="file"
+              id="fileInput"
+              accept=".met,.txt"
+              title="Load file"
+            />
           </div>
           <div class="button-row">
             <span class="button-label">Save to file</span>
@@ -231,9 +281,18 @@
           <hr />
           <div class="button-row">
             <table class="export-info">
-              <tr><td>Resolution</td><td>1920×1080</td></tr>
-              <tr><td>FPS</td><td>60</td></tr>
-              <tr><td>Format</td><td>.webm</td></tr>
+              <tr>
+                <td>Resolution</td>
+                <td>1920×1080</td>
+              </tr>
+              <tr>
+                <td>FPS</td>
+                <td>60</td>
+              </tr>
+              <tr>
+                <td>Format</td>
+                <td>.webm</td>
+              </tr>
             </table>
             <button id="btnExport">Export</button>
           </div>
@@ -246,13 +305,23 @@
           <div class="keyboard-shortcuts">
             <strong>Keyboard Shortcuts</strong>
             <ul>
-              <li><span class="shortcut-keys"><kbd>␣</kbd></span> Play / Pause</li>
-              <li><span class="shortcut-keys"><kbd>←</kbd> / <kbd>→</kbd></span> Previous / Next section</li>
-              <li><span class="shortcut-keys"><kbd>↓</kbd> / <kbd>↑</kbd></span> Previous / Next bar</li>
-              <li><span class="shortcut-keys"><kbd>Ctrl</kbd>+ <kbd>S</kbd></span> Save file</li>
+              <li>
+                <span class="shortcut-keys"><kbd>␣</kbd></span> Play / Pause
+              </li>
+              <li>
+                <span class="shortcut-keys"><kbd>←</kbd> / <kbd>→</kbd></span>
+                Previous / Next section
+              </li>
+              <li>
+                <span class="shortcut-keys"><kbd>↓</kbd> / <kbd>↑</kbd></span>
+                Previous / Next bar
+              </li>
+              <li>
+                <span class="shortcut-keys"><kbd>Ctrl</kbd>+ <kbd>S</kbd></span>
+                Save file
+              </li>
             </ul>
           </div>
-          
         </settingsDiv>
       </settingsArea>
       <navSection></navSection>
@@ -260,7 +329,7 @@
       <footer class="footer">
         <a href="https://lordicon.com/">Icons by Lordicon.com</a>
         <!-- <a href="./disclaimer.html" style="float: left">Disclaimer</a> -->
-        <div style="float: right">
+        <div class="footerGithubDiv">
           <a
             rel="noopener"
             href="https://github.com/AdminOfThis/Metronizer"
