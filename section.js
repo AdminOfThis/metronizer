@@ -52,22 +52,23 @@ class Section {
     for (let i = 1; i < data.length - 1; i++) {
       str += data[i];
     }
-
     // Clean up and inject index into template placeholders
     str = str.replaceAll(">  <", "><");
     str = str.replaceAll("XXX", this.index + "");
 
     // Create container div
-    const newDiv = createDiv(str);
+    const newDiv = createDiv(""); // ← Create empty div first
     newDiv.class("row");
-    newDiv.innerHTML = str;
+    newDiv.elt.innerHTML = str; // ← Set innerHTML on the element, not the p5 object
+
+    // Store reference to the parent div
+    this.parentDiv = newDiv;
 
     // Set up remove button
     this.removeButton = select("#removeSectionButton" + this.index);
     this.removeButton.mouseReleased(() => {
       this.remove();
     });
-    newDiv.child(this.removeButton);
 
     // Insert at correct position by counting how many lower-indexed sections are already loaded
     let insertPosition = 0;
@@ -83,7 +84,7 @@ class Section {
     } else {
       sectionsContainer.insertBefore(
         newDiv.elt,
-        existingChildren[insertPosition]
+        existingChildren[insertPosition],
       );
     }
 
@@ -93,7 +94,7 @@ class Section {
     this.inputBars.changed(
       function () {
         this.count = select("#bars" + this.index).value();
-      }.bind(this)
+      }.bind(this),
     );
 
     // Initialize BPM input
@@ -102,7 +103,7 @@ class Section {
     this.inputBPM.changed(
       function () {
         this.bpm = select("#bpm" + this.index).value();
-      }.bind(this)
+      }.bind(this),
     );
 
     // Initialize time signature input
@@ -113,7 +114,7 @@ class Section {
         this.measure = select("#measure" + this.index).value();
         this.measure_min = parseInt(this.measure.split("/")[0]);
         this.measure_maj = parseInt(this.measure.split("/")[1]);
-      }.bind(this)
+      }.bind(this),
     );
 
     // Initialize precount checkbox (only visible for first section)
@@ -126,7 +127,7 @@ class Section {
         if (this.index === 0) {
           Section.hasPreCount = this.doNotCount;
         }
-      }.bind(this)
+      }.bind(this),
     );
     this.precountParent = select("#precountParent" + this.index);
 
