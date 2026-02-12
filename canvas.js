@@ -64,10 +64,11 @@ let displayTitle = "";
 
 /** Animation type enum */
 const AnimationType = {
+  NONE: "none",
   BOUNCE: "bounce",
   TRIANGLE: "triangle",
   SAWTOOTH: "sawtooth",
-  SAWTOOTH_INV: "sawtooth_inv"
+  SAWTOOTH_INV: "sawtooth_inv",
 };
 
 /** Ball animation type */
@@ -170,11 +171,13 @@ function drawOnCanvas(cnv, time) {
       currentTakt,
       currentSubdivide,
       currentBlock,
-      timeSinceStart
+      timeSinceStart,
     );
 
     // Draw bouncing ball
-    drawCircle(cnv, jump, timeSinceStart, currentSubdivide, currentBlock);
+    if (animationType != AnimationType.NONE) {
+      drawCircle(cnv, jump, timeSinceStart, currentSubdivide, currentBlock);
+    }
   }
 
   // Draw all takt lines
@@ -203,8 +206,8 @@ function drawPlayheadLine(cnv) {
   let startY = 0;
   if (showHeaderBoxes) {
     let padding = 12;
-    let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2 ;
-    startY = boxHeight ; // Add some margin
+    let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2;
+    startY = boxHeight; // Add some margin
   }
 
   cnv.rect(width / 3 - nowLineWidth / 2, startY, nowLineWidth, height - startY);
@@ -221,12 +224,14 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   let padding = 12;
   let strokeW = 10;
   // Height fits title + counter (or two lines for sides)
-  let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2 ;
+  let boxHeight = BIG_TEXT_SIZE * 0.8 + BIG_TEXT_SIZE * 1.5 + padding * 2;
 
   // Draw header boxes if enabled
   if (showHeaderBoxes) {
     cnv.noFill();
-    cnv.stroke(lerpColor(color(colorBackground), color(colorForeground), amt * 0.5));
+    cnv.stroke(
+      lerpColor(color(colorBackground), color(colorForeground), amt * 0.5),
+    );
     cnv.strokeWeight(strokeW);
 
     // Calculate left box dimensions
@@ -242,7 +247,8 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
     let rightContentWidth = rightBounds.w;
 
     // Use same width for both boxes (max of left and right)
-    let sideBoxWidth = max(leftContentWidth, rightContentWidth) + padding * 3+10;
+    let sideBoxWidth =
+      max(leftContentWidth, rightContentWidth) + padding * 3 + 10;
 
     // Position boxes with offset for stroke width
     let boxY = strokeW / 2;
@@ -276,7 +282,11 @@ function drawCurrentInfo(cnv, currentBlock, timeSinceStart) {
   // Show time remaining if enabled
   if (showTimeRemaining) {
     let timeRemaining = max(0, totalLength - timeSinceStart);
-    cnv.text("-" + msToTime(timeRemaining), width - textMargin, BIG_TEXT_SIZE + 10);
+    cnv.text(
+      "-" + msToTime(timeRemaining),
+      width - textMargin,
+      BIG_TEXT_SIZE + 10,
+    );
   }
 
   cnv.textAlign(LEFT, TOP);
@@ -295,13 +305,14 @@ function drawBarCounter(
   currentTakt,
   currentSubdivide,
   currentBlock,
-  timeSinceStart
+  timeSinceStart,
 ) {
   cnv.textAlign(CENTER, TOP);
 
   let counterText;
   if (currentSubdivide > 0) {
-    counterText = currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min;
+    counterText =
+      currentTakt + " | " + currentSubdivide + "/" + currentBlock.measure_min;
   } else {
     let timeToEnd = calculateTimeToEnd(timeSinceStart);
     if (timeToEnd > 0) {
@@ -384,10 +395,10 @@ function drawTaktLines(cnv, timeSinceStart) {
         // Main bar line
         let amt = min(
           map(x, 100, width / 3, 0, basecolor / 255),
-          basecolor / 255
+          basecolor / 255,
         );
         cnv.fill(
-          lerpColor(color(colorBackground), color(colorForeground), amt)
+          lerpColor(color(colorBackground), color(colorForeground), amt),
         );
         cnv.rect(x - RECT_WIDTH / 2, height / 2, RECT_WIDTH * 1.5, height / 4);
 
@@ -400,10 +411,10 @@ function drawTaktLines(cnv, timeSinceStart) {
           let subX = width / 3 + taktBegin + addOffset;
           let subAmt = min(
             map(subX, 100, width / 3, 0, basecolor / 255),
-            basecolor / 255
+            basecolor / 255,
           );
           cnv.fill(
-            lerpColor(color(colorBackground), color(colorForeground), subAmt)
+            lerpColor(color(colorBackground), color(colorForeground), subAmt),
           );
           cnv.rect(subX - RECT_WIDTH / 2, height / 2, RECT_WIDTH, height / 6);
         }
@@ -511,7 +522,7 @@ function drawComments(cnv, index, pixelPerSecond, timeSinceStart) {
     // Draw comment marker line
     let nowLineWidth = RECT_WIDTH / 2;
     cnv.fill(
-      lerpColor(color(colorBackground), color(colorForeground), amt * 0.5)
+      lerpColor(color(colorBackground), color(colorForeground), amt * 0.5),
     );
     cnv.rect(x - RECT_WIDTH / 2, height / 4, nowLineWidth, height / 4);
   }
@@ -605,7 +616,7 @@ function calculateCurrentBarAndBeat(timeSinceStart) {
             (addedTime -
               Section.list[i].length() / Section.list[i].measure_min +
               5) /
-              Section.list[i].length()
+              Section.list[i].length(),
           ) + 1;
       }
       break;
@@ -623,7 +634,9 @@ function calculateCurrentBarAndBeat(timeSinceStart) {
  * @returns {number} Jump height in pixels
  */
 function calculateBallJump(timeSinceStart, currentLength, currentBlock) {
-  const progress = ((timeSinceStart - currentLength) / currentBlock.length()) * currentBlock.measure_min;
+  const progress =
+    ((timeSinceStart - currentLength) / currentBlock.length()) *
+    currentBlock.measure_min;
   const phase = progress % 1;
 
   switch (animationType) {
@@ -636,6 +649,7 @@ function calculateBallJump(timeSinceStart, currentLength, currentBlock) {
     case AnimationType.SAWTOOTH_INV:
       // Inverted sawtooth wave - gradual rise, instant drop
       return phase * bounce;
+    case AnimationType.BOUNCE:
     default:
       // Bounce - sine wave
       return abs(sin(progress * PI) * bounce);
@@ -676,13 +690,11 @@ function calculateCommentX(c, pixelPerSecond, timeSinceStart) {
   while (currentBar <= c.bar && currentBlock < Section.list.length) {
     if (Section.list[currentBlock].doNotCount) {
       // doNotCount sections add time but don't increment bar numbers
-      x +=
-        (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
       currentBlock++;
     } else if (currentBar + Section.list[currentBlock].count <= c.bar) {
       // Skip entire section - it's before our target bar
-      x +=
-        (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
+      x += (Section.list[currentBlock].lengthTotal() / 1000.0) * pixelPerSecond;
       currentBar += parseInt(Section.list[currentBlock].count);
       currentBlock++;
     } else {
