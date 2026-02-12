@@ -608,7 +608,9 @@ hr {
 
 .keyboard-shortcuts {
   margin-top: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .keyboard-shortcuts summary {
@@ -618,6 +620,7 @@ hr {
 }
 
 .keyboard-shortcuts ul {
+  align-self: baseline;
   margin: 8px 0 0 0;
   padding-left: 0;
   list-style: none;
