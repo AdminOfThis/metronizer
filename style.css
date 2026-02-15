@@ -446,8 +446,8 @@ select:focus {
   white-space: nowrap;
   flex: 1;
   overflow-y: auto;
-  border: 2px solid;
-  border-color: var(--color-primary);
+  /* border: 2px solid; */
+  /* border-color: var(--color-primary); */
   padding: 8px;
   gap: 8px;
 }
