@@ -487,6 +487,10 @@ select:focus {
   width: 100%;
 }
 
+.row > button {
+  height: 31px;
+}
+
 button {
   background-color: var(--color-bg);
   border: solid;
