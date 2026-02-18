@@ -325,7 +325,9 @@
       <footer class="footer">
         <a href="https://lordicon.com/">Icons by Lordicon.com</a>
         <div id="visitor-count">
-          So far ### people have visited this godforsaken website
+          So far
+          <div id="stats"></div>
+          people have visited this godforsaken website
         </div>
         <!-- <a href="./disclaimer.html" style="float: left">Disclaimer</a> -->
         <div>
@@ -350,13 +352,34 @@
         async
         src="//gc.zgo.at/count.js"
       ></script>
+      <!-- Goat Counter Numbers -->
       <script>
-        var t = setInterval(function () {
-          if (window.goatcounter && window.goatcounter.visit_count) {
-            clearInterval(t);
-            window.goatcounter.visit_count({ append: "#visitor-count" });
+        window.addEventListener("load", function () {
+          if (!window.goatcounter || !window.goatcounter.get_data) {
+            console.error("GoatCounter not loaded");
+            return;
           }
-        }, 100);
+
+          let path = window.goatcounter.get_data()["p"];
+
+          fetch(
+            "https://metronizer.goatcounter.com/counter/" +
+              encodeURIComponent(path) +
+              ".json",
+          )
+            .then((response) => {
+              if (!response.ok) throw new Error("Counter not found");
+              return response.json();
+            })
+            .then((data) => {
+              document.getElementById("stats").innerText =
+                data.count.toLocaleString();
+            })
+            .catch((err) => {
+              console.error(err);
+              document.getElementById("stats").innerText = "0";
+            });
+        });
       </script>
       <script src="animatedButton.js"></script>
       <script src="sketch.js"></script>
