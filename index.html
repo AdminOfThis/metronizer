@@ -3,11 +3,7 @@
   <head>
     <title>Metronizer</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script
-      data-goatcounter="https://metronizer.goatcounter.com/count"
-      async
-      src="//gc.zgo.at/count.js"
-    ></script>
+
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
@@ -328,8 +324,11 @@
       <!-- Footer -->
       <footer class="footer">
         <a href="https://lordicon.com/">Icons by Lordicon.com</a>
+        <div id="visitor-count">
+          So far ### people have visited this godforsaken website
+        </div>
         <!-- <a href="./disclaimer.html" style="float: left">Disclaimer</a> -->
-        <div class="footerGithubDiv">
+        <div>
           <a
             rel="noopener"
             href="https://github.com/AdminOfThis/Metronizer"
@@ -345,7 +344,20 @@
           >
         </div>
       </footer>
-
+      <!-- Goat Counter Page counter -->
+      <script
+        data-goatcounter="https://metronizer.goatcounter.com/count"
+        async
+        src="//gc.zgo.at/count.js"
+      ></script>
+      <script>
+        var t = setInterval(function () {
+          if (window.goatcounter && window.goatcounter.visit_count) {
+            clearInterval(t);
+            window.goatcounter.visit_count({ append: "#visitor-count" });
+          }
+        }, 100);
+      </script>
       <script src="animatedButton.js"></script>
       <script src="sketch.js"></script>
     </main>
