@@ -182,13 +182,6 @@ commentSection > * {
   justify-content: center; /* Center flex items horizontally */
 }
 
-footer {
-  grid-area: footer;
-  display: flex;
-  justify-content: space-between;
-  background-color: var(--color-bg2);
-}
-
 /* CANVAS */
 
 .canvas {
@@ -661,7 +654,17 @@ kbd {
   gap: 5px;
 }
 
+footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-bg2);
+  
+}
+
 .goatCounter {
+  font-size: x-small;
   display: flex;
   gap: 5px;
 }
