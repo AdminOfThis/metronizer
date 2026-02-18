@@ -660,3 +660,8 @@ kbd {
   align-items: center;
   gap: 5px;
 }
+
+.goatCounter {
+  display: flex;
+  gap: 5px;
+}
