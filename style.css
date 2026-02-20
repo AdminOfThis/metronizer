@@ -656,15 +656,25 @@ kbd {
 
 footer {
   grid-area: footer;
+  position: relative; /* Required */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: end;
   background-color: var(--color-bg2);
-  
 }
 
-.goatCounter {
+.footer-left {
+  margin-right: auto;
+}
+
+.footer-right {
+  margin-left: auto;
+}
+
+.footer-center {
   font-size: x-small;
   display: flex;
-  gap: 5px;
+  gap: .25em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
