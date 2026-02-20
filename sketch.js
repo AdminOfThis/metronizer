@@ -90,7 +90,7 @@ let pauseSinceStart = 0;
 let previousSubDivide = 1;
 
 /** Whether to play metronome sounds */
-let bool_playSound = true;
+let bool_playSound = false;
 
 // ===========================
 // Sound Variables
@@ -216,10 +216,10 @@ function setupButtons() {
   let btnLoadFile = select("#btnLoadFile");
   let fileInput = select("#fileInput");
   if (btnLoadFile && fileInput) {
-    btnLoadFile.mouseReleased(function() {
+    btnLoadFile.mouseReleased(function () {
       fileInput.elt.click();
     });
-    fileInput.elt.addEventListener('change', function(e) {
+    fileInput.elt.addEventListener("change", function (e) {
       if (e.target.files.length > 0) {
         let file = e.target.files[0];
         if (hasAllowedExtension(file.name)) {
@@ -232,13 +232,13 @@ function setupButtons() {
           }
           // Read file
           const reader = new FileReader();
-          reader.onload = function(event) {
+          reader.onload = function (event) {
             parseInput(event.target.result);
           };
           reader.readAsText(file);
         }
         // Reset input so same file can be loaded again
-        e.target.value = '';
+        e.target.value = "";
       }
     });
   }
@@ -309,6 +309,7 @@ function setupSliders() {
 
   // Metronome toggle
   tglMetronome = select("#toggleMetronome");
+  tglMetronome.checked(bool_playSound);
   tglMetronome.input(function () {
     bool_playSound = tglMetronome.checked();
   });
@@ -400,11 +401,11 @@ function setupExportUI() {
  * Updates the time slider position during playback.
  * @param {number} timeSinceStart - Elapsed time in ms
  */
-updateTimeSlider = function(timeSinceStart) {
+updateTimeSlider = function (timeSinceStart) {
   if (sliderTime != null && play) {
     sliderTime.value((timeSinceStart / totalLength) * 10000.0);
   }
-}
+};
 
 /**
  * Handles playing click sounds on beat changes.
@@ -468,11 +469,11 @@ function gotFile(file) {
     // Always use FileReader for consistent text reading
     if (file.file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         parseInput(e.target.result);
       };
       reader.readAsText(file.file);
-    } else if (file.data && typeof file.data === 'string') {
+    } else if (file.data && typeof file.data === "string") {
       parseInput(file.data);
     }
   }
@@ -506,7 +507,7 @@ function getStrings() {
     colorBackground: colorBackground,
     colorAccent: colorAccent,
     playSound: bool_playSound,
-    animationType: animationType
+    animationType: animationType,
   };
   result += "settings " + JSON.stringify(settings);
 
@@ -693,7 +694,7 @@ function reset() {
   document.dispatchEvent(
     new CustomEvent("btnPlayPause", {
       detail: { isPlaying: play },
-    })
+    }),
   );
 }
 
@@ -720,7 +721,7 @@ function buttonPlayPause() {
   document.dispatchEvent(
     new CustomEvent("btnPlayPause", {
       detail: { isPlaying: play },
-    })
+    }),
   );
 }
 
@@ -776,7 +777,7 @@ async function exportMP4() {
 
   // Calculate frames needed
   let neededNumberOfFrames = ceil(
-    ((totalLength + 8000) / 1000.0) * exportFrameRate
+    ((totalLength + 8000) / 1000.0) * exportFrameRate,
   );
   let currentFrame = 0;
 
@@ -788,7 +789,11 @@ async function exportMP4() {
 
   while (currentFrame < neededNumberOfFrames && exporting) {
     // Process a batch of frames
-    for (let i = 0; i < BATCH_SIZE && currentFrame < neededNumberOfFrames && exporting; i++) {
+    for (
+      let i = 0;
+      i < BATCH_SIZE && currentFrame < neededNumberOfFrames && exporting;
+      i++
+    ) {
       const frameTime = startTime + (1000.0 / exportFrameRate) * currentFrame;
       drawOnCanvas(exportCanvas, frameTime);
       capturer.capture(exportCanvas.canvas);
@@ -798,11 +803,11 @@ async function exportMP4() {
     // Update progress after each batch
     const progress = currentFrame / neededNumberOfFrames;
     const elapsed = (performance.now() - startRenderTime) / 1000;
-    const remaining = currentFrame/neededNumberOfFrames*100 ;
+    const remaining = (currentFrame / neededNumberOfFrames) * 100;
 
     exportProgress.value(progress);
     renderFrame.html(
-      `${currentFrame} / ${neededNumberOfFrames} (${remaining.toFixed(2)}%)`
+      `${currentFrame} / ${neededNumberOfFrames} (${remaining.toFixed(2)}%)`,
     );
 
     // Use requestAnimationFrame for smoother UI updates
@@ -835,7 +840,7 @@ async function exportMP4() {
  */
 function keyPressed(e) {
   // Handle Ctrl+S to save file
-  if ((e.ctrlKey || e.metaKey) && key === 's') {
+  if ((e.ctrlKey || e.metaKey) && key === "s") {
     e.preventDefault();
     buttonSave();
     return false;
@@ -843,7 +848,7 @@ function keyPressed(e) {
 
   // Ignore other shortcuts when typing in input fields
   let activeTag = document.activeElement.tagName.toLowerCase();
-  if (activeTag === 'input' || activeTag === 'textarea') {
+  if (activeTag === "input" || activeTag === "textarea") {
     return;
   }
 
@@ -872,7 +877,8 @@ function seekToPreviousSection() {
   // Find the section before current position
   let targetTime = 0;
   for (let i = sectionTimes.length - 1; i >= 0; i--) {
-    if (sectionTimes[i] < currentTime - 500) { // 500ms threshold
+    if (sectionTimes[i] < currentTime - 500) {
+      // 500ms threshold
       targetTime = sectionTimes[i];
       break;
     }
@@ -893,7 +899,8 @@ function seekToNextSection() {
   // Find the section after current position
   let targetTime = totalLength;
   for (let i = 0; i < sectionTimes.length; i++) {
-    if (sectionTimes[i] > currentTime + 100) { // 100ms threshold
+    if (sectionTimes[i] > currentTime + 100) {
+      // 100ms threshold
       targetTime = sectionTimes[i];
       break;
     }
@@ -914,7 +921,8 @@ function seekToPreviousBar() {
   // Find the bar before current position
   let targetTime = 0;
   for (let i = barTimes.length - 1; i >= 0; i--) {
-    if (barTimes[i] < currentTime - 500) { // 500ms threshold
+    if (barTimes[i] < currentTime - 500) {
+      // 500ms threshold
       targetTime = barTimes[i];
       break;
     }
@@ -935,7 +943,8 @@ function seekToNextBar() {
   // Find the bar after current position
   let targetTime = totalLength;
   for (let i = 0; i < barTimes.length; i++) {
-    if (barTimes[i] > currentTime + 100) { // 100ms threshold
+    if (barTimes[i] > currentTime + 100) {
+      // 100ms threshold
       targetTime = barTimes[i];
       break;
     }
