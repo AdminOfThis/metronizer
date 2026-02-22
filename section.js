@@ -107,11 +107,12 @@ class Section {
     );
 
     // Initialize time signature input
-    this.inputMeasure = select("#measure" + this.index);
-    this.inputMeasure.value(this.measure);
-    this.inputMeasure.changed(
+    this.inputMeasure = document.querySelector("#measure" + this.index);
+    this.inputMeasure.value = this.measure;
+    this.inputMeasure.addEventListener(
+      "sl-change",
       function () {
-        this.measure = select("#measure" + this.index).value();
+        this.measure = document.querySelector("#measure" + this.index).value;
         this.measure_min = parseInt(this.measure.split("/")[0]);
         this.measure_maj = parseInt(this.measure.split("/")[1]);
       }.bind(this),

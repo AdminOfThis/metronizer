@@ -673,8 +673,27 @@ footer {
 .footer-center {
   font-size: x-small;
   display: flex;
-  gap: .25em;
+  gap: 0.25em;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+}
+
+:not(sl-select).list-input {
+  width: 95px;
+}
+
+sl-select.list-input {
+  width: 95px;
+  height: 30px;
+}
+
+sl-select.list-input::part(listbox) {
+  width: auto;
+  min-width: max-content;
+}
+
+sl-select.list-input::part(combobox) {
+  height: 30px;
+  min-height: 30px;
 }

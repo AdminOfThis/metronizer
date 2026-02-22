@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="sl-theme-dark">
   <head>
     <title>Metronizer</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -13,6 +13,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"
+    ></script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
@@ -249,11 +258,7 @@
           <div class="toggle-row">
             <label for="toggleMetronome" class="slider-label">Play Sound</label>
             <label class="switch">
-              <input
-                type="checkbox"
-                id="toggleMetronome"
-                title="Play Sound"
-              />
+              <input type="checkbox" id="toggleMetronome" title="Play Sound" />
               <span class="slider round"></span>
             </label>
           </div>
@@ -322,16 +327,19 @@
       <navSection></navSection>
       <!-- Footer -->
       <footer class="footer">
-        <a class = "footer-left" href="https://lordicon.com/">Icons by Lordicon.com</a>
+        <a class="footer-left" href="https://lordicon.com/"
+          >Icons by Lordicon.com</a
+        >
         <div class="footer-center">
           So far
           <div id="stats">###</div>
           people have visited this godforsaken website
         </div>
+
         <!-- <a href="./disclaimer.html" style="float: left">Disclaimer</a> -->
         <div>
           <a
-            class = "footer-right"
+            class="footer-right"
             rel="noopener"
             href="https://github.com/AdminOfThis/Metronizer"
             target="_blank"
