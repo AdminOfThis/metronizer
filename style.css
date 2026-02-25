@@ -759,3 +759,9 @@ wa-slider::part(track-active) {
 wa-icon {
   background-color: transparent;
 }
+
+.gap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

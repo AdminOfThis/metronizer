@@ -798,7 +798,7 @@ async function exportMP4() {
     const elapsed = (performance.now() - startRenderTime) / 1000;
     const remaining = (currentFrame / neededNumberOfFrames) * 100;
 
-    exportProgress.value(progress);
+    exportProgress.value(progress*100.0);
     renderFrame.html(
       `${currentFrame} / ${neededNumberOfFrames} (${remaining.toFixed(2)}%)`,
     );
