@@ -573,16 +573,40 @@ hr {
   background-color: transparent;
 }
 
+.color-section {
+  --wa-spacing-medium: 0px;
+}
+
 .color-section::part(header) {
   height: 30px;
   min-height: 30px;
+  padding-block: 0;
+}
+
+.color-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.color-section-label {
+  font-size: var(--wa-font-size-small, 0.875rem);
+  color: var(--wa-color-neutral-text-loud, var(--color-text-muted));
 }
 
 .color-pickers-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.color-pickers-row wa-color-picker {
+  justify-self: center;
+}
+
+.color-pickers-row wa-color-picker::part(form-control) {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 16px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .keyboard-shortcuts {
