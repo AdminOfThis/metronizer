@@ -1,30 +1,20 @@
 :root {
-  /* counter-reset: sections; */
-  /* Base colors */
   --color-bg: #2d2d2d;
   --color-bg2: #3b3b3b;
   --color-surface: #3b3b3b;
   --color-primary: #8abf7b;
   --color-secondary: #f5a623;
-  --color-text: #f0f0f0; /* Slightly brighter for contrast on dark */
-  --color-text-on-secondary: #1a1a1a; /* Dark text for use over secondary */
+  --color-text: #f0f0f0;
   --color-text-muted: #a1a1a1;
   --color-border: #444444;
-  --color-danger: #ff6f61;
-
-  --color-hover: #4d4d4d;
   --color-active: #4c4c4c;
 
   font-family: "Segoe UI";
 
-  /* https://webawesome.com/docs/tokens/color/#foundational-colors */
-
-  /* Web Awesome neutral fill — forces all input/select/etc backgrounds to match our theme */
+  /* Web Awesome token overrides */
   --wa-color-neutral-fill-quiet: var(--color-bg2);
   --wa-color-neutral-fill-normal: var(--color-bg2);
   --wa-color-neutral-fill-loud: var(--color-bg);
-
-  /* Web Awesome brand color overrides — maps --color-primary (#8abf7b) onto the brand scale */
   --wa-color-brand-50: var(--color-primary);
   --wa-color-focus: var(--color-primary);
 
@@ -35,77 +25,125 @@
 /* ===== Full-Page Layout ===== */
 html,
 body {
-  height: 100vh; /* Ensure viewport covers full browser height */
-  overflow: hidden; /* Disable scrolling to keep layout fixed */
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* ===== Global Reset & Base Styles ===== */
+/* ===== Global Reset ===== */
 * {
-  /* Apply default text color from theme */
   color: var(--color-text) !important;
-  /* Apply default background color from theme */
   background-color: var(--color-bg2);
-
-  /* Slightly round all elements for consistency */
   border-radius: 2.5px;
-  /* Remove default browser margins */
   margin: 0;
 }
 
 /* ===== Main Layout Grid ===== */
 main {
-  display: grid; /* Use CSS Grid for layout */
-  height: 100%; /* Fill available vertical space */
-
-  /* Define named grid areas for page structure */
+  display: grid;
+  height: 100%;
   grid-template-areas:
     "top top top top"
     "nav canvas canvas settings"
     "nav control control settings"
     "nav sections comments settings"
     "footer footer footer footer";
-
-  /* Column widths: hidden nav, two equal main areas, settings sidebar */
   grid-template-columns: 0fr 2fr 2fr 1fr;
-  /* Row heights: hidden header, auto rows, flexible middle, fixed footer */
   grid-template-rows: 0px auto auto 1fr 30px;
-  gap: 5px 5px; /* Space between grid items */
-
-  background-color: var(--color-bg); /* Background for main container */
-  /* background-color: red; */ /* Debugging: visualize grid */
+  gap: 5px;
+  background-color: var(--color-bg);
 }
 
-/* Center content and add spacing for all direct children of main */
 main > * {
-  justify-items: center; /* Center items within each grid cell */
-  padding: 5px; /* Inner spacing around elements */
+  justify-items: center;
+  padding: 5px;
 }
 
-/* ===== Grid Items & Layout Areas ===== */
+/* ===== Grid Areas ===== */
 headerSection {
-  grid-area: top; /* Assign headerSection to the "top" area spanning all columns */
-}
-navSection {
-  grid-area: nav; /* Assign navSection to the "nav" sidebar area */
+  grid-area: top;
 }
 
-/* Hide header and nav placeholders (collapsed) */
+navSection {
+  grid-area: nav;
+}
+
 headerSection,
 navSection {
-  visibility: hidden; /* Keep elements in DOM but invisible */
-  min-width: 0; /* Prevent occupying horizontal space */
-  width: 0; /* Collapse width completely */
-  max-width: 0; /* Ensure no expansion beyond zero */
-  padding: 0; /* Remove any internal spacing */
+  visibility: hidden;
+  min-width: 0;
+  width: 0;
+  max-width: 0;
+  padding: 0;
 }
 
 settingsArea {
-  grid-area: settings; /* Place settingsArea in the settings sidebar */
-  min-width: 400px; /* Ensure settings area stays at least this wide */
+  grid-area: settings;
+  min-width: 400px;
   max-height: 100vh;
   overflow-y: auto;
 }
 
+canvasSection {
+  grid-area: canvas;
+  height: auto;
+}
+
+controlSection {
+  grid-area: control;
+  justify-content: center;
+  display: grid;
+  gap: 10px;
+}
+
+sectionSection {
+  grid-area: sections;
+}
+
+commentSection {
+  grid-area: comments;
+}
+
+sectionSection,
+commentSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 90vh;
+  width: 100%;
+  gap: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+sectionSection > *,
+commentSection > * {
+  justify-items: center;
+  justify-content: center;
+}
+
+/* ===== Canvas ===== */
+.canvas {
+  display: block;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.canvas-parent {
+  display: block;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+settingsDiv {
+  display: grid;
+  gap: 10px;
+  padding: 15px;
+}
+
+/* ===== Button Rows ===== */
 .button-row {
   display: flex;
   align-items: center;
@@ -127,23 +165,6 @@ settingsArea {
   padding: 4px 12px;
 }
 
-.button-row-simple {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-end;
-}
-
-.button-row-simple button,
-.button-row-simple wa-button {
-  width: 80px;
-  cursor: pointer;
-}
-
-.button-row-simple button {
-  padding: 8px 12px;
-}
-
 .export-info {
   flex: 1;
   font-size: 0.85em;
@@ -161,276 +182,7 @@ settingsArea {
   display: none;
 }
 
-canvasSection {
-  grid-area: canvas; /* Place canvasSection in the main canvas area */
-  height: auto; /* Allow height to adjust to content or canvas size */
-}
-
-controlSection {
-  grid-area: control; /* Place controlSection in the control row */
-  justify-content: center; /* Center controls horizontally */
-  display: grid; /* Use grid for arranging control buttons */
-  gap: 10px; /* Space between control buttons */
-}
-
-sectionSection {
-  grid-area: sections; /* Place sectionSection in the sections column */
-}
-commentSection {
-  grid-area: comments; /* Place commentSection in the comments column */
-}
-
-/* Shared styling for sections and comments panels */
-sectionSection,
-commentSection {
-  display: flex; /* Flex layout for vertical stacking */
-  flex-direction: column; /* Stack children top-to-bottom */
-  justify-content: center; /* Center content vertically when possible */
-  max-height: 90vh; /* Limit height to 90% of viewport */
-  width: 100%; /* Full width of grid cell */
-  gap: 5px; /* Space between items */
-  padding: 5px; /* Internal padding */
-  box-sizing: border-box; /* Include padding in width/height */
-  overflow: hidden; /* Hide overflow; scroll only within panels */
-}
-
-/* Centering content inside individual items */
-sectionSection > *,
-commentSection > * {
-  justify-items: center; /* Center grid items if any nested grids exist */
-  justify-content: center; /* Center flex items horizontally */
-}
-
-/* CANVAS */
-
-.canvas {
-  /* margin: 20px; */
-  display: block;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.canvas-parent {
-  /* margin: 5px; */
-  display: block;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.grid-container {
-  margin-left: auto;
-  margin-right: auto;
-  justify-content: center;
-  display: flex;
-}
-
-settingsDiv {
-  display: grid;
-  gap: 10px; /* Space between individual setting controls */
-  padding: 15px;
-}
-
-/*########################################### Default input styling ################################################*/
-/* input {
-  padding: 4px 8px;
-  border: solid;
-  border-width: 2px;
-  border-color: var(--color-primary);
-  border-radius: 2.5px;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-input:hover {
-  background-color: var(--color-active);
-}
-
-input:focus {
-  outline: none;
-  background-color: var(--color-surface);
-}
-
-input[type="range"] {
-  width: 200px;
-  flex-shrink: 0;
-  accent-color: var(--color-primary);
-  padding: 0;
-  border: none;
-  background-color: transparent;
-}
-
-input[type="range"]:hover,
-input[type="range"]:focus {
-  background-color: transparent;
-}
-
-input[type="number"] {
-  flex-shrink: 0;
-}
-
-input[type="checkbox"] {
-  appearance: none;
-  padding: 0;
-  position: relative;
-  width: 1.35rem;
-  height: 1.35rem;
-  /* border: px solid; */
-/* line-height: 1; */
-/* } */
-
-input[type="checkbox"]::before {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  white-space: pre;
-  content: " ";
-  accent-color: var(--color-primary);
-  background-color: var(--color-bg);
-}
-
-input[type="checkbox"]:checked::before {
-  background-color: var(--color-bg);
-  content: "X";
-}
-*/
-
-/* The slider */
-/* .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--color-text-muted);
-  -webkit-transition: 0.1s;
-  transition: 0.1s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: 0.1s;
-  transition: 0.1s;
-} */
-
-input:checked + .slider {
-  background-color: var(--color-primary);
-}
-
-input:focus + .slider {
-  box-shadow: 1 0 5px red;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-input[type="color"] {
-  width: 200px;
-  height: 30px;
-  padding: 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-/* The switch - the box around the slider */
-/* .switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 24px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-*/
-
-/* select {
-  padding: 4px 8px;
-  border: solid;
-  border-width: 2px;
-  border-color: var(--color-primary);
-  border-radius: 2.5px;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 16px;
-}
-
-select:hover {
-  background-color: var(--color-active);
-}
-
-select:focus {
-  outline: none;
-  background-color: var(--color-surface);
-} */
-
-.commentMessage {
-  min-width: 50px;
-  flex: 1;
-  /* margin-right: 20px; */
-}
-
-.control {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  justify-content: center;
-  gap: 8px;
-}
-
-.control > wa-button::part(base) {
-  width: 80px;
-}
-
-.warning {
-  color: var(--color-secondary);
-  border: solid;
-}
-
-.centered {
-  text-align: center;
-}
-
-/* 
-  This rule targets elements with the class "no-background"
-  and all of their direct children.
-  It ensures that no background color is applied.
-*/
-.no-background,
-.no-background > * {
-  background-color: transparent; /* Removes any background color */
-}
-
+/* ===== Sections & Comments Lists ===== */
 .sections,
 .comments {
   justify-self: left;
@@ -438,26 +190,19 @@ select:focus {
   white-space: nowrap;
   flex: 1;
   overflow-y: auto;
-  /* border: 2px solid; */
-  /* border-color: var(--color-primary); */
   padding: 8px;
   gap: 8px;
 }
 
 .comments > div,
 .sections > div {
-  margin-bottom: 8px; /* or whatever spacing you want */
+  margin-bottom: 8px;
   background-color: var(--color-active);
 }
 
 .comments > div:last-child,
 .sections > div:last-child {
-  margin-bottom: 0; /* optional: avoid extra space at the bottom */
-}
-
-.remove-button {
-  /* width: 30px; */
-  margin-left: auto;
+  margin-bottom: 0;
 }
 
 .header-row {
@@ -470,7 +215,7 @@ select:focus {
   width: calc(var(--section-width) + var(--section-gap));
   font-weight: bold;
   text-align: left;
-  white-space: nowrap; /* prevents wrapping */
+  white-space: nowrap;
 }
 
 .row {
@@ -480,10 +225,24 @@ select:focus {
   width: 100%;
 }
 
-.row > button {
-  height: 31px;
+.remove-button {
+  margin-left: auto;
 }
 
+/* ===== Control Bar ===== */
+.control {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  justify-content: center;
+  gap: 8px;
+}
+
+.control > wa-button::part(base) {
+  width: 80px;
+}
+
+/* ===== Native Buttons ===== */
 button {
   background-color: var(--color-bg);
   border: solid;
@@ -495,7 +254,6 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  /* margin: 4px; */
   min-width: 50px;
 }
 
@@ -513,11 +271,7 @@ button:disabled {
   color: var(--color-text-muted);
 }
 
-button img {
-  filter: invert(100%) sepia(0%) saturate(100%) hue-rotate(0deg)
-    brightness(100%) contrast(100%);
-}
-
+/* ===== Links ===== */
 a:link,
 a:visited {
   color: var(--color-text);
@@ -525,23 +279,11 @@ a:visited {
   text-decoration: none;
 }
 
-progress {
-  width: 100%;
-}
-
-progress::-webkit-progress-value {
-  background-color: var(--color-primary);
-}
-
-progress::-moz-progress-bar {
-  background-color: var(--color-primary);
-}
-
+/* ===== Typography ===== */
 h3,
 h4 {
   text-align: center;
   color: var(--color-primary);
-  /*margin: 5px;*/
 }
 
 p {
@@ -553,73 +295,43 @@ hr {
   color: var(--color-border);
 }
 
-.lottie-icon {
-  box-sizing: border-box; /*ensure width/height include borders if you add them */
-  height: 30px;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-}
-.lottie-icon svg {
-  padding: 10px;
-  height: 30px;
-  width: auto; /*fill the full width of the now-unpadded parent */
-  display: block; /*remove inline whitespace */
+kbd {
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #fff;
 }
 
-/* Color Picker Section */
-.color-section {
-  margin: 0;
-  background-color: transparent;
+/* ===== Misc Utilities ===== */
+.commentMessage {
+  min-width: 50px;
+  flex: 1;
 }
 
-.color-section {
-  --wa-spacing-medium: 0px;
+.warning {
+  color: var(--color-secondary);
+  border: solid;
 }
 
-.color-section::part(header) {
-  height: 30px;
-  min-height: 30px;
-  padding-block: 0;
+.centered {
+  text-align: center;
 }
 
-.color-section-wrapper {
+.gap {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
-.color-section-label {
-  font-size: var(--wa-font-size-small, 0.875rem);
-  color: var(--wa-color-neutral-text-loud, var(--color-text-muted));
-}
-
-.color-pickers-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-.color-pickers-row wa-color-picker {
-  justify-self: center;
-}
-
-.color-pickers-row wa-color-picker::part(form-control) {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
+/* ===== Keyboard Shortcuts ===== */
 .keyboard-shortcuts {
   margin-top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.keyboard-shortcuts summary {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .keyboard-shortcuts ul {
@@ -648,26 +360,10 @@ hr {
   text-align: left;
 }
 
-kbd {
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-family: monospace;
-  font-size: 0.9em;
-  color: #fff;
-}
-
-.checkboxContainer {
-  padding-right: 5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
+/* ===== Footer ===== */
 footer {
   grid-area: footer;
-  position: relative; /* Required */
+  position: relative;
   display: flex;
   align-items: end;
   background-color: var(--color-bg2);
@@ -690,12 +386,39 @@ footer {
   transform: translateX(-50%);
 }
 
-:not(wa-select).list-input {
+/* ===== Color Pickers ===== */
+.color-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.color-section-label {
+  font-size: var(--wa-font-size-small, 0.875rem);
+  color: var(--wa-color-neutral-text-loud, var(--color-text-muted));
+}
+
+.color-pickers-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.color-pickers-row wa-color-picker {
+  justify-self: center;
+}
+
+.color-pickers-row wa-color-picker::part(form-control) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Web Awesome Component Overrides ===== */
+.list-input {
   width: 95px;
 }
 
 wa-select.list-input {
-  width: 95px;
   height: 30px;
 }
 
@@ -707,10 +430,6 @@ wa-select.list-input::part(listbox) {
 wa-select.list-input::part(combobox) {
   height: 30px;
   min-height: 30px;
-}
-
-wa-number-input.list-input {
-  width: 95px;
 }
 
 wa-number-input.list-input::part(base) {
@@ -726,18 +445,18 @@ wa-number-input.list-input::part(input) {
   padding: 0;
 }
 
-wa-number-input.list-input::part(input) {
-  padding: 0 0px;
+wa-switch {
+  background-color: transparent;
 }
 
-wa-switch {
-  /* color: red; */
+wa-icon {
   background-color: transparent;
 }
 
 wa-button::part(base) {
   border-width: 2px;
   border-color: var(--color-primary);
+  color: var(--color-text);
 }
 
 wa-button.remove-button::part(base),
@@ -752,10 +471,6 @@ wa-input.commentMessage {
 
 wa-button.centered-button {
   align-self: center;
-}
-
-wa-button::part(base) {
-  color: var(--color-text);
 }
 
 wa-button.centered-button::part(base) {
@@ -778,14 +493,4 @@ wa-slider::part(track-active) {
 
 #timeSlider {
   width: 100%;
-}
-
-wa-icon {
-  background-color: transparent;
-}
-
-.gap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
