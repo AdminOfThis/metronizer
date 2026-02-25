@@ -1,22 +1,26 @@
 <div class="section">
-  <input
+  <wa-number-input
     title="Bar"
+    class="list-input"
     type="number"
-    value="1"
     id="barsXXX"
     placeholder="Bars"
     min="1"
     max="999"
-  />
-  <input
+    value="1"
+    size="small"
+  ></wa-number-input>
+  <wa-number-input
     title="Count"
+    class="list-input"
     type="number"
-    value="60"
     id="bpmXXX"
     placeholder="BPM"
     min="1"
     max="300"
-  />
+    value="60"
+    size="small"
+  ></wa-number-input>
   <!-- <select title="Measure" name="measure" id="measureXXX">
     <option value="1/4">1/4</option>
     <option value="2/4">2/4</option>
@@ -31,8 +35,7 @@
     <option value="8/8">8/8</option>
     <option value="9/8">9/8</option>
   </select> -->
-  <!-- WORK IN PROGRESS -->
-  <sl-select
+  <wa-select
     title="Measure"
     name="measure"
     id="measureXXX"
@@ -40,24 +43,23 @@
     size="small"
   >
     <small>Quarter notes</small>
-    <sl-option value="1/4">1/4</sl-option>
-    <sl-option value="2/4">2/4</sl-option>
-    <sl-option value="3/4">3/4</sl-option>
-    <sl-option value="4/4">4/4</sl-option>
-    <sl-option value="5/4">5/4</sl-option>
-    <sl-option value="6/4">6/4</sl-option>
-    <sl-divider></sl-divider>
+    <wa-option value="1/4">1/4</wa-option>
+    <wa-option value="2/4">2/4</wa-option>
+    <wa-option value="3/4">3/4</wa-option>
+    <wa-option value="4/4">4/4</wa-option>
+    <wa-option value="5/4">5/4</wa-option>
+    <wa-option value="6/4">6/4</wa-option>
+    <wa-divider></wa-divider>
     <small>Eighth notes</small>
-    <sl-option value="4/8">4/8</sl-option>
-    <sl-option value="6/8">6/8</sl-option>
-    <sl-option value="7/8">7/8</sl-option>
-    <sl-option value="8/8">8/8</sl-option>
-    <sl-option value="9/8">9/8</sl-option>
-  </sl-select>
-  <div id="precountParentXXX" class="checkboxContainer">
-    <input type="checkbox" id="isPreXXX" />
-    <label for="isPreXXX">Pre-Count</label>
-  </div>
+    <wa-option value="4/8">4/8</wa-option>
+    <wa-option value="6/8">6/8</wa-option>
+    <wa-option value="7/8">7/8</wa-option>
+    <wa-option value="8/8">8/8</wa-option>
+    <wa-option value="9/8">9/8</wa-option>
+  </wa-select>
+  <wa-switch id="isPreXXX">Is PreCount</wa-switch>
 
-  <button id="removeSectionButtonXXX" class="remove-button">Remove</button>
+  <wa-button id="removeSectionButtonXXX" class="remove-button" title="Remove section">
+    <wa-icon name="trash-can" label="Remove section"></wa-icon>
+  </wa-button>
 </div>

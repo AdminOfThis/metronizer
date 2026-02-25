@@ -16,6 +16,17 @@
   --color-active: #4c4c4c;
 
   font-family: "Segoe UI";
+
+  /* Web Awesome neutral fill — forces all input/select/etc backgrounds to match our theme */
+  --wa-color-neutral-fill-quiet: var(--color-bg2);
+  --wa-color-neutral-fill-normal: var(--color-bg2);
+  --wa-color-neutral-fill-loud: var(--color-bg);
+
+  /* Web Awesome brand color overrides — maps --color-primary (#8abf7b) onto the brand scale */
+  --wa-color-brand-50: var(--color-primary);
+
+  --section-width: 95px;
+  --section-gap: 8px;
 }
 
 /* ===== Full-Page Layout ===== */
@@ -28,7 +39,7 @@ body {
 /* ===== Global Reset & Base Styles ===== */
 * {
   /* Apply default text color from theme */
-  color: var(--color-text);
+  color: var(--color-text) !important;
   /* Apply default background color from theme */
   background-color: var(--color-bg2);
 
@@ -237,7 +248,7 @@ settingsDiv > div > select {
 }
 
 /*########################################### Default input styling ################################################*/
-input {
+/* input {
   padding: 4px 8px;
   border: solid;
   border-width: 2px;
@@ -283,8 +294,8 @@ input[type="checkbox"] {
   width: 1.35rem;
   height: 1.35rem;
   /* border: px solid; */
-  line-height: 1;
-}
+/* line-height: 1; */
+/* } */
 
 input[type="checkbox"]::before {
   position: absolute;
@@ -301,9 +312,10 @@ input[type="checkbox"]:checked::before {
   background-color: var(--color-bg);
   content: "X";
 }
+*/
 
 /* The slider */
-.slider {
+/* .slider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -325,7 +337,7 @@ input[type="checkbox"]:checked::before {
   background-color: white;
   -webkit-transition: 0.1s;
   transition: 0.1s;
-}
+} */
 
 input:checked + .slider {
   background-color: var(--color-primary);
@@ -361,7 +373,7 @@ input[type="color"] {
 }
 
 /* The switch - the box around the slider */
-.switch {
+/* .switch {
   position: relative;
   display: inline-block;
   width: 50px;
@@ -374,9 +386,9 @@ input[type="color"] {
   width: 0;
   height: 0;
 }
+*/
 
-select {
-  /* width: 200px; */
+/* select {
   padding: 4px 8px;
   border: solid;
   border-width: 2px;
@@ -395,7 +407,7 @@ select:hover {
 select:focus {
   outline: none;
   background-color: var(--color-surface);
-}
+} */
 
 .commentMessage {
   min-width: 50px;
@@ -465,7 +477,7 @@ select:focus {
 }
 
 .header-row > * {
-  width: 86.25px;
+  width: calc(var(--section-width) + var(--section-gap));
   font-weight: bold;
   text-align: left;
   white-space: nowrap; /* prevents wrapping */
@@ -474,7 +486,7 @@ select:focus {
 .row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--section-gap);
   width: 100%;
 }
 
@@ -679,21 +691,56 @@ footer {
   transform: translateX(-50%);
 }
 
-:not(sl-select).list-input {
+:not(wa-select).list-input {
   width: 95px;
 }
 
-sl-select.list-input {
+wa-select.list-input {
   width: 95px;
   height: 30px;
 }
 
-sl-select.list-input::part(listbox) {
+wa-select.list-input::part(listbox) {
   width: auto;
   min-width: max-content;
 }
 
-sl-select.list-input::part(combobox) {
+wa-select.list-input::part(combobox) {
   height: 30px;
   min-height: 30px;
+}
+
+wa-number-input.list-input {
+  width: 95px;
+}
+
+wa-number-input.list-input::part(base) {
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+wa-number-input.list-input::part(start),
+wa-number-input.list-input::part(end),
+wa-number-input.list-input::part(input) {
+  margin: 0;
+  padding: 0;
+}
+
+wa-number-input.list-input::part(input) {
+  padding: 0 0px;
+}
+
+wa-switch.list-input::part(label) {
+  color: red;
+}
+
+wa-button.remove-button::part(base),
+wa-input.list-input::part(base),
+wa-input.commentMessage::part(base) {
+  height: 28px;
+}
+
+wa-input.commentMessage {
+  flex: 1;
 }

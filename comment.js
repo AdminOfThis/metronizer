@@ -50,16 +50,13 @@ class Comment {
     str = str.replaceAll("XXX", this.index + "");
 
     // Create container div
-    const newDiv = createDiv(str);
+    const newDiv = createDiv("");
     newDiv.class("row");
-    newDiv.innerHTML = str;
+    newDiv.elt.innerHTML = str;
 
     // Set up remove button
-    this.removeButton = select("#removeCommentButton" + this.index);
-    this.removeButton.mouseReleased(() => {
-      this.remove();
-    });
-    newDiv.child(this.removeButton);
+    this.removeButton = document.querySelector("#removeCommentButton" + this.index);
+    this.removeButton.addEventListener("click", () => this.remove());
 
     // Insert at correct position to maintain order regardless of async timing
     const commentsContainer = select("#comments").elt;
@@ -71,29 +68,32 @@ class Comment {
     }
 
     // Initialize bar input
-    this.inputBar = select("#commentBar" + this.index);
-    this.inputBar.value(this.bar);
-    this.inputBar.changed(
+    this.inputBar = document.querySelector("#commentBar" + this.index);
+    this.inputBar.setAttribute("value", this.bar);
+    this.inputBar.addEventListener(
+      "change",
       function () {
-        this.bar = select("#commentBar" + this.index).value();
+        this.bar = document.querySelector("#commentBar" + this.index).value;
       }.bind(this)
     );
 
     // Initialize sub-bar (beat) input
-    this.inputSubBar = select("#commentSubBar" + this.index);
-    this.inputSubBar.value(this.sub_bar);
-    this.inputSubBar.changed(
+    this.inputSubBar = document.querySelector("#commentSubBar" + this.index);
+    this.inputSubBar.setAttribute("value", this.sub_bar);
+    this.inputSubBar.addEventListener(
+      "change",
       function () {
-        this.sub_bar = select("#commentSubBar" + this.index).value();
+        this.sub_bar = document.querySelector("#commentSubBar" + this.index).value;
       }.bind(this)
     );
 
     // Initialize comment message input
-    this.inputComment = select("#commentMessage" + this.index);
-    this.inputComment.value(this.commentMessage);
-    this.inputComment.changed(
+    this.inputComment = document.querySelector("#commentMessage" + this.index);
+    this.inputComment.setAttribute("value", this.commentMessage);
+    this.inputComment.addEventListener(
+      "change",
       function () {
-        this.commentMessage = select("#commentMessage" + this.index).value();
+        this.commentMessage = document.querySelector("#commentMessage" + this.index).value;
       }.bind(this)
     );
 
@@ -166,10 +166,8 @@ class Comment {
    * Triggers renumbering of remaining comments.
    */
   remove() {
-    // Remove DOM element
-    select("#commentBar" + this.index)
-      .parent()
-      .remove();
+    // Remove the entire row from the DOM
+    this.parentDiv.remove();
 
     // Remove from static list
     Comment.list.splice(Comment.list.indexOf(this), 1);
@@ -189,10 +187,10 @@ class Comment {
     let newIndex = Comment.list.indexOf(this);
 
     // Update all element IDs
-    this.inputBar.id("commentBar" + newIndex);
-    this.inputSubBar.id("commentSubBar" + newIndex);
-    this.inputComment.id("commentMessage" + newIndex);
-    this.removeButton.id("removeCommentButton" + newIndex);
+    this.inputBar.id = "commentBar" + newIndex;
+    this.inputSubBar.id = "commentSubBar" + newIndex;
+    this.inputComment.id = "commentMessage" + newIndex;
+    this.removeButton.id = "removeCommentButton" + newIndex;
 
     this.index = newIndex;
   }
