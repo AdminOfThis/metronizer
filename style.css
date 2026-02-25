@@ -17,6 +17,8 @@
 
   font-family: "Segoe UI";
 
+  /* https://webawesome.com/docs/tokens/color/#foundational-colors */
+
   /* Web Awesome neutral fill — forces all input/select/etc backgrounds to match our theme */
   --wa-color-neutral-fill-quiet: var(--color-bg2);
   --wa-color-neutral-fill-normal: var(--color-bg2);
@@ -24,6 +26,7 @@
 
   /* Web Awesome brand color overrides — maps --color-primary (#8abf7b) onto the brand scale */
   --wa-color-brand-50: var(--color-primary);
+  --wa-color-focus: var(--color-primary);
 
   --section-width: 95px;
   --section-gap: 8px;
@@ -103,10 +106,6 @@ settingsArea {
   overflow-y: auto;
 }
 
-.settingsHeader {
-  margin-bottom: 15px;
-}
-
 .button-row {
   display: flex;
   align-items: center;
@@ -117,11 +116,15 @@ settingsArea {
   flex: 1;
 }
 
-.button-row button {
+.button-row button,
+.button-row wa-button {
   width: 80px;
   flex-shrink: 0;
-  padding: 4px 12px;
   cursor: pointer;
+}
+
+.button-row button {
+  padding: 4px 12px;
 }
 
 .button-row-simple {
@@ -131,10 +134,14 @@ settingsArea {
   align-items: flex-end;
 }
 
-.button-row-simple button {
+.button-row-simple button,
+.button-row-simple wa-button {
   width: 80px;
-  padding: 8px 12px;
   cursor: pointer;
+}
+
+.button-row-simple button {
+  padding: 8px 12px;
 }
 
 .export-info {
@@ -163,6 +170,7 @@ controlSection {
   grid-area: control; /* Place controlSection in the control row */
   justify-content: center; /* Center controls horizontally */
   display: grid; /* Use grid for arranging control buttons */
+  gap: 10px; /* Space between control buttons */
 }
 
 sectionSection {
@@ -181,7 +189,7 @@ commentSection {
   max-height: 90vh; /* Limit height to 90% of viewport */
   width: 100%; /* Full width of grid cell */
   gap: 5px; /* Space between items */
-  padding: 0 5px 0 5px; /* Internal padding */
+  padding: 5px; /* Internal padding */
   box-sizing: border-box; /* Include padding in width/height */
   overflow: hidden; /* Hide overflow; scroll only within panels */
 }
@@ -220,31 +228,8 @@ commentSection > * {
 
 settingsDiv {
   display: grid;
-  gap: 18px; /* Space between individual setting controls */
-  padding-right: 15px;
-}
-
-/* Slider container layout */
-settingsDiv > div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-settingsDiv > div .slider-label {
-  flex: 1;
-  white-space: nowrap;
-}
-
-settingsDiv > div > input,
-settingsDiv > div > select {
-  width: 200px;
-}
-
-.slider-value {
-  min-width: 35px;
-  text-align: right;
-  font-weight: bold;
+  gap: 10px; /* Space between individual setting controls */
+  padding: 15px;
 }
 
 /*########################################### Default input styling ################################################*/
@@ -423,6 +408,10 @@ select:focus {
   gap: 8px;
 }
 
+.control > wa-button::part(base) {
+  width: 80px;
+}
+
 .warning {
   color: var(--color-secondary);
   border: solid;
@@ -467,6 +456,7 @@ select:focus {
 }
 
 .remove-button {
+  /* width: 30px; */
   margin-left: auto;
 }
 
@@ -580,34 +570,19 @@ hr {
 /* Color Picker Section */
 .color-section {
   margin: 0;
+  background-color: transparent;
 }
 
-.color-section summary {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
+.color-section::part(header) {
+  height: 30px;
+  min-height: 30px;
 }
 
-.color-section summary:hover {
-  opacity: 0.8;
-}
-
-.color-picker-group {
+.color-pickers-row {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-  padding-left: 5px;
-}
-
-.color-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.color-picker-row .slider-label {
-  flex: 1;
+  flex-direction: row;
+  justify-content: center;
+  gap: 16px;
 }
 
 .keyboard-shortcuts {
@@ -731,8 +706,14 @@ wa-number-input.list-input::part(input) {
   padding: 0 0px;
 }
 
-wa-switch.list-input::part(label) {
-  color: red;
+wa-switch {
+  /* color: red; */
+  background-color: transparent;
+}
+
+wa-button::part(base) {
+  border-width: 2px;
+  border-color: var(--color-primary);
 }
 
 wa-button.remove-button::part(base),
@@ -743,4 +724,38 @@ wa-input.commentMessage::part(base) {
 
 wa-input.commentMessage {
   flex: 1;
+}
+
+wa-button.centered-button {
+  align-self: center;
+}
+
+wa-button::part(base) {
+  color: var(--color-text);
+}
+
+wa-button.centered-button::part(base) {
+  height: 30px;
+}
+
+settingsDiv > div > wa-input::part(base),
+settingsDiv > div > wa-select::part(combobox) {
+  height: 30px;
+  min-height: 30px;
+}
+
+wa-slider::part(track) {
+  background-color: var(--color-border);
+}
+
+wa-slider::part(track-active) {
+  background-color: var(--color-primary);
+}
+
+#timeSlider {
+  width: 100%;
+}
+
+wa-icon {
+  background-color: transparent;
 }

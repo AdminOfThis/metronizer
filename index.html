@@ -2,14 +2,11 @@
 <html lang="en" class="wa-dark">
   <head>
     <title>Metronizer</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-
     <script src="section.js"></script>
     <script src="comment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.js"></script>
     <script src="canvas.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
 
@@ -32,23 +29,20 @@
         <div id="canvas-parent" class="canvas-parent"></div>
       </canvasSection>
       <controlSection>
-        <div>
-          <input
-            type="range"
-            title="Time"
-            id="timeSlider"
-            min="0"
-            max="10000"
-            value="0"
-          />
-        </div>
+        <wa-slider
+          id="timeSlider"
+          min="0"
+          max="10000"
+          step="1"
+          value="0"
+        ></wa-slider>
         <div id="control" class="control">
-          <button id="btnPlayPause" type="button" aria-label="Play/Pause">
-            <div id="iconPlayPause" class="no-background lottie-icon"></div>
-          </button>
-          <button id="btnParse" type="button" aria-label="Reset">
-            <div id="iconReset" class="no-background lottie-icon"></div>
-          </button>
+          <wa-button id="btnPlayPause" type="button" aria-label="Play/Pause">
+            <wa-icon name="play" label="Play/Pause"></wa-icon>
+          </wa-button>
+          <wa-button id="btnParse" type="button" aria-label="Reset">
+            <wa-icon name="arrows-rotate" label="Reset"></wa-icon>
+          </wa-button>
         </div>
       </controlSection>
       <sectionSection>
@@ -59,7 +53,9 @@
           <div>Measure</div>
         </div>
         <div id="sections" class="sections"></div>
-        <button id="btnAddSection" class="centered-button">Add Section</button>
+        <wa-button id="btnAddSection" class="centered-button"
+          >Add Section</wa-button
+        >
       </sectionSection>
       <commentSection>
         <h3>Comments</h3>
@@ -69,203 +65,139 @@
           <div>Comment</div>
         </div>
         <div id="comments" class="comments"></div>
-        <button id="btnAddComment" class="centered-button">Add Comment</button>
+        <wa-button id="btnAddComment" class="centered-button"
+          >Add Comment</wa-button
+        >
       </commentSection>
       <!-- SETTINGS -->
       <settingsArea>
-        <h3 class="settingsHeader">Settings</h3>
+        <h3>Settings</h3>
         <settingsDiv>
           <!-- Title Input -->
-          <div>
-            <label for="titleInput" class="slider-label">Title</label>
-            <input
-              type="text"
-              id="titleInput"
-              placeholder="Enter title..."
-              value="Metronizer Test Piece v2.1"
-              title="Display title"
-            />
-          </div>
+          <wa-input
+            id="titleInput"
+            placeholder="Title of the music piece"
+            value="Metronizer Test Piece v2.1"
+            label="Title"
+            size="medium"
+          ></wa-input>
           <hr />
           <!-- Density Slider -->
-          <div>
-            <label for="sizeSlider" class="slider-label">Speed</label>
-            <span id="sizeValue" class="slider-value">50</span>
-            <input
-              type="range"
-              title="Density"
-              id="sizeSlider"
-              min="50"
-              max="550"
-              step="10"
-              value="200"
-              list="sizeTicks"
-              oninput="sizeValue.textContent = this.value"
-            />
-            <datalist id="sizeTicks">
-              <option value="50"></option>
-              <option value="100"></option>
-              <option value="150"></option>
-              <option value="200"></option>
-              <option value="250"></option>
-              <option value="300"></option>
-              <option value="350"></option>
-              <option value="400"></option>
-              <option value="450"></option>
-              <option value="500"></option>
-              <option value="550"></option>
-            </datalist>
-          </div>
+          <wa-slider
+            id="sizeSlider"
+            min="50"
+            max="550"
+            step="50"
+            value="200"
+            with-tooltip
+            with-markers
+            label="Speed"
+          >
+            <span slot="reference">Slow</span>
+            <span slot="reference">Medium</span>
+            <span slot="reference">Fast</span></wa-slider
+          >
           <!-- Bar Prononciation Slider -->
-          <div>
-            <label for="barSlider" class="slider-label">Beat Emphasis</label>
-            <span class="slider-value"
-              ><span id="barSliderValue">0</span>%</span
-            >
-            <input
-              type="range"
-              title="Bar Prononciation"
-              id="barSlider"
-              min="00"
-              max="100"
-              step="5"
-              value="0"
-              list="barTickList"
-              oninput="barSliderValue.textContent = this.value"
-            />
-            <datalist id="barTickList">
-              <option value="0"></option>
-              <option value="10"></option>
-              <option value="20"></option>
-              <option value="30"></option>
-              <option value="40"></option>
-              <option value="50"></option>
-              <option value="60"></option>
-              <option value="70"></option>
-              <option value="80"></option>
-              <option value="90"></option>
-              <option value="100"></option>
-            </datalist>
-          </div>
+          <wa-slider
+            id="barSlider"
+            min="0"
+            max="100"
+            step="10"
+            value="0"
+            with-tooltip
+            with-markers
+            label="Beat Emphasis"
+          >
+            <span slot="reference">None</span>
+            <span slot="reference">Small</span>
+            <span slot="reference">Big</span></wa-slider
+          >
           <!-- Ball size Slider -->
-          <div>
-            <label for="ballSizeSlider" class="slider-label">Ball Size</label>
-            <span id="ballSizeSliderValue" class="slider-value">0</span>
-            <input
-              type="range"
-              title="Ball Size"
-              id="ballSizeSlider"
-              min="50"
-              max="200"
-              step="1"
-              value="100"
-              list="ballSizeTickList"
-              oninput="ballSizeSliderValue.textContent = this.value"
-            />
-            <datalist id="ballSizeTickList">
-              <option value="50"></option>
-              <option value="65"></option>
-              <option value="80"></option>
-              <option value="95"></option>
-              <option value="110"></option>
-              <option value="125"></option>
-              <option value="140"></option>
-              <option value="155"></option>
-              <option value="170"></option>
-              <option value="185"></option>
-              <option value="200"></option>
-            </datalist>
-          </div>
+          <wa-slider
+            id="ballSizeSlider"
+            min="50"
+            max="200"
+            step="25"
+            value="100"
+            with-tooltip
+            with-markers
+            label="Ball Size"
+          >
+            <span slot="reference">Small</span>
+            <span slot="reference">Medium</span>
+            <span slot="reference">Large</span>
+          </wa-slider>
           <!-- Animation Type -->
-          <div>
-            <label for="animationType" class="slider-label"
-              >Ball Animation</label
-            >
-            <select id="animationType" title="Ball Animation Type">
-              <option value="none">None</option>
-              <option value="bounce" selected>Bounce</option>
-              <option value="triangle">Triangle</option>
-              <option value="sawtooth">Sawtooth</option>
-              <option value="sawtooth_inv">Inverted Sawtooth</option>
-            </select>
-          </div>
-          <div class="toggle-row">
-            <label for="toggleTimeRemaining" class="slider-label"
-              >Show Time Remaining</label
-            >
-            <label class="switch">
-              <input
-                type="checkbox"
-                id="toggleTimeRemaining"
-                title="Show Time Remaining"
-              />
-              <span class="slider round"></span>
-            </label>
-          </div>
-          <div class="toggle-row">
-            <label for="toggleHeaderBoxes" class="slider-label"
-              >Show Header Borders</label
-            >
-            <label class="switch">
-              <input
-                type="checkbox"
-                id="toggleHeaderBoxes"
-                title="Show Header Borders"
-              />
-              <span class="slider round"></span>
-            </label>
-          </div>
+
+          <wa-select
+            id="animationType"
+            title="Ball Animation Type"
+            value="bounce"
+            label="Ball Animation"
+          >
+            <wa-option value="none">None</wa-option>
+            <wa-option value="bounce">Bounce</wa-option>
+            <wa-option value="triangle">Triangle</wa-option>
+            <wa-option value="sawtooth">Sawtooth</wa-option>
+            <wa-option value="sawtooth_inv">Inverted Sawtooth</wa-option>
+          </wa-select>
+
+          <wa-switch
+            size="medium"
+            id="toggleTimeRemaining"
+            title="Show Time Remaining"
+            >Show Time Remaining</wa-switch
+          >
+          <wa-switch
+            size="medium"
+            id="toggleHeaderBoxes"
+            title="Show Header Borders"
+            >Show Header Borders</wa-switch
+          >
           <hr />
           <!-- Color Pickers -->
-          <details class="color-section">
-            <summary class="slider-label">Colors</summary>
-            <div class="color-picker-group">
-              <div class="color-picker-row">
-                <label for="colorForeground" class="slider-label"
-                  >Foreground</label
-                >
-                <input
-                  type="color"
-                  id="colorForeground"
-                  value="#ffffff"
-                  title="Foreground Color"
-                />
-              </div>
-              <div class="color-picker-row">
-                <label for="colorBackground" class="slider-label"
-                  >Background</label
-                >
-                <input
-                  type="color"
-                  id="colorBackground"
-                  value="#000000"
-                  title="Background Color"
-                />
-              </div>
-              <div class="color-picker-row">
-                <label for="colorAccent" class="slider-label">Accent</label>
-                <input
-                  type="color"
-                  id="colorAccent"
-                  value="#ff0000"
-                  title="Accent Color"
-                />
-              </div>
+          <wa-details
+            class="color-section"
+            summary="Colors"
+            icon-placement="start"
+          >
+            <div class="color-pickers-row">
+              <wa-color-picker
+                id="colorForeground"
+                value="#ffffff"
+                format="hex"
+                size="medium"
+                label="Foreground"
+                opacity
+              ></wa-color-picker>
+              <wa-color-picker
+                id="colorBackground"
+                value="#000000"
+                format="hex"
+                size="medium"
+                label="Background"
+              ></wa-color-picker>
+              <wa-color-picker
+                id="colorAccent"
+                value="#ff0000"
+                format="hex"
+                size="medium"
+                label="Accent"
+                opacity
+              ></wa-color-picker>
             </div>
-          </details>
+          </wa-details>
           <hr />
           <div class="toggle-row">
-            <label for="toggleMetronome" class="slider-label">Play Sound</label>
-            <label class="switch">
-              <input type="checkbox" id="toggleMetronome" title="Play Sound" />
-              <span class="slider round"></span>
-            </label>
+            <wa-switch size="medium" id="toggleMetronome" title="Play Sound"
+              >Play Sound</wa-switch
+            >
           </div>
 
           <hr />
           <div class="button-row">
             <span class="button-label">Load file</span>
-            <button id="btnLoadFile">Load</button>
+            <wa-button id="btnLoadFile">Load</wa-button>
             <input
               type="file"
               id="fileInput"
@@ -275,7 +207,7 @@
           </div>
           <div class="button-row">
             <span class="button-label">Save to file</span>
-            <button id="btnSaveFile">Save</button>
+            <wa-button id="btnSaveFile">Save</wa-button>
           </div>
           <hr />
           <div class="button-row">
@@ -293,7 +225,7 @@
                 <td>.webm</td>
               </tr>
             </table>
-            <button id="btnExport">Export</button>
+            <wa-button id="btnExport">Export</wa-button>
           </div>
           <div id="activeRender">
             <h3 id="rendering" class="warning">Rendering, please wait</h3>
@@ -326,9 +258,8 @@
       <navSection></navSection>
       <!-- Footer -->
       <footer class="footer">
-        <a class="footer-left" href="https://lordicon.com/"
-          >Icons by Lordicon.com</a
-        >
+        <div class="footer-left"></div>
+
         <div class="footer-center">
           So far
           <div id="stats">###</div>
@@ -388,7 +319,6 @@
             });
         });
       </script>
-      <script src="animatedButton.js"></script>
       <script src="sketch.js"></script>
     </main>
   </body>
