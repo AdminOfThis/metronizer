@@ -27,6 +27,8 @@ let btnAddSection,
   btnExport,
   btnSaveFile;
 
+let icon;
+
 /** Slider elements */
 let sliderDensity, sliderPronounciation, sliderBallSize, sliderTime;
 
@@ -206,6 +208,8 @@ function setupButtons() {
   btnPlayPause = select("#btnPlayPause");
   btnPlayPause.mouseReleased(buttonPlayPause.bind(this));
 
+  icon = document.querySelector("#btnPlayPause wa-icon");
+
   btnReset = select("#btnParse");
   btnReset.mouseReleased(buttonReset);
 
@@ -272,30 +276,27 @@ function setupSliders() {
   // Density slider (pixels per second)
   sliderDensity = select("#sizeSlider");
   if (sliderDensity != null) {
-    sliderDensity.value(pixelPerSecond);
-    select("#sizeValue").html(pixelPerSecond);
+    sliderDensity.elt.value = pixelPerSecond;
     sliderDensity.input(function () {
-      pixelPerSecond = sliderDensity.value();
+      pixelPerSecond = sliderDensity.elt.value;
     });
   }
 
   // Bar pronounciation slider
   sliderPronounciation = select("#barSlider");
   if (sliderPronounciation != null) {
-    sliderPronounciation.value(barPronounciation);
-    select("#barSliderValue").html(barPronounciation);
+    sliderPronounciation.elt.value = barPronounciation;
     sliderPronounciation.input(function () {
-      barPronounciation = sliderPronounciation.value();
+      barPronounciation = sliderPronounciation.elt.value;
     });
   }
 
   // Ball size slider
   sliderBallSize = select("#ballSizeSlider");
   if (sliderBallSize != null) {
-    sliderBallSize.value(circleRadius);
-    select("#ballSizeSliderValue").html(circleRadius);
+    sliderBallSize.elt.value = circleRadius;
     sliderBallSize.input(function () {
-      circleRadius = sliderBallSize.value();
+      circleRadius = sliderBallSize.elt.value;
     });
   }
 
@@ -303,22 +304,23 @@ function setupSliders() {
   sliderTime = select("#timeSlider");
   if (sliderTime != null) {
     sliderTime.input(function () {
-      startTime = lastPause + (-sliderTime.value() / 10000.0) * totalLength;
+      startTime = lastPause + (-sliderTime.elt.value / 10000.0) * totalLength;
     });
   }
 
   // Metronome toggle
   tglMetronome = select("#toggleMetronome");
-  tglMetronome.checked(bool_playSound);
-  tglMetronome.input(function () {
-    bool_playSound = tglMetronome.checked();
+  if (bool_playSound) tglMetronome.elt.setAttribute("checked", "");
+  else tglMetronome.elt.removeAttribute("checked");
+  tglMetronome.changed(function () {
+    bool_playSound = tglMetronome.elt.checked;
   });
 
   // Animation type dropdown
   let animationSelect = select("#animationType");
   if (animationSelect != null) {
     animationType = animationSelect.value();
-    animationSelect.input(function () {
+    animationSelect.changed(function () {
       animationType = animationSelect.value();
     });
   }
@@ -326,18 +328,18 @@ function setupSliders() {
   // Time remaining toggle
   let tglTimeRemaining = select("#toggleTimeRemaining");
   if (tglTimeRemaining != null) {
-    showTimeRemaining = tglTimeRemaining.checked();
-    tglTimeRemaining.input(function () {
-      showTimeRemaining = tglTimeRemaining.checked();
+    showTimeRemaining = tglTimeRemaining.elt.checked;
+    tglTimeRemaining.changed(function () {
+      showTimeRemaining = tglTimeRemaining.elt.checked;
     });
   }
 
   // Header boxes toggle
   let tglHeaderBoxes = select("#toggleHeaderBoxes");
   if (tglHeaderBoxes != null) {
-    showHeaderBoxes = tglHeaderBoxes.checked();
-    tglHeaderBoxes.input(function () {
-      showHeaderBoxes = tglHeaderBoxes.checked();
+    showHeaderBoxes = tglHeaderBoxes.elt.checked;
+    tglHeaderBoxes.changed(function () {
+      showHeaderBoxes = tglHeaderBoxes.elt.checked;
     });
   }
 
@@ -354,21 +356,21 @@ function setupSliders() {
   pickerBackground = select("#colorBackground");
   if (pickerBackground != null) {
     pickerBackground.input(function () {
-      colorBackground = this.value();
+      colorBackground = pickerBackground.elt.value;
     });
   }
 
   pickerForeground = select("#colorForeground");
   if (pickerForeground != null) {
     pickerForeground.input(function () {
-      colorForeground = this.value();
+      colorForeground = pickerForeground.elt.value;
     });
   }
 
   pickerAccent = select("#colorAccent");
   if (pickerAccent != null) {
     pickerAccent.input(function () {
-      colorAccent = this.value();
+      colorAccent = pickerAccent.elt.value;
     });
   }
 }
@@ -599,36 +601,33 @@ function applySettings(settings) {
   if (settings.speed !== undefined) {
     pixelPerSecond = settings.speed;
     let sizeSlider = select("#sizeSlider");
-    if (sizeSlider) {
-      sizeSlider.value(pixelPerSecond);
-      select("#sizeValue").html(pixelPerSecond);
-    }
+    if (sizeSlider) sizeSlider.elt.value = pixelPerSecond;
   }
   if (settings.beatEmphasis !== undefined) {
     barPronounciation = settings.beatEmphasis;
     let barSlider = select("#barSlider");
-    if (barSlider) {
-      barSlider.value(barPronounciation);
-      select("#barSliderValue").html(barPronounciation);
-    }
+    if (barSlider) barSlider.elt.value = barPronounciation;
   }
   if (settings.ballSize !== undefined) {
     circleRadius = settings.ballSize;
     let ballSizeSlider = select("#ballSizeSlider");
-    if (ballSizeSlider) {
-      ballSizeSlider.value(circleRadius);
-      select("#ballSizeSliderValue").html(circleRadius);
-    }
+    if (ballSizeSlider) ballSizeSlider.elt.value = circleRadius;
   }
   if (settings.showTimeRemaining !== undefined) {
     showTimeRemaining = settings.showTimeRemaining;
     let toggle = select("#toggleTimeRemaining");
-    if (toggle) toggle.checked(showTimeRemaining);
+    if (toggle) {
+      if (showTimeRemaining) toggle.elt.setAttribute("checked", "");
+      else toggle.elt.removeAttribute("checked");
+    }
   }
   if (settings.showHeaderBoxes !== undefined) {
     showHeaderBoxes = settings.showHeaderBoxes;
     let toggle = select("#toggleHeaderBoxes");
-    if (toggle) toggle.checked(showHeaderBoxes);
+    if (toggle) {
+      if (showHeaderBoxes) toggle.elt.setAttribute("checked", "");
+      else toggle.elt.removeAttribute("checked");
+    }
   }
   if (settings.colorForeground !== undefined) {
     colorForeground = settings.colorForeground;
@@ -648,7 +647,10 @@ function applySettings(settings) {
   if (settings.playSound !== undefined) {
     bool_playSound = settings.playSound;
     let toggle = select("#toggleMetronome");
-    if (toggle) toggle.checked(bool_playSound);
+    if (toggle) {
+      if (bool_playSound) toggle.elt.setAttribute("checked", "");
+      else toggle.elt.removeAttribute("checked");
+    }
   }
   if (settings.animationType !== undefined) {
     animationType = settings.animationType;
@@ -689,13 +691,6 @@ function reset() {
   bounce = height / 4;
   window.play = false;
   previousSubDivide = 1;
-
-  // Dispatch event for UI updates
-  document.dispatchEvent(
-    new CustomEvent("btnPlayPause", {
-      detail: { isPlaying: play },
-    }),
-  );
 }
 
 /**
@@ -714,15 +709,13 @@ function buttonPlayPause() {
 
   if (play) {
     totalPause += millis() - lastPause;
+
+    icon.setAttribute("name", "pause");
   } else {
     lastPause = millis();
+    const icon = document.querySelector("#btnPlayPause wa-icon");
+    icon.setAttribute("name", "play");
   }
-
-  document.dispatchEvent(
-    new CustomEvent("btnPlayPause", {
-      detail: { isPlaying: play },
-    }),
-  );
 }
 
 // ===========================
@@ -805,7 +798,7 @@ async function exportMP4() {
     const elapsed = (performance.now() - startRenderTime) / 1000;
     const remaining = (currentFrame / neededNumberOfFrames) * 100;
 
-    exportProgress.value(progress);
+    exportProgress.value(progress*100.0);
     renderFrame.html(
       `${currentFrame} / ${neededNumberOfFrames} (${remaining.toFixed(2)}%)`,
     );

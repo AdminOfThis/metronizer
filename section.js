@@ -65,8 +65,8 @@ class Section {
     this.parentDiv = newDiv;
 
     // Set up remove button
-    this.removeButton = select("#removeSectionButton" + this.index);
-    this.removeButton.mouseReleased(() => {
+    this.removeButton = document.querySelector("#removeSectionButton" + this.index);
+    this.removeButton.addEventListener("click", () => {
       this.remove();
     });
 
@@ -89,47 +89,56 @@ class Section {
     }
 
     // Initialize bars input
-    this.inputBars = select("#bars" + this.index);
-    this.inputBars.value(this.count);
-    this.inputBars.changed(
+    // wa-number-input is a custom element: use setAttribute for pre-upgrade value setting
+    this.inputBars = document.querySelector("#bars" + this.index);
+    this.inputBars.setAttribute("value", this.count);
+    this.inputBars.addEventListener(
+      "change",
       function () {
-        this.count = select("#bars" + this.index).value();
+        this.count = document.querySelector("#bars" + this.index).value;
       }.bind(this),
     );
 
     // Initialize BPM input
-    this.inputBPM = select("#bpm" + this.index);
-    this.inputBPM.value(this.bpm);
-    this.inputBPM.changed(
+    this.inputBPM = document.querySelector("#bpm" + this.index);
+    this.inputBPM.setAttribute("value", this.bpm);
+    this.inputBPM.addEventListener(
+      "change",
       function () {
-        this.bpm = select("#bpm" + this.index).value();
+        this.bpm = document.querySelector("#bpm" + this.index).value;
       }.bind(this),
     );
 
     // Initialize time signature input
-    this.inputMeasure = select("#measure" + this.index);
-    this.inputMeasure.value(this.measure);
-    this.inputMeasure.changed(
+    this.inputMeasure = document.querySelector("#measure" + this.index);
+    this.inputMeasure.value = this.measure;
+    this.inputMeasure.addEventListener(
+      "change",
       function () {
-        this.measure = select("#measure" + this.index).value();
+        this.measure = document.querySelector("#measure" + this.index).value;
         this.measure_min = parseInt(this.measure.split("/")[0]);
         this.measure_maj = parseInt(this.measure.split("/")[1]);
       }.bind(this),
     );
 
     // Initialize precount checkbox (only visible for first section)
-    this.inputIsPre = select("#isPre" + this.index);
-    this.inputIsPre.checked(this.doNotCount);
-    this.inputIsPre.changed(
+    // wa-switch is a custom element: use setAttribute to set initial state before upgrade
+    this.inputIsPre = document.querySelector("#isPre" + this.index);
+    if (this.doNotCount) {
+      this.inputIsPre.setAttribute("checked", "");
+    } else {
+      this.inputIsPre.removeAttribute("checked");
+    }
+    this.inputIsPre.addEventListener(
+      "change",
       function () {
-        this.doNotCount = select("#isPre" + this.index).checked();
+        this.doNotCount = document.querySelector("#isPre" + this.index).checked;
         // Update static hasPreCount if this is the first section
         if (this.index === 0) {
           Section.hasPreCount = this.doNotCount;
         }
       }.bind(this),
     );
-    this.precountParent = select("#precountParent" + this.index);
 
     // Store reference to parent div and set up drag and drop
     this.parentDiv = newDiv;
@@ -201,7 +210,7 @@ class Section {
         if (oldFirstHadPreCount && Section.list.length > 0) {
           const newFirst = Section.list[0];
           newFirst.doNotCount = true;
-          newFirst.inputIsPre.checked(true);
+          newFirst.inputIsPre.setAttribute("checked", "");
           Section.hasPreCount = true;
         }
       }
@@ -236,12 +245,11 @@ class Section {
     let newIndex = Section.list.indexOf(this);
 
     // Update all element IDs
-    this.inputBars.elt.id = "bars" + newIndex;
-    this.inputBPM.elt.id = "bpm" + newIndex;
-    this.inputMeasure.elt.id = "measure" + newIndex;
-    this.inputIsPre.elt.id = "isPre" + newIndex;
-    this.precountParent.elt.id = "precountParent" + newIndex;
-    this.removeButton.elt.id = "removeSectionButton" + newIndex;
+    this.inputBars.id = "bars" + newIndex;
+    this.inputBPM.id = "bpm" + newIndex;
+    this.inputMeasure.id = "measure" + newIndex;
+    this.inputIsPre.id = "isPre" + newIndex;
+    this.removeButton.id = "removeSectionButton" + newIndex;
 
     // Update precount visibility and reset value if not first
     this.updatePreCount(newIndex);
@@ -251,13 +259,13 @@ class Section {
 
   updatePreCount(newIndex) {
     if (newIndex === 0) {
-      this.precountParent.style("visibility", "visible");
+      this.inputIsPre.style.display = "";
       // Update static hasPreCount
       Section.hasPreCount = this.doNotCount;
     } else {
-      this.precountParent.style("visibility", "hidden");
+      this.inputIsPre.style.display = "none";
       this.doNotCount = false;
-      this.inputIsPre.checked(false);
+      this.inputIsPre.removeAttribute("checked");
     }
   }
 
