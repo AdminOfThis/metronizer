@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B2B5B"/>
+      <stop offset="0.65" stop-color="#0F1E3A"/>
+      <stop offset="1" stop-color="#0B1324"/>
+    </linearGradient>
+
+    <linearGradient id="now" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFFFF"/>
+      <stop offset="1" stop-color="#FFFFFF0a"/>
+    </linearGradient>
+
+    <radialGradient id="ball" cx="30%" cy="28%" r="70%">
+      <stop offset="0" stop-color="#cc9999"/>
+      <stop offset=".2" stop-color="#cc0000"/>
+    </radialGradient>
+
+    <filter id="uiShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- scale factor: 64/52 = 1.230769 -->
+  <rect width="64" height="64" rx="14.769" fill="url(#bg)"/>
+
+  <g opacity="0.9" fill="#E5E7EB" filter="url(#uiShadow)">
+    <rect x="12" y="32" width="2" height="25" rx="1" opacity="0.18"/>
+    <rect x="22" y="32" width="2" height="20" rx="1" opacity="0.65"/>
+    <rect x="32" y="32" width="2" height="20" rx="1" opacity="0.65"/>
+    <rect x="42" y="32" width="2" height="20" rx="1" opacity="0.65"/>
+    <rect x="52" y="32" width="2" height="25" rx="1" opacity="0.65"/>
+  </g>
+
+  <g filter="url(#uiShadow)">
+    <rect x="19.5" y="2" width="1" height="30" rx="0.5" fill="url(#now)" opacity="0.5"/>
+  </g>
+
+  <g filter="url(#uiShadow)">
+    <circle cx="20" cy="17" r="7" fill="url(#ball)"/>
+  </g>
+</svg>
